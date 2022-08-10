@@ -1,0 +1,6 @@
+builder:
+  environment:
+    JAVA_OPTS: "-Xms1g -Xmx8g -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+OptimizeStringConcat"
+    GRADLE_OPTS: "-Dorg.gradle.jvmargs='-Xms1g -Xmx8g -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+OptimizeStringConcat'"
+  image: gradle:7.4.0-jdk11
+  command: "./build.sh CI"
