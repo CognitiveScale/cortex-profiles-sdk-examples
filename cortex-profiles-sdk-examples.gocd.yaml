@@ -14,7 +14,7 @@ common:
               - script: |
                   c12e-ci
 pipelines:
-  cortex-profiles-sdk-examples-builds:
+  cortex-profiles-sdk-examples:
     group: fabric6
     materials:
       cortex-profiles-sdk-examples:
@@ -26,7 +26,7 @@ pipelines:
       # LastPass: "Shared-devops/ci-automation (artifactory) - Copy"
       CD_PASS: "AES:C7Q5cxwSWCb4LxgsSuF+5g==:q/1S6mlGg6qcwzRPZgFSfg=="
     stages: *serviceBuild
-  cortex-profiles-sdk-examples-builds-pr:
+  cortex-profiles-sdk-examples-pr:
     group: pull-requests
     label_template: ${COUNT}
     materials:
@@ -37,4 +37,9 @@ pipelines:
         options:
           url: git@github.com:CognitiveScale/cortex-profiles-sdk-examples.git
           defaultBranch: main
+    environment_variables:
+      CD_USER: "ci-automation"
+    secure_variables:
+      # LastPass: "Shared-devops/ci-automation (artifactory) - Copy"
+      CD_PASS: "AES:C7Q5cxwSWCb4LxgsSuF+5g==:q/1S6mlGg6qcwzRPZgFSfg=="
     stages: *serviceBuild
