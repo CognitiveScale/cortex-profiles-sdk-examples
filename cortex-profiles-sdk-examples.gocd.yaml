@@ -12,7 +12,7 @@ common:
                   echo "artifactoryUser=${CD_USER}
                   artifactoryPassword=${CD_PASS}" > gradle.properties
               - script: |
-                  make build
+                  c12e-ci
 pipelines:
   cortex-profiles-sdk-examples-builds:
     group: fabric6
