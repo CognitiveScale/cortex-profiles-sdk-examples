@@ -7,6 +7,10 @@ common:
           Build:
             elastic_profile_id: integrationTestAgent
             tasks:
+              - script: |
+                set -eu
+                echo "artifactoryUser=${CD_USER}
+                artifactoryPassword=${CD_PASS}" > gradle.properties
               - script: make build
 pipelines:
   cortex-profiles-sdk-examples-builds:
@@ -15,6 +19,11 @@ pipelines:
       cortex-profiles-sdk-examples:
         git: git@github.com:CognitiveScale/cortex-profiles-sdk-examples.git
         branch: main
+    environment_variables:
+      CD_USER: "ci-automation"
+    secure_variables:
+      # LastPass: "Shared-devops/ci-automation (artifactory) - Copy"
+      CD_PASS: "AES:C7Q5cxwSWCb4LxgsSuF+5g==:q/1S6mlGg6qcwzRPZgFSfg=="
     stages: *serviceBuild
   cortex-profiles-sdk-examples-builds-pr:
     group: pull-requests
