@@ -1,0 +1,30 @@
+format_version: 10
+common:
+  serviceBuild: &serviceBuild
+    - build:
+        clean_workspace: true
+        jobs:
+          Build:
+            elastic_profile_id: integrationTestAgent
+            tasks:
+              - script: make build
+pipelines:
+  cortex-profiles-sdk-examples-builds:
+    group: fabric6
+    materials:
+      cortex-profiles-sdk-examples:
+        git: git@github.com:CognitiveScale/cortex-profiles-sdk-examples.git
+        branch: main
+    stages: *serviceBuild
+  cortex-profiles-sdk-examples-builds-pr:
+    group: pull-requests
+    label_template: ${COUNT}
+    materials:
+      cortex-profiles-sdk-examples:
+        plugin_configuration:
+          id: github.pr
+          version: 1
+        options:
+          url: git@github.com:CognitiveScale/cortex-profiles-sdk-examples.git
+          defaultBranch: main
+    stages: *serviceBuild
