@@ -8,10 +8,11 @@ common:
             elastic_profile_id: integrationTestAgent
             tasks:
               - script: |
-                set -eu
-                echo "artifactoryUser=${CD_USER}
-                artifactoryPassword=${CD_PASS}" > gradle.properties
-              - script: make build
+                  set -eu
+                  echo "artifactoryUser=${CD_USER}
+                  artifactoryPassword=${CD_PASS}" > gradle.properties
+              - script: |
+                  make build
 pipelines:
   cortex-profiles-sdk-examples-builds:
     group: fabric6
