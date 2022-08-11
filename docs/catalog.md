@@ -8,7 +8,7 @@ the [Cortex Fabric GraphQL API](https://cognitivescale.github.io/cortex-fabric/d
 Deployed Agents interact with the Cortex Catalog instance. The Profiles SDK includes a local
 implementation of the Catalog that may be easier to use during development.
 
-Base Interface: `com.c12e.cortex.phoenix.Catalog` <!-- TODO: Link to javadoc -->
+Base Interface: [com.c12e.cortex.phoenix.Catalog](https://cognitivescale.github.io/cortex-fabric/docs/reference-guides/apis/#profiles-sdk-api)
 
 ## Remote Catalog
 
@@ -16,7 +16,7 @@ By default, the Profiles SDK (`CortexSession`) utilizes remote Cortex Catalog. T
 containing your application (and the Cortex Profiles SDK) communicate with the Cortex Catalog instance in your
 Cortex Cluster.
 
-Implementation: `com.c12e.cortex.profiles.catalog.CortexRemoteCatalog` <!-- TODO: Link to javadoc -->
+Implementation: [com.c12e.cortex.profiles.catalog.CortexRemoteCatalog](https://cognitivescale.github.io/cortex-fabric/docs/reference-guides/apis/#profiles-sdk-api)
 
 ### Configuration Properties
 
@@ -52,7 +52,7 @@ which Cortex resources can be used with the `LocalCatalog`.)
 
 **NOTE:** Comments are not supported in the YAML files used by the LocalCatalog.
 
-Implementation: `com.c12e.cortex.phoenix.LocalCatalog` <!-- TODO: Link to javadoc -->
+Implementation: [com.c12e.cortex.phoenix.LocalCatalog](https://cognitivescale.github.io/cortex-fabric/docs/reference-guides/apis/#profiles-sdk-api)
 
 ### Configuration options
 
