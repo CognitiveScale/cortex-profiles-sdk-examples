@@ -24,7 +24,7 @@ These examples are structured in step-by-step way to display the array of usages
 C4Component
    title Component diagram for Cortex Profiles SDK (in a Skill)
    System_Boundary(cortex, "Cortex Cluster - DCI") {
-       Container(api, "Cortex Phoenix API Server", "Kotlin/Spring", "Exposes access to Cortex Catalog, Cortex Secrets")
+       Container(api, "Cortex API Service", "Kotlin/Spring", "Exposes access to Cortex Catalog, Cortex Secrets")
 
        %% Not sure if this should be Container or SystemDB
        SystemDb(minio, "Cortex Remote Storage", "Remote Storage for Managed Content, Profiles, and Campaigns data. One of: S3/GCS/Minio")
@@ -40,7 +40,7 @@ C4Component
        Component(storage, "Remote Storage Management", "Java/Kotlin", "Allows users to access Cortex remote storage for Managed Content, Profiles Related Data, Campaigns")
        Boundary(module, "Cortex Profiles Module", "Core Profiles Engine Library") {
            Component(spark, "Spark Invocation Mapper", "Java/Kotlin", "Maps invocations of Cortex Profiles API to the Spark API - read, write, readStream, writeStream")
-           Component(process, "Job Flows", "Java/Kotlin", "Provides full configuration of Cortex Phoenix job flows - buidling profiles, ingesting data sources")
+           Component(process, "Job Flows", "Java/Kotlin", "Provides full configuration of Cortex Fabric job flows - buidling profiles, ingesting data sources")
            Component(validation, "Validator", "Java", "Custom validation points for post write, post read, etc.")
        }
 
@@ -75,7 +75,7 @@ The Profiles SDK provides:
 - Access to [Cortex Backend Storage](./docs/backendstorage.md) (e.g. Managed Content and Profiles)
 - Configurable provider for Cortex [Secrets](./docs/secrets.md)
 - Stream and batch processing support for Cortex Connections
-- Access to Cortex Phoenix job flows for ingesting Data Sources and building Profiles
+- Access to Cortex Fabric job flows for ingesting Data Sources and building Profiles
 - Spark property-based [configuration options](./docs/config.md)
 - A [Cortex Skill Template](./templates) with a [spark-submit](https://spark.apache.org/docs/latest/submitting-applications.html) based launcher
 <!-- - a [Version Compatibility](#version-compatibility) check with platform dependencies -->
