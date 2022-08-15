@@ -20,7 +20,7 @@ deployed Agents containing your application are able to access Managed Content a
 
 **This implementation will not work when running outside the cluster**. <!-- TODO: Show error when using it outside the cluster? -->
 
-Implementation: `com.c12e.cortex.profiles.client.InternalRemoteStorageClient` <!-- TODO: Link to javadoc -->
+Implementation: [com.c12e.cortex.profiles.client.InternalRemoteStorageClient](https://cognitivescale.github.io/cortex-fabric/docs/reference-guides/apis/#profiles-sdk-api)
 
 ### Configuration Properties
 
@@ -47,7 +47,7 @@ The Profiles SDK supports configuring a local filesystem as the backend Cortex S
 outside the cluster, but may require additional setup because there is no starting data for Managed Content, Profiles,
 or Campaigns.
 
-Implementation: `com.c12e.cortex.profiles.client.LocalRemoteStorageClient` <!-- TODO: Link to javadoc -->
+Implementation: [com.c12e.cortex.profiles.client.LocalRemoteStorageClient](https://cognitivescale.github.io/cortex-fabric/docs/reference-guides/apis/#profiles-sdk-api)
 
 ### Configuration Properties
 
