@@ -8,6 +8,7 @@ import yaml
 import sys
 import json
 
+
 def get_runtime_args(config, token, url):
     pyspark_args = config['pyspark']
     options = pyspark_args['options']
@@ -26,10 +27,6 @@ def get_runtime_args(config, token, url):
     args.append(f"spark.kubernetes.driverEnv.CORTEX_TOKEN={token}")
     args.append('--conf')
     args.append(f"spark.cortex.phoenix.token={token}")
-    args.append('--conf')
-    args.append(f"spark.kubernetes.driver.podTemplateFile=driverSpec.yaml")
-    args.append('--conf')
-    args.append(f"spark.kubernetes.executor.podTemplateContainerName=spark-kubernetes-driver")
     if url:
         args.append('--conf')
         args.append(f"spark.fabric.client.phoenix.url={url}")
@@ -48,6 +45,7 @@ def replace_template_variables(template, variables):
 def get_config_file(config_file_loc):
     with open(config_file_loc) as json_file:
         return json.load(json_file)
+
 
 class LogMessage:
     def __init__(self):
@@ -95,13 +93,16 @@ class LogMessage:
                 current_container = ''
         return instance
 
+
 def get_driver_template(driver_file_loc):
     with open(driver_file_loc) as yaml_file:
         return yaml_file.read()
 
+
 def write_driver(driver_spec_loc, driver_spec):
     with open(driver_spec_loc, 'w') as file:
         file.write(driver_spec)
+
 
 if __name__ == '__main__':
     try:
@@ -125,16 +126,23 @@ if __name__ == '__main__':
         config_option_overrides = input_params.get("conf")
         if config_option_overrides:
             spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(config_option_overrides)
-        driver_template = get_driver_template("/app/conf/driverTemplate.yaml")
 
-        # variable replace and write new driver podspec
-        # TODO better job of generalizing
-        driver_variables = {
-            'CONTROLLER_NAME': os.environ.get('POD_NAME', "None"),
-            'CONTROLLER_UID': os.environ.get('POD_UID', "None")
-        }
-        driver_spec = replace_template_variables(driver_template, driver_variables)
-        write_driver("driverSpec.yaml", driver_spec)
+        isClusterMode = spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).get(
+            "spark.kubernetes.driver.master")
+        if isClusterMode:
+            driver_template = get_driver_template("/app/conf/driverTemplate.yaml")
+
+            # variable replace and write new driver podspec
+            # TODO better job of generalizing
+            driver_variables = {
+                'CONTROLLER_NAME': os.environ.get('POD_NAME', "None"),
+                'CONTROLLER_UID': os.environ.get('POD_UID', "None")
+            }
+            driver_spec = replace_template_variables(driver_template, driver_variables)
+            write_driver("driverSpec.yaml", driver_spec)
+            driverOptions = {"spark.kubernetes.driver.podTemplateFile": "driverSpec.yaml",
+                             "spark.kubernetes.executor.podTemplateContainerName": "spark-kubernetes-driver"}
+            spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(driverOptions)
 
         # create spark-submit call
         run_args = get_runtime_args(spark_config, token, payload.get('apiEndpoint'))
@@ -155,9 +163,11 @@ if __name__ == '__main__':
                 if pod == '':
                     pod = LogMessage.get_or_empty_string(log_message.pod_info, 'pod name')
                 if container_name in log_message.containers:
-                    container_state = LogMessage.get_or_empty_string(log_message.containers[container_name], 'container state')
+                    container_state = LogMessage.get_or_empty_string(log_message.containers[container_name],
+                                                                     'container state')
                     exit_code = LogMessage.get_or_empty_string(log_message.containers[container_name], 'exit code')
-                    termination_reason = LogMessage.get_or_empty_string(log_message.containers[container_name], 'termination reason')
+                    termination_reason = LogMessage.get_or_empty_string(log_message.containers[container_name],
+                                                                        'termination reason')
                 log_lines.clear()
             log_lines.append(line)
             print(line.rstrip())
