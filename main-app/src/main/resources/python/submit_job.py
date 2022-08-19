@@ -127,8 +127,7 @@ if __name__ == '__main__':
         if config_option_overrides:
             spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(config_option_overrides)
 
-        isClusterMode = spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).get(
-            "spark.kubernetes.driver.master")
+        isClusterMode = spark_config.get("pyspark", {}).get("options", {}).get("--deploy-mode")
         if isClusterMode:
             driver_template = get_driver_template("/app/conf/driverTemplate.yaml")
 
