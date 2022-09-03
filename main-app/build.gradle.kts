@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":cdata-connection"))
     implementation(project(":datasource-streaming"))
     implementation(project(":bigquery-connection"))
+    implementation(project(":catalog-management"))
 
     // CLI framework
     implementation("info.picocli:picocli:4.6.3")
