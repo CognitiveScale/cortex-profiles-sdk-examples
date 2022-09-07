@@ -41,6 +41,7 @@ dependencies {
 
     // other examples
     implementation(project(":local-clients"))
+    implementation(project(":datasource-query"))
     implementation(project(":join-connections"))
     implementation(project(":datasource-refresh"))
     implementation(project(":build-profiles"))
@@ -59,6 +60,7 @@ dependencies {
 
     // other examples
     testImplementation(project(":local-clients"))
+    testImplementation(project(":datasource-query"))
     testImplementation(project(":join-connections"))
     testImplementation(project(":datasource-refresh"))
     testImplementation(project(":build-profiles"))
@@ -105,6 +107,7 @@ tasks.withType<Jar> {
     // include all compiled examples in built jar
     from(project.sourceSets["main"].output)
     from(project(":local-clients").sourceSets["main"].output)
+    from(project(":datasource-query").sourceSets["main"].output)
     from(project(":build-profiles").sourceSets["main"].output)
     from(project(":datasource-refresh").sourceSets["main"].output)
     from(project(":join-connections").sourceSets["main"].output)
