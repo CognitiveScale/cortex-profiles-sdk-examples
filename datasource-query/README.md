@@ -1,16 +1,14 @@
-# Build Profiles
+# Ingest Datasource with SparkSQL query
 
-This example is a CLI application for building Cortex Profiles. This builds off of
+This example is a CLI application for ingesting Cortex Datasource. This builds off of
 the [Local Clients](../local-clients/README.md) example for its setup.
 
-(See [BuildProfile.java](./src/main/java/com/c12e/cortex/examples/profile/IngestDatasource.java) for the source code.)
+(See [IngestDatasource.java](./src/main/java/com/c12e/cortex/examples/profile/IngestDatasource.java) for the source code.)
 
 ## Jobs
 
-This example builds Profiles for the `member-profile` [Profile Schema](../local-clients/README.md#profile-schemas) by
-using pre-built Job flows for:
+This example ingest Datasource for the `member-base` using pre-built Job flows for:
 - Ingesting a Data Source (`IngestDataSourceJob`)
-- Building Profiles (`BuildProfileJob`)
 
 These job flows create Data Sources and Profiles similarly to how they are created in the Fabric Console. Building the
 resource using the Profiles SDK provides users with greater control of the ingestion process and the ability to
@@ -25,7 +23,7 @@ To run this example locally with local Cortex Clients (from the parent directory
     ```
 2. Run the application with Gradle.
     ```
-    ./gradlew main-app:run --args="build-profile --project local --profile-schema member-profile"
+    ./gradlew main-app:run --args="datasource-query --project local --datasource member-base"
     ```
 
 The end of the log output should be similar to:
@@ -53,52 +51,8 @@ The end of the log output should be similar to:
 16:24:03.932 [main] INFO  c.c.c.p.f.DefaultFeatureReportCalculator - Insufficient dataset size for sampling (actual vs MIN_SAMPLE_SIZE): 100 vs 3364. Using entire dataset
 16:24:04.899 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionReader - Removed hadoop filesystem - format_type: delta, uri: ./build/test-data//cortex-profiles/sources/local/member-base-ds-delta, extra
 16:24:04.899 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionReader - Reading connection from file_path './build/test-data//cortex-profiles/sources/local/member-base-ds-delta'
-Warning: Nashorn engine is planned to be removed from a future JDK release
-16:24:05.395 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionReader - Removed hadoop filesystem - format_type: delta, uri: ./build/test-data//cortex-profiles/sources/local/member-flu-risk-file-ds-delta, extra
-16:24:05.395 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionReader - Reading connection from file_path './build/test-data//cortex-profiles/sources/local/member-flu-risk-file-ds-delta'
-root
- |-- profile_id: integer (nullable = true)
- |-- state_code: string (nullable = true)
- |-- city: string (nullable = true)
- |-- state: string (nullable = true)
- |-- zip_code: integer (nullable = true)
- |-- gender: string (nullable = true)
- |-- email: string (nullable = true)
- |-- segment: string (nullable = true)
- |-- member_health_plan: string (nullable = true)
- |-- is_PCP_auto_assigned: integer (nullable = true)
- |-- pcp_tax_id: integer (nullable = true)
- |-- address: string (nullable = true)
- |-- phone: string (nullable = true)
- |-- do_not_call: integer (nullable = true)
- |-- channel_pref: string (nullable = true)
- |-- age: integer (nullable = true)
- |-- last_flu_shot_date: string (nullable = true)
- |-- pcp_name: string (nullable = true)
- |-- pcp_address: string (nullable = true)
- |-- _timestamp: timestamp (nullable = false)
- |-- has_phone_number: boolean (nullable = true)
- |-- age_group: string (nullable = true)
- |-- flu_risk_score: double (nullable = true)
- |-- date: string (nullable = true)
- |-- avg_flu_risk: double (nullable = true)
- |-- flu_risk_1_pct: double (nullable = true)
- |-- is_flu_risk_1_pct: boolean (nullable = true)
 
-16:24:06.464 [main] INFO  c.c12e.cortex.phoenix.ProfileEngine - Build Profile Completed
-16:24:06.466 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionWriter - Overwriting delta table: './build/test-data//cortex-profiles/profiles/local/member-profile-delta'
-16:24:06.478 [main] WARN  o.a.spark.sql.catalyst.util.package - Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
-16:24:11.422 [main] INFO  c.c.c.p.f.DefaultFeatureReportCalculator - Insufficient dataset size for sampling (actual vs MIN_SAMPLE_SIZE): 100 vs 3364. Using entire dataset
-16:24:41.731 [shutdown-hook-0] INFO  o.s.jetty.server.AbstractConnector - Stopped Spark@d946bcc{HTTP/1.1, (http/1.1)}{0.0.0.0:4040}
-16:24:41.733 [shutdown-hook-0] INFO  org.apache.spark.ui.SparkUI - Stopped Spark web UI at http://c02wq091htdf.attlocal.net:4040
 ```
-
-This will cause the Profiles for the [member-profile](../main-app/src/main/resources/spec/profileSchemas.yml) Profile
-Schema to be created by ingesting and joining the `member-base-ds` and `member-flu-risk-file-ds`
-[DataSources](../main-app/src/main/resources/spec/datasources.yml). The Profile Schema will additionally have various
-computed and bucketed attributes.
-
-The built profiles are saved at: `main-app/build/test-data/cortex-profiles/profiles/local/member-profile-delta`.
 
 ## Run Locally in a Docker Container With Spark-submit
 
@@ -119,56 +73,12 @@ To run this example in a Docker container with local Cortex clients (from the pa
     ```
     docker run -p 4040:4040 --entrypoint="python" \
       -e CORTEX_TOKEN="${CORTEX_TOKEN}" \
-      -v $(pwd)/build-profiles/src/main/resources/conf:/app/conf \
+      -v $(pwd)/datasource-query/src/main/resources/conf:/app/conf \
       -v $(pwd)/main-app/src:/opt/spark/work-dir/src \
       -v $(pwd)/main-app/build:/opt/spark/work-dir/build \
     profiles-example submit_job.py "{ \"payload\" : { \"config\" : \"/app/conf/spark-conf.json\" } }"
     ```
-
-The end of the log output should be similar to:
-```
-22:01:40.685 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionReader - Reading connection from file_path 'src/main/resources/data/cortex-profiles/sources/local/member-flu-risk-file-ds-delta'
-root
- |-- profile_id: integer (nullable = true)
- |-- state_code: string (nullable = true)
- |-- city: string (nullable = true)
- |-- state: string (nullable = true)
- |-- zip_code: integer (nullable = true)
- |-- gender: string (nullable = true)
- |-- email: string (nullable = true)
- |-- segment: string (nullable = true)
- |-- member_health_plan: string (nullable = true)
- |-- is_PCP_auto_assigned: integer (nullable = true)
- |-- pcp_tax_id: integer (nullable = true)
- |-- address: string (nullable = true)
- |-- phone: string (nullable = true)
- |-- do_not_call: integer (nullable = true)
- |-- channel_pref: string (nullable = true)
- |-- age: integer (nullable = true)
- |-- last_flu_shot_date: string (nullable = true)
- |-- pcp_name: string (nullable = true)
- |-- pcp_address: string (nullable = true)
- |-- _timestamp: timestamp (nullable = false)
- |-- has_phone_number: boolean (nullable = true)
- |-- age_group: string (nullable = true)
- |-- flu_risk_score: double (nullable = true)
- |-- date: string (nullable = true)
- |-- avg_flu_risk: double (nullable = true)
- |-- flu_risk_1_pct: double (nullable = true)
- |-- is_flu_risk_1_pct: boolean (nullable = true)
-
-22:01:42.281 [main] INFO  c.c12e.cortex.phoenix.ProfileEngine - Build Profile Completed
-22:01:42.293 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionWriter - Overwriting delta table: 'src/main/resources/data/cortex-profiles/profiles/local/member-profile-delta'
-22:01:42.308 [main] WARN  o.a.spark.sql.catalyst.util.package - Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
-22:01:49.523 [main] INFO  c.c.c.p.f.DefaultFeatureReportCalculator - Insufficient dataset size for sampling (actual vs MIN_SAMPLE_SIZE): 100 vs 3364. Using entire dataset
-22:02:36.035 [shutdown-hook-0] INFO  o.s.jetty.server.AbstractConnector - Stopped Spark@2a331b46{HTTP/1.1, (http/1.1)}{0.0.0.0:4040}
-22:02:36.039 [shutdown-hook-0] INFO  org.apache.spark.ui.SparkUI - Stopped Spark web UI at http://6ff8c687d5da:4040
-Pod Name:
-Container State:
-Termination Reason:
-Exit Code: 0
-```
-
+   
 ## Run as a Skill
 
 ### Prerequisites
