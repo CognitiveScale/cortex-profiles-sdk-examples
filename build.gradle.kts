@@ -89,7 +89,7 @@ subprojects {
 		resolutionStrategy {
 			eachDependency {
 				when (requested.group) {
-					"com.c12e.cortex.profiles" -> useVersion("6.3.2-rc.1")
+					"com.c12e.cortex.profiles" -> useVersion("6.3.2-rc.2")
 				}
 			}
 		}
