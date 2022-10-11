@@ -17,6 +17,7 @@ import com.c12e.cortex.examples.joinconn.JoinConnections;
 import com.c12e.cortex.examples.profile.BuildProfile;
 import com.c12e.cortex.examples.streaming.StreamingDataSource;
 import com.c12e.cortex.examples.bigquery.BigQuery;
+import com.c12e.cortex.examples.redisrw.RedisWrite;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
