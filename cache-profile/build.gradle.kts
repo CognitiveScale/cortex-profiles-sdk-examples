@@ -33,4 +33,4 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
-project.setProperty("mainClassName", "com.c12e.cortex.examples.redisrw.RedisWrite")
+project.setProperty("mainClassName", "com.c12e.cortex.examples.cache.RedisWrite")

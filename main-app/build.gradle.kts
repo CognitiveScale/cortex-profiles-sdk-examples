@@ -47,7 +47,7 @@ dependencies {
     implementation(project(":cdata-connection"))
     implementation(project(":datasource-streaming"))
     implementation(project(":bigquery-connection"))
-    implementation(project(":redis-connection"))
+    implementation(project(":cache-profile"))
 
     // CLI framework
     implementation("info.picocli:picocli:4.6.3")
@@ -66,7 +66,7 @@ dependencies {
     testImplementation(project(":cdata-connection"))
     testImplementation(project(":datasource-streaming"))
     testImplementation(project(":bigquery-connection"))
-    testImplementation(project(":redis-connection"))
+    testImplementation(project(":cache-profile"))
 }
 
 // application entrypoint
@@ -113,5 +113,5 @@ tasks.withType<Jar> {
     from(project(":cdata-connection").sourceSets["main"].output)
     from(project(":datasource-streaming").sourceSets["main"].output)
     from(project(":bigquery-connection").sourceSets["main"].output)
-    from(project(":redis-connection").sourceSets["main"].output)
+    from(project(":cache-profile").sourceSets["main"].output)
 }

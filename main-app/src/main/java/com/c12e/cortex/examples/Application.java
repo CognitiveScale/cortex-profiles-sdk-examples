@@ -17,7 +17,7 @@ import com.c12e.cortex.examples.joinconn.JoinConnections;
 import com.c12e.cortex.examples.profile.BuildProfile;
 import com.c12e.cortex.examples.streaming.StreamingDataSource;
 import com.c12e.cortex.examples.bigquery.BigQuery;
-import com.c12e.cortex.examples.redisrw.RedisWrite;
+import com.c12e.cortex.examples.cache.RedisWrite;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -31,7 +31,8 @@ import picocli.CommandLine.Command;
         BuildProfile.class,
         CData.class,
         StreamingDataSource.class,
-        BigQuery.class
+        BigQuery.class,
+        RedisWrite.class
 })
 public class Application {
     public static void main(String[] args) {

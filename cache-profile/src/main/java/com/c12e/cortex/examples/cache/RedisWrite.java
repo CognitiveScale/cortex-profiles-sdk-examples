@@ -1,9 +1,7 @@
-package com.c12e.cortex.examples.redisrw;
+package com.c12e.cortex.examples.cache;
 
 import com.c12e.cortex.examples.local.SessionExample;
 import com.c12e.cortex.profiles.CortexSession;
-import com.c12e.cortex.phoenix.DataSource;
-import io.delta.tables.DeltaTable;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
@@ -15,12 +13,12 @@ import picocli.CommandLine.Option;
  * Sample CLI application that writes the underlying Profile data to an Redis.
  * Caches the Profile on profile_id
  */
-@Command(name = "redis-write", description = "Example Redis write form profile", mixinStandardHelpOptions = true)
+@Command(name = "cache-profile", description = "Example Redis write form profile", mixinStandardHelpOptions = true)
 public class RedisWrite implements Runnable {
     @Option(names = {"-p", "--project"}, description = "Cortex Project to use", required = true)
     String project;
 
-    @Option(names = {"-p", "--profile"}, description = "Profile Schema Name", required = true)
+    @Option(names = {"-ps", "--profile"}, description = "Profile Schema Name", required = true)
     String profileSchemaName;
 
     @Override
