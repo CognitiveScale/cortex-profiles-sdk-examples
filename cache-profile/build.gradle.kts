@@ -20,7 +20,6 @@ dependencies {
 
     // CLI framework
     api("info.picocli:picocli:4.6.3")
-    api("com.redislabs:spark-redis_2.12:3.1.0")
     annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
     // test dependencies
