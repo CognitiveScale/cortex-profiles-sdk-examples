@@ -178,19 +178,19 @@ in a Docker container locally, you should set the `--entrypoint` option.
 
     The final output should look similar to:
     ```
-    docker build --build-arg base_img=c12e/spark-template:profile-jar-base-6.3.0-M.2.1 -t profiles-example:latest -f ./main-app/build/resources/main/Dockerfile ./main-app/build
+    docker build --build-arg base_img=c12e/spark-template:profile-jar-base-6.3.2-rc.2 -t profiles-example:latest -f ./main-app/build/resources/main/Dockerfile ./main-app/build
     [+] Building 1.5s (17/17) FINISHED
     => [internal] load build definition from Dockerfile                                                                                                                                                                                     0.0s
     => => transferring dockerfile: 37B                                                                                                                                                                                                      0.0s
     => [internal] load .dockerignore                                                                                                                                                                                                        0.0s
     => => transferring context: 2B                                                                                                                                                                                                          0.0s
-    => [internal] load metadata for docker.io/c12e/spark-template:profile-jar-base-6.3.0-M.2.1                                                                                                                                              1.0s
+    => [internal] load metadata for docker.io/c12e/spark-template:profile-jar-base-6.3.2-rc.2                                                                                                                                              1.0s
     => [auth] c12e/spark-template:pull token for registry-1.docker.io                                                                                                                                                                       0.0s
     => FROM docker.io/redboxoss/scuttle:latest                                                                                                                                                                                              0.4s
     => => resolve docker.io/redboxoss/scuttle:latest                                                                                                                                                                                        0.4s
     => [internal] load build context                                                                                                                                                                                                        0.0s
     => => transferring context: 1.16kB                                                                                                                                                                                                      0.0s
-    => [stage-0 1/9] FROM docker.io/c12e/spark-template:profile-jar-base-6.3.0-M.2.1@sha256:331f93e1290442934adbd14e904740ef458d2ea012c3288d689608e9202899dd                                                                                0.0s
+    => [stage-0 1/9] FROM docker.io/c12e/spark-template:profile-jar-base-6.3.2-rc.2@sha256:331f93e1290442934adbd14e904740ef458d2ea012c3288d689608e9202899dd                                                                                0.0s
     => [auth] redboxoss/scuttle:pull token for registry-1.docker.io                                                                                                                                                                         0.0s
     => CACHED [stage-0 2/9] COPY --from=redboxoss/scuttle:latest /scuttle /bin/scuttle                                                                                                                                                      0.0s
     => CACHED [stage-0 3/9] COPY ./resources/main/python/ .                                                                                                                                                                                 0.0s

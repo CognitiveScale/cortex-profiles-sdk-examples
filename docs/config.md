@@ -76,6 +76,8 @@ properties (`spark.cortex.storage.storageType`), as well as the values provided 
 
 Below is a table of configuration options. Examples are defaults.
 
+Configurations may be in the form of spark properties (Config value column) or environment variables (Environment column)
+
 Cortex Config Options:
 
 | Config value                                  | Description (Javadoc)                                                                                                                        | Environment             | Example                         | Supported |
@@ -106,7 +108,7 @@ Cortex Config Options:
 | spark.cortex.storage.s3.secretKey             | AWS secret key for S3 based Cortex backend storage                                                                                           | AWS_SECRET_KEY          | *****                           | true      |
 | spark.cortex.storage.s3.endpoint              | S3 Endpoint for S3 based Cortex backend storage                                                                                              | S3_ENDPOINT             | http://localhost:9000           | true      |
 | spark.cortex.storage.s3.region                | AWS region S3 based Cortex backend storage                                                                                                   | AWS_REGION              | aws-global                      | true      |
-| spark.cortex.storage.s3.sslEnabled            | Whether SSL is enabled for S3 backed Cortex backend storage                                                                                  | S3_SSL_ENABLED          | false                           | true      |
+| spark.cortex.storage.s3.sslEnabled            | Whether SSL is enabled for S3 backed Cortex backend storage (CMS/KMS SSE should enable this)                                                 | S3_SSL_ENABLED          | false                           | true      |
 | spark.cortex.storage.s3.pathstyle             | Whether S3 path style is used or not                                                                                                         | S3_PATH_STYLE_ACCESS    | true                            | true      |
 | spark.cortex.storage.bucket.managedContent    | Name of bucket for Cortex Managed Content                                                                                                    | CONTENT_BUCKET          | cortex-content                  | true      |
 | spark.cortex.storage.bucket.profiles          | Name of bucket for Cortex Profiles                                                                                                           | PROFILES_BUCKET         | cortex-profiles                 | true      |
@@ -116,3 +118,42 @@ Cortex Config Options:
 | spark.cortex.storage.gcs.authType             | Authentication type for GCS based Cortex backend storage, possible values: SERVICE_ACCOUNT_JSON_KEYFILE, COMPUTE_ENGINE, APPLICATION_DEFAULT | GCS_AUTH_TYPE           | SERVICE_ACCOUNT_JSON_KEYFILE    | true      |
 | spark.cortex.storage.gcs.serviceAccountKey    | GCS Service Account (JSON String) for GCS backed Cortex backend storage                                                                      | GCS_SERVICE_ACCOUNT_KEY |                                 | true      |
 
+### Example Cluster Storage Configurations
+When in a Cortex Kubernetes cluster the profiles-sdk will interact with the cortex-api service and retrieve this information automatically.
+If you are not running the Docker container in a Cortex cluster, or you want to override the storage configuration, here are examples of the necessary spark property values that will need to be set.
+
+The profiles bucket should always be set `spark.cortex.storage.bucket.profiles` (s3a://my-s3-bucket or gs://my-gcs-bucket)
+
+#### S3 with IRSA
+```json
+{
+  "spark.cortex.storage.storageType": "s3",
+  "spark.cortex.storage.s3.endpoint": "https://s3.amazonaws.com",
+  "spark.cortex.storage.s3.sslEnabled": "true",
+  "spark.cortex.storage.s3.assumeIam": "true"
+}
+```
+#### S3 without IRSA
+```json
+{
+  "spark.kubernetes.driverEnv.STORAGE_TYPE": "s3",
+  "spark.kubernetes.driverEnv.S3_ENDPOINT": "https://minio.example.com",
+  "spark.cortex.storage.s3.accessKey": "xxxx",
+  "spark.cortex.storage.s3.secretKey": "xxxx"
+}
+```
+#### GCS with Workload Identity
+```json
+{
+  "spark.cortex.storage.storageType": "gcs",
+  "spark.cortex.storage.gcs.authType": "COMPUTE_ENGINE"
+}
+```
+#### GCS without Workload Identity (JSON Keyfile)
+```json
+{
+  "spark.cortex.storage.storageType": "gcs",
+  "spark.cortex.storage.gcs.authType": "SERVICE_ACCOUNT_JSON_KEYFILE",
+  "spark.cortex.storage.gcs.serviceAccountKey": "{xxxx}"
+}
+```

@@ -8,7 +8,7 @@ the [Local Clients](../local-clients/README.md) example for its setup but uses a
 ## Prerequisites:
 
 **NOTE:** Streaming is only supported for S3 File Stream and GCS File Stream Connection types. (See [Connection Types](https://cognitivescale.github.io/cortex-fabric/docs/reference-guides/connection-types).)
-This example assumes an S3 File Stream is being used, but you can update Connection definition and Secrets accordingly.
+This example assumes an S3 File Stream is being used, but you can update Connection definition and Secrets accordingly. **This example uses delta merge for batch ingestion, the merge requires a unique primary key in your dataset.**
 
 * Upload data to S3 that can be used for the Connection. You can optionally use the [member dataset](../main-app/src/main/resources/data/members_100_v14.csv) used in local examples.
 * Update the `member-base-s3-stream` [S3 File Stream](https://cognitivescale.github.io/cortex-fabric/docs/reference-guides/connection-types#s3-file-stream-connections)
