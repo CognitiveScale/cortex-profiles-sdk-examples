@@ -1,4 +1,4 @@
-.PHONY: clean build build-daemon create-app-image create-daemon-image test start-daemon deploy-daemon
+.PHONY: clean build build-daemon create-app-image create-daemon-image test start-daemon deploy-daemon start-daemon-container
 -include .build_file
 
 TAG := latest
@@ -20,6 +20,7 @@ ifndef DAEMON_TAG
 	dummy:=$(shell echo "SKILL_VERSION=$(SKILL_VERSION)">> ".build_file")
 endif
 DAEMON_TAG?=$(GIT_HASH)-$(SKILL_VERSION)
+SCALECOUNT?=3
 URL=$(shell cat ~/.cortex/config | jq .profiles[.currentProfile].url)
 ifndef DOCKER_PREGISTRY_URL
 	DOCKER_PREGISTRY_URL=$(shell curl ${URL}/fabric/v4/info | jq -r .endpoints.registry.url | sed 's~http[s]*://~~g')
@@ -53,7 +54,6 @@ clean:
 start-daemon:
 	./gradlew :profile-daemon:bootRun
 
-
 # Tag the latest create-app-image built container
 tag-container: check-env
 	docker tag ${DOCKER_IMAGE}:${TAG} ${SPARK_CONTAINER}
@@ -75,7 +75,7 @@ skill-save: check-env
 	cortex skills save -y templates/skill.yaml --project ${PROJECT_NAME}
 
 daemon-skill-save: check-env
-	cortex actions deploy --actionName ${DAEMON_IMAGE} --actionType daemon --docker ${DAEMON_CONTAINER} --project ${PROJECT_NAME} --port '8080' --environmentVariables '"REDIS_HOST"="localhost","REDIS_PORT"="6379","REDIS_USER"="default","REDIS_PASSWORD"=""'
+	cortex actions deploy --actionName ${DAEMON_IMAGE} --actionType daemon --docker ${DAEMON_CONTAINER} --project ${PROJECT_NAME} --port '8080' --environmentVariables '"REDIS_HOST"="${REDIS_HOST}","REDIS_PORT"="${REDIS_PORT}","REDIS_USER"="${REDIS_USER}","REDIS_PASSWORD"="${REDIS_PASSWORD}"' --scaleCount ${SCALECOUNT}
 	cortex skills save -y profiles-daemon/skill.yaml --project ${PROJECT_NAME}
 
 # Save types

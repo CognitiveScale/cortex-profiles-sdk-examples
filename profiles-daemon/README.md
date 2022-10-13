@@ -147,3 +147,28 @@ The APIs we expose:
     ```
     {"NPI_ID":"1710056445","CURR_ELIG_IND":"Y"} 
     ```
+
+    * POST request:
+        * `http://localhost:8080/api/v1/profiles/listProfileIds` lists the indexed profile_ids
+          ```
+          curl --location --request POST 'http://localhost:8080/api/v1/profiles/listProfileIds' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+          "profileSchema": "profile1"
+          }'
+      
+        
+          ["profile1:MBR10011284","profile1:MBR5355267","profile1:MBR5675173"]
+          ```
+        * `http://localhost:8080/api/v1/profiles/profileById` fetches the profileId data
+          ```
+          curl --location --request POST 'http://localhost:8080/api/v1/profiles/profileById' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+          "profileSchema": "member-profile",
+          "profileId": "27844860"
+          }'
+        
+          
+          {"NPI_ID":"1710056445","CURR_ELIG_IND":"Y"} 
+          ```

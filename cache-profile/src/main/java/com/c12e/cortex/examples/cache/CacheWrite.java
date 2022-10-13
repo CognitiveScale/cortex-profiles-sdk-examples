@@ -14,7 +14,7 @@ import picocli.CommandLine.Option;
  * Caches the Profile on profile_id
  */
 @Command(name = "cache-profile", description = "Example Redis write form profile", mixinStandardHelpOptions = true)
-public class RedisWrite implements Runnable {
+public class CacheWrite implements Runnable {
     @Option(names = {"-p", "--project"}, description = "Cortex Project to use", required = true)
     String project;
 
