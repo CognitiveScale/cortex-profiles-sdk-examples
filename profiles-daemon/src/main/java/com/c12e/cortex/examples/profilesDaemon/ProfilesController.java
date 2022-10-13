@@ -1,8 +1,6 @@
 package com.c12e.cortex.examples.profilesDaemon;
 
-
-import com.c12e.cortex.examples.profilesDaemon.requests.ListProfileIdsInput;
-import com.c12e.cortex.examples.profilesDaemon.requests.ProfileByIdInput;
+import com.c12e.cortex.examples.profilesDaemon.requests.Payload;
 import io.lettuce.core.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -44,20 +42,20 @@ public class ProfilesController {
     }
 
     @PostMapping(path="profileById")
-    public Map<String, Map<String, String>> profileById(@RequestBody ProfileByIdInput profileByIdInput) {
+    public Map<String, Map<String, String>> profileById(@RequestBody Payload payload) {
         /**
          * Fetches profile from a particular profileSchema and profileId
          */
-        Map<String, String> response = profilesService.getProfileById(redisClient, profileByIdInput.getProfileSchema(), profileByIdInput.getProfileId());
+        Map<String, String> response = profilesService.getProfileById(redisClient, payload.getPayload().get("profileSchema"), payload.getPayload().get("profileId"));
         return Map.of("payload", response);
     }
 
     @PostMapping(path="listProfileIds")
-    public Map<String, List> listProfileIds(@RequestBody ListProfileIdsInput listProfileIdsInput) {
+    public Map<String, List> listProfileIds(@RequestBody Payload payload) {
         /**
          * Fetches all profile Ids for a particular profileSchema
          */
-        List<String> response = profilesService.getProfileIds(redisClient, listProfileIdsInput.getProfileSchema());
+        List<String> response = profilesService.getProfileIds(redisClient, payload.getPayload().get("profileSchema"));
         return Map.of("payload", response);
     }
 }
