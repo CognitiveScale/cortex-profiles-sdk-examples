@@ -227,18 +227,21 @@ public abstract class RailedCommand implements Runnable {
 
         for (Connection connection : connections) {
             if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
+                System.out.println("Creating Connection: " + connection.getName());
                 cortexSession.catalog().createConnection(connection);
             }
         }
 
         for (DataSource dataSource : dataSources) {
             if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
+                System.out.println("Creating DataSource: " + dataSource.getName());
                 cortexSession.catalog().createDataSource(dataSource);
             }
         }
 
         for (ProfileSchema profileSchema : profileSchemas) {
             if (getOrDefault(() -> cortexSession.catalog().getProfileSchema(profileSchema.getProject(), profileSchema.getName()), null) == null) {
+                System.out.println("Creating ProfileSchema: " + profileSchema.getName());
                 cortexSession.catalog().createProfileSchema(profileSchema);
             }
         }

@@ -13,7 +13,7 @@
       "--project",
       "local",
       "--config",
-      "/opt/spark/conf/app-conf.json"
+      "/app/conf/app-conf.json"
     ],
     "app_location": "local:///app/libs/app.jar",
     "options": {

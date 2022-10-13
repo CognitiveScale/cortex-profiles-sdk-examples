@@ -33,15 +33,13 @@ public class ManageCatalog extends RailedCommand {
         for (Map profile : profiles) {
             // Build primary data source
             String profileSchemaName = (String) profile.get("name");
-
             if(skipDataSource) {
                 //build profile directly from connection, not supported for streaming connections
                 System.out.println("Building profile: " + profileSchemaName);
                 BuildProfileJob buildProfileJob = cortexSession.job().buildProfile(project, profileSchemaName, cortexSession.getContext());
                 buildProfileJob.performFeatureCatalogCalculations = () -> false;
                 buildProfileJob.getDataset = (p, n) -> IngestDataSourceJob.DEFAULT_DATASOURCE_FORMATTER
-                        .apply(cortexSession.read().connection(p, n).load()
-                        );
+                        .apply(cortexSession.read().connection(p, cortexSession.catalog().getDataSource(p, n).getConnection().getName()).load());
                 buildProfileJob.run();
             } else {
                 ProfileSchema profileSchema = cortexSession.catalog().getProfileSchema(project, profileSchemaName);
