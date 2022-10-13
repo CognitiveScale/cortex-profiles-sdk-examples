@@ -137,6 +137,42 @@ To Build and run the skill:
 make deploy-daemon
 ```
 
+To invoke the skill
+1. Use the below command to invoke the skill
+    ```
+    cortex skills invoke --params-file ./profiles-daemon/src/main/resources/payload.json pdaemon request --project <projectName>
+   
+   
+    {
+       "success": true,
+       "activationId": "f8520e95-5416-490c-9d52-a6cb108234cb"
+    }
+    ```
+   1. output for the above can be looked at be
+       ```
+       cortex agents get-activation f8520e95-5416-490c-9d52-a6cb108234cb --project <projectName>
+   
+      {
+       "success": true,
+       "requestId": "f8520e95-5416-490c-9d52-a6cb108234cb",
+       "skillName": "pdaemon",
+       "inputName": "request",
+       "projectId": "bptest",
+       "username": "cortex@example.com",
+       "payload": {
+       "profileSchema": "profile1"
+       },
+       "sessionId": "f8520e95-5416-490c-9d52-a6cb108234cb",
+       "start": 1665671043250,
+       "status": "COMPLETE",
+       "end": 1665671044235,
+       "response": [
+       "profile1:MBR10011284",
+       "profile1:MBR5355267"]
+      }
+       ```
+
+
 The APIs we expose:
 * GET request:
   * `http://localhost:8080/api/v1/profiles/<profileSchema>` lists the indexed profile_ids
@@ -153,9 +189,9 @@ The APIs we expose:
           ```
           curl --location --request POST 'http://localhost:8080/api/v1/profiles/listProfileIds' \
           --header 'Content-Type: application/json' \
-          --data-raw '{
-          "profileSchema": "profile1"
-          }'
+          --data-raw ' {"payload":{
+          "profileSchema": "member-profile"
+          }} '
       
         
           ["profile1:MBR10011284","profile1:MBR5355267","profile1:MBR5675173"]
@@ -164,10 +200,10 @@ The APIs we expose:
           ```
           curl --location --request POST 'http://localhost:8080/api/v1/profiles/profileById' \
           --header 'Content-Type: application/json' \
-          --data-raw '{
+          --data-raw '{"payload":{
           "profileSchema": "member-profile",
           "profileId": "27844860"
-          }'
+           }} '
         
           
           {"NPI_ID":"1710056445","CURR_ELIG_IND":"Y"} 
