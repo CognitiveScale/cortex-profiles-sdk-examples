@@ -28,17 +28,17 @@ public class CacheWrite implements Runnable {
         writeProfileToRedis(cortexSession, project, profileSchemaName);
     }
 
-    public Boolean writeProfileToRedis(CortexSession cortexSession, String project, String dataSourceName) {
-            // Get the Data Source and read its corresponding Connection.
-            Dataset<Row> profileData = cortexSession.read().profile(project, profileSchemaName).load().toDF();
+    public Boolean writeProfileToRedis(CortexSession cortexSession, String project, String profileSchemaName) {
+        // Get the Data Source and read its corresponding Connection.
+        Dataset<Row> profileData = cortexSession.read().profile(project, profileSchemaName).load().toDF();
 
-            // Write to Redis
-            profileData.write().format("org.apache.spark.sql.redis")
-                    .option("table", profileSchemaName)
-                    .option("key.column", "profile_id")
-                    .mode(SaveMode.Append)
-                    .save();
+        // Write to Redis
+        profileData.write().format("org.apache.spark.sql.redis")
+                .option("table", profileSchemaName)
+                .option("key.column", "profile_id")
+                .mode(SaveMode.Append)
+                .save();
 
-            return true;
+        return true;
     }
 }
