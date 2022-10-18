@@ -4,9 +4,9 @@ import io.prometheus.client.Gauge;
 
 public class Metrics {
     static final Gauge KPIGauge = Gauge.build()
-            .name("kpi").help("Profile KPI").register();
+            .name("kpi").help("Profile KPI").labelNames("KPI").register();
 
-    static void setKPI(Long number){
-        KPIGauge.set(number);
+    static void setKPI(Long number) {
+        KPIGauge.labels("KPI").set(number);
     }
 }
