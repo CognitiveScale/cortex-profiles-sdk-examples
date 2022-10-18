@@ -171,7 +171,7 @@ In this case
     - Use the [remote storage client](../docs/backendstorage.md#remote-storage-client) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the GraphQL API endpoint, and remove the local storage client implementation (`spark.cortex.client.storage.impl`).
     - Remove the local Secret client implementation (`spark.cortex.client.secrets.impl`).
     - Update the `app_command` arguments to match your Cortex Project and Profile Schema (`--project`, `--profile`, `--table`, `--output`, `--secret`).
-    - Update the `spark.redis.*` configurations in the spark-conf
+    - Update the `spark.redis.*` [configurations](https://github.com/RedisLabs/spark-redis/blob/master/doc/configuration.md) in the spark-conf
     
 To Build and run the skill:
 1. Run the following make commands:
