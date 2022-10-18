@@ -5,6 +5,23 @@ This builds off of the [Local Clients](../local-clients/README.md) example for i
 
 (See [RedisWrite.java](./src/main/java/com/c12e/cortex/examples/cache/RedisWrite.java) for the source code.)
 
+```mermaid
+sequenceDiagram
+    actor User
+    User-->>cache-wrtie: Job invoke
+    note right of cache-wrtie: cache-write job
+    rect rgb(191, 223, 255)
+    profiles-deltalake->>+cache-wrtie: Reads the profile
+    cache-wrtie->>Redis: Writes profiles to redis
+    end
+    User->>+profiles-daemon: Daemon invoke
+    profiles-daemon-->>Redis: profile lookup
+    profiles-daemon->>-User: resposnse
+    User->>+profiles-daemon: Daemon invoke
+    profiles-daemon-->>Redis: profile lookup
+    profiles-daemon->>-User: resposnse
+```
+
 ## Prerequisites
 
 * The Redis Spark connector is required to run this example (`com.redislabs:spark-redis_2.12:3.1.0`). 
