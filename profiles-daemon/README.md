@@ -5,6 +5,23 @@ This works in conjunction with [Cache Profile](../cache-profile/README.md) examp
 
 (See [ProfileApplication.java](./src/main/java/com/c12e/cortex/examples/profilesDaemon/ProfileApplication.java) for the source code.)
 
+```mermaid
+sequenceDiagram
+    actor User
+    User-->>cache-wrtie: Job invoke
+    note right of cache-wrtie: cache-write job
+    rect rgb(191, 223, 255)
+    profiles-deltalake->>+cache-wrtie: Reads the profile
+    cache-wrtie->>Redis: Writes profiles to redis
+    end
+    User->>+profiles-daemon: Daemon invoke
+    profiles-daemon-->>Redis: profile lookup
+    profiles-daemon->>-User: resposnse
+    User->>+profiles-daemon: Daemon invoke
+    profiles-daemon-->>Redis: profile lookup
+    profiles-daemon->>-User: resposnse
+```
+
 ## Prerequisites
 
 * Run the [Cache Profile](../cache-profile/README.md) example for the Daemon to be able to retrieve profile data from redis.
@@ -181,7 +198,7 @@ To invoke the skill
     1. This exposes the profiles-daemon wrapped as a skill as a service, which can be used as the below curl
    ```
        curl --location --request POST 'https://api.test.cvstest.gke.insights.ai/fabric/v4/projects/bptest/agentinvoke/realtime2/services/input?sync=true' \
-       --header 'Authorization: Bearer eyJhbGciOiJF5ERTQSIsIm3pZCI6I29aY19sTUZvZW1LZTBkNEpWaThkMmxlTnFCRUxpdkxPWkdObndrX1I1REkifQ.eyJzdWIiOiJjOGM5N2M5ZS05NTFmLTQwNTMtODEwNi1mNzk3ZjJlMDY3NTYiLCJhdWQiOiJjb3J0ZXgiLCJpc3MiOiJjb2duaXRpdmVzY2FsZS5jb20iLCJpYXQiOjE2NjU5OTM4MTIsImV4cCI6MTY2NjA4MDIxMn0.2hAc280crQD9sxSnmn3iU0e9--OvHSBXrkkpWQZQYe9w4fFDteASMVGLiA64Un14sOSk714sLlGCcXab0tUK5Q' \
+       --header 'Authorization: Bearer ${CORTEX_TOKEN}' \
        --header 'Content-Type: application/json' \
        --data-raw '{
        "payload": {
