@@ -4,6 +4,8 @@ import com.c12e.cortex.examples.local.SessionExample;
 import com.c12e.cortex.phoenix.AggregationResult;
 import com.c12e.cortex.profiles.CortexSession;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoder;
+import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -12,15 +14,15 @@ import com.c12e.cortex.phoenix.ProfileWindowedAggregation;
 import com.c12e.cortex.phoenix.ProfileScriptEngine;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Collections;
-
-import static com.c12e.cortex.examples.aggregate.Metrics.setKPI;
+import java.util.Date;
 
 
 /**
- * Sample CLI application that writes the underlying Profile data to an Redis.
- * Caches the Profile on profile_id
+ * Sample CLI application that uses KPI expressions in Javascript to evaluate KPIs
  */
 @Command(name = "kpi-query", description = "Calculating KPI using aggregate using from Profiles", mixinStandardHelpOptions = true)
 public class KPIQueries implements Runnable {
@@ -36,6 +38,9 @@ public class KPIQueries implements Runnable {
     @Option(names = {"-d", "--duration"}, description = "Window Duration", required = true)
     String windowDuration;
 
+    @Option(names = {"-n", "--name"}, description = "KPI name", required = true)
+    String name;
+
     @Option(names = {"-cf", "--cohortFilters"}, defaultValue="", description = "Cohort Filter", required = false)
     String[] cohortFilters;
 
@@ -49,19 +54,36 @@ public class KPIQueries implements Runnable {
     public void run() {
         var sessionExample = new SessionExample();
         CortexSession cortexSession = sessionExample.getCortexSession();
-        Double out = runKPI(cortexSession, project);
-        System.out.println("==========");
-        System.out.println(out);
-        System.out.println("==========");
+        Double value = null;
+        try {
+            value = runKPI(cortexSession, project);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        KPIvalue kpiValue = new KPIvalue();
+        kpiValue.setName(name);
+        kpiValue.setValue(value);
+        kpiValue.setValue(value);
+        kpiValue.setWindowDuration(windowDuration);
+        kpiValue.setStartDate(startDate);
+        kpiValue.setEndDate(endDate);
+
+        // Encoders are created for Java beans
+        Encoder<KPIvalue> KPIEncoder = Encoders.bean(KPIvalue.class);
+        Dataset<KPIvalue> javaBeanDS = cortexSession.spark().createDataset(
+                Collections.singletonList(kpiValue),
+                KPIEncoder
+        );
+        javaBeanDS.show();
     }
 
-    public String buildFilter(String[] cohortFilters, String startDate, String endDate) {
+    public String buildFilter(String[] cohortFilters, String startDate, String endDate) throws ParseException {
         StringBuilder filterStr = new StringBuilder("");
         if(!startDate.isBlank()){
-            filterStr.append("_timestamp.gte('" + Timestamp.valueOf(startDate) + "')");
+            filterStr.append("_timestamp.gte('" + startDate + "')");
         }
         if(!endDate.isBlank()) {
-            String filter = "_timestamp.lte('" + Timestamp.valueOf(endDate) + "')";
+            String filter = "_timestamp.lte('" + endDate + "')";
             if (filterStr.toString().isBlank()) {
                 filterStr.append(filter);
             } else {
@@ -86,13 +108,14 @@ public class KPIQueries implements Runnable {
     }
 
 
-    public Double runKPI(CortexSession cortexSession, String project) {
+    public Double runKPI(CortexSession cortexSession, String project) throws ParseException {
         Dataset<Row> profileData = cortexSession.read().profile(project, profileSchemaName).load().toDF();
+        System.out.println(script);
 
         ProfileWindowedAggregation engine = new ProfileWindowedAggregation(profileData, windowDuration);
+        String filter = buildFilter(cohortFilters, startDate, endDate);
 
-        if(!String.join("", cohortFilters).isBlank()) {
-            String filter = buildFilter(cohortFilters, startDate, endDate);
+        if(!filter.isBlank()) {
             Dataset cohortData = applyFilter(profileData.toDF(), filter);
             engine.addDataset("cohort", cohortData);
         }
