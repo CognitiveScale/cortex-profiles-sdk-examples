@@ -1,42 +1,9 @@
 # Sample CLI application to evaluate KPI expressions
 
-Here are some examples for the KPis that can be calculated:
-```
-1. kpi-query -p local \ 
-    -n "Count people who want to continue getting mail" \
-    -ps cvs \
-    -s "filter(MAIL_STATUS.equalTo(\"MAIL CONTINUE\")).count()" \
-    -d "180 days"
-2. kpi-query -p local \
-    -n "Percentage of people who want to continue getting mail" \
-    -ps cvs  \
-    -d "180 days" \
-    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
-    -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)" 
-3. kpi-query -p local \
-    -n "Percentage of people who want to continue getting mail or are `ELIGIBLE`" \
-    -ps cvs \
-    -d "180 days" \
-    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
-    -cf "PEER_DESC.equalTo(\"MAPD\")" \
-    -cf "ELIGIBILITY.equalTo(\"ELIGIBLE\")" \
-    -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
-4. kpi-query -p local \
-    -n "Percentage of people(registered within a timeperiod) who want to continue getting mail" \
-    -ps cvs \
-    -d "180 days" \
-    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
-    -sd "2020-01-01" \
-    -ed "2022-12-31" \
-    -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
-```
+### Background
 
-This example is a CLI application that Uses Nashorn engine internally for parsing Javascript scripts for calculating KPIs(Key Performance Indicators
-).
-This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
-
-(See [KPIQueries.java](./src/main/java/com/c12e/cortex/examples/aggregate/KPIQueries.java) for the source code.)
-
+This CLI Application enables users to be able to evaluate KPI expression written in Javascript, through the profiles-sdk, similar to [KPI Dashboard](https://cognitivescale.github.io/cortex-fabric/docs/campaigns/prepare-campaigns#configure-cohorts).
+The goal is to provide interface over profiles to evaluate straight forward KPI expressions or to define cohorts on the profiles to write complex KPI expressions to be aggregated over certain window duration between a timeframe.
 Explanation of different options provided:
 ```
     [Usage: profiles-example kpi-query [-hV] -d=<windowDuration> [-ed=<endDate>]
@@ -53,8 +20,52 @@ Explanation of different options provided:
       -ps, --profile=<profileSchemaName>     Profile Schema Name
       -s, --script=<script>                  KPI Script
       -sd, --startDate=<startDate>           Start Date, Set the time-frame over which the KPI is calculated
-      -V, --v]()ersion                       Print version information and exit.
+      -V, --version                          Print version information and exit.
   ```
+
+
+Here are some examples for the KPis that can be calculated:
+```
+1. kpi-query -p local \ 
+    -n "Count people who want to continue getting mail" \
+    -ps cvs \
+    -s "filter(MAIL_STATUS.equalTo(\"MAIL CONTINUE\")).count()" \
+    -d "180 days"
+```
+```
+2. kpi-query -p local \
+    -n "Percentage of people who want to continue getting mail" \
+    -ps cvs  \
+    -d "180 days" \
+    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
+    -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
+``` 
+```
+3. kpi-query -p local \
+    -n "Percentage of people who want to continue getting mail or are `ELIGIBLE`" \
+    -ps cvs \
+    -d "180 days" \
+    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
+    -cf "PEER_DESC.equalTo(\"MAPD\")" \
+    -cf "ELIGIBILITY.equalTo(\"ELIGIBLE\")" \
+    -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
+```
+```
+4. kpi-query -p local \
+    -n "Percentage of people(registered within a timeperiod) who want to continue getting mail" \
+    -ps cvs \
+    -d "180 days" \
+    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
+    -sd "2020-01-01" \
+    -ed "2022-12-31" \
+    -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
+```
+
+This example is a CLI application that Uses Nashorn engine internally for parsing Javascript scripts for calculating KPIs(Key Performance Indicators
+). 
+This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
+
+(See [KPIQueries.java](./src/main/java/com/c12e/cortex/examples/aggregate/KPIQueries.java) for the source code.)
 
 ## Prerequisites
 
@@ -149,7 +160,7 @@ To run this example in a Docker container with local Cortex clients (from the pa
     docker run -p 4040:4040 \
       --entrypoint="python" \
       -e CORTEX_TOKEN="${CORTEX_TOKEN}" \
-      -v $(pwd)/cache-profile/src/main/resources/conf:/app/conf \
+      -v $(pwd)/aggregate-queries/src/main/resources/conf:/app/conf \
       -v $(pwd)/main-app/src:/opt/spark/work-dir/src \
       -v $(pwd)/main-app/build:/opt/spark/work-dir/build \
       profiles-example submit_job.py "{\"payload\" : {\"config\": \"/app/conf/spark-conf.json\"}}"
@@ -163,47 +174,77 @@ To run this example in a Docker container with local Cortex clients (from the pa
 
 The end of the logs should be similar to:
 ```
-13:59:36.030 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@46c269e0{/executors/threadDump/json,null,AVAILABLE,@Spark}
-13:59:36.046 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@6069dd38{/static,null,AVAILABLE,@Spark}
-13:59:36.048 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@6981f8f3{/,null,AVAILABLE,@Spark}
-13:59:36.050 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@2eae4349{/api,null,AVAILABLE,@Spark}
-13:59:36.052 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@117525fe{/metrics,null,AVAILABLE,@Spark}
-13:59:36.053 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@46963479{/jobs/job/kill,null,AVAILABLE,@Spark}
-13:59:36.055 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@6dd1c3ed{/stages/stage/kill,null,AVAILABLE,@Spark}
-13:59:36.061 [main] INFO  org.apache.spark.ui.SparkUI - Bound SparkUI to 0.0.0.0, and started at http://df81c31332e3:4040
-13:59:36.926 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@1163a27{/metrics/json,null,AVAILABLE,@Spark}
-13:59:36.927 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@502a4156{/metrics/prometheus,null,AVAILABLE,@Spark}
-13:59:37.691 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@2ee39e73{/SQL,null,AVAILABLE,@Spark}
-13:59:37.692 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@71a4f441{/SQL/json,null,AVAILABLE,@Spark}
-13:59:37.693 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@13866329{/SQL/execution,null,AVAILABLE,@Spark}
-13:59:37.695 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@1a9ec80e{/SQL/execution/json,null,AVAILABLE,@Spark}
-13:59:37.712 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@5c48b72c{/static/sql,null,AVAILABLE,@Spark}
-13:59:44.042 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionReader - Removed hadoop filesystem - format_type: delta, uri: src/main/resources/data/cortex-profiles/profiles/local/member-profile-delta, extra
-14:00:00.822 [main] WARN  o.a.spark.sql.catalyst.util.package - Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.
-14:00:03.872 [shutdown-hook-0] INFO  o.s.jetty.server.AbstractConnector - Stopped Spark@2def7a7a{HTTP/1.1, (http/1.1)}{0.0.0.0:4040}
-14:00:03.876 [shutdown-hook-0] INFO  org.apache.spark.ui.SparkUI - Stopped Spark web UI at http://df81c31332e3:4040
+11:38:15.049 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@5fa23c{/environment,null,AVAILABLE,@Spark}
+11:38:15.052 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@433348bc{/environment/json,null,AVAILABLE,@Spark}
+11:38:15.057 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@102ecc22{/executors,null,AVAILABLE,@Spark}
+11:38:15.063 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@26dc9bd5{/executors/json,null,AVAILABLE,@Spark}
+11:38:15.067 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@43045f9f{/executors/threadDump,null,AVAILABLE,@Spark}
+11:38:15.079 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@6403e24c{/executors/threadDump/json,null,AVAILABLE,@Spark}
+11:38:15.122 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@4eba373c{/static,null,AVAILABLE,@Spark}
+11:38:15.124 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@22a6e998{/,null,AVAILABLE,@Spark}
+11:38:15.128 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@e57e5d6{/api,null,AVAILABLE,@Spark}
+11:38:15.132 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@4b6e1c0{/metrics,null,AVAILABLE,@Spark}
+11:38:15.135 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@26cb5207{/jobs/job/kill,null,AVAILABLE,@Spark}
+11:38:15.138 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@18d910b3{/stages/stage/kill,null,AVAILABLE,@Spark}
+11:38:15.149 [main] INFO  org.apache.spark.ui.SparkUI - Bound SparkUI to 0.0.0.0, and started at http://2ce5f6badc71:4040
+11:38:16.713 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@42f85fa4{/metrics/json,null,AVAILABLE,@Spark}
+11:38:16.715 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@27abb6ca{/metrics/prometheus,null,AVAILABLE,@Spark}
+11:38:19.162 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@20cdb152{/SQL,null,AVAILABLE,@Spark}
+11:38:19.163 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@14b31e37{/SQL/json,null,AVAILABLE,@Spark}
+11:38:19.164 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@650aa077{/SQL/execution,null,AVAILABLE,@Spark}
+11:38:19.165 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@457a5b2d{/SQL/execution/json,null,AVAILABLE,@Spark}
+11:38:19.181 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@126f8f24{/static/sql,null,AVAILABLE,@Spark}
+11:38:26.778 [main] DEBUG c.c.c.p.m.c.DefaultCortexConnectionReader - Removed hadoop filesystem - format_type: delta, uri: src/main/resources/data/cortex-profiles/profiles/local/member-profile-delta, extra
+filter(state_code.equalTo('NY')).count()
+Warning: Nashorn engine is planned to be removed from a future JDK release
++--------------------+-----+
+|              window|col_1|
++--------------------+-----+
+|{2022-09-25 00:00...|   22|
++--------------------+-----+
+
++-------+--------------------+---------+-----+--------------+
+|endDate|                name|startDate|value|windowDuration|
++-------+--------------------+---------+-----+--------------+
+|       |Member count from...|         | 22.0|      180 days|
++-------+--------------------+---------+-----+--------------+
+
+11:38:53.265 [shutdown-hook-0] INFO  o.s.jetty.server.AbstractConnector - Stopped Spark@9b21bd3{HTTP/1.1, (http/1.1)}{0.0.0.0:4040}
+11:38:53.270 [shutdown-hook-0] INFO  org.apache.spark.ui.SparkUI - Stopped Spark web UI at http://2ce5f6badc71:4040
 Pod Name: 
 Container State: 
 Termination Reason: 
 Exit Code: 0
 ```
 
-The redis connection details have been defined in the [SessionExample.java](../local-clients/src/main/java/com/c12e/cortex/examples/local/SessionExample.java) file
-for local connections and can be passed via [spark-conf.json](../cache-profile/src/main/resources/conf/spark-conf.json)`./main-app/build/tmp/test-data/sink-ds` for jobs that need to be run in cluster.
-More configurations can be found [here](https://github.com/RedisLabs/spark-redis/blob/master/doc/configuration.md).
-In this case 
-
 ### Run as a Skill
 
 ### Prerequisites
 * Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying data source of the Profile does not need to exist.**
 * Generate a `CORTEX_TOKEN`.
-* Update/Add the [spark-conf.json](./src/main/resources/conf/spark-conf.json) file to:
-    - Use the [Remote Catalog](../docs/catalog.md#remote-catalog) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the in-cluster GraphQL API endpoint (`"http://cortex-api.cortex.svc.cluster.local:8080"`) and removing the Local Catalog implementation (`spark.cortex.catalog.impl`).
-    - Use the [remote storage client](../docs/backendstorage.md#remote-storage-client) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the GraphQL API endpoint, and remove the local storage client implementation (`spark.cortex.client.storage.impl`).
-    - Remove the local Secret client implementation (`spark.cortex.client.secrets.impl`).
-    - Update the `app_command` arguments to match your Cortex Project and Profile Schema (`--project`, `--profile`, `--table`, `--output`, `--secret`).
-    - Update the `spark.redis.*` configurations in the spark-conf
+  * Update/Add the [spark-conf.json](./src/main/resources/conf/spark-conf.json) file to:
+      - Use the [Remote Catalog](../docs/catalog.md#remote-catalog) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the in-cluster GraphQL API endpoint (`"http://cortex-api.cortex.svc.cluster.local:8080"`) and removing the Local Catalog implementation (`spark.cortex.catalog.impl`).
+      - Use the [remote storage client](../docs/backendstorage.md#remote-storage-client) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the GraphQL API endpoint, and remove the local storage client implementation (`spark.cortex.client.storage.impl`).
+      - Remove the local Secret client implementation (`spark.cortex.client.secrets.impl`).
+      - Update the `app_command` arguments to match your Cortex Project and Profile Schema and other available options (`--project`, `--profile`, `--table`, `--output`, `--secret`).
+        - Explanation of different options provided:
+           ```
+          [Usage: profiles-example kpi-query [-hV] -d=<windowDuration> [-ed=<endDate>]
+                                            -n=<name> -p=<project>
+                                            -ps=<profileSchemaName> -s=<script>
+                                            [-sd=<startDate>] [-cf=<cohortFilters>]...
+          Calculating KPI using aggregate using from Profiles
+            -cf, --cohortFilters=<cohortFilters>   Cohort Filter
+            -d, --duration=<windowDuration>        Window Duration
+            -ed, --endDate=<endDate>               End Date, Set the time-frame over which the KPI is calculated
+            -h, --help                             Show this help message and exit.
+            -n, --name=<name>                      KPI name
+            -p, --project=<project>                Cortex Project to use
+            -ps, --profile=<profileSchemaName>     Profile Schema Name
+            -s, --script=<script>                  KPI Script
+            -sd, --startDate=<startDate>           Start Date, Set the time-frame over which the KPI is calculated
+            -V, --version                          Print version information and exit.
+            ```
     
 To Build and run the skill:
 1. Run the following make commands:
@@ -218,11 +259,17 @@ make build create-app-image deploy-skill invoke
   "pyspark": {
     "pyspark_bin": "bin/spark-submit",
     "app_command": [
-      "cache-profile",
+      "kpi-query",
       "--project",
       "loadtest",
       "--profile",
-      "profile1"
+      "profile1",
+      "--script",
+      "filter(MAIL_STATUS.equalTo(\"MAIL CONTINUE\")).count()",
+      "--duration",
+      "180 days",
+      "--name",
+      "Count people who want to continue getting mail"
     ],
     "app_location": "local:///app/libs/app.jar",
     "options": {
@@ -250,25 +297,22 @@ make build create-app-image deploy-skill invoke
         "spark.executor.cores": "3",
         "spark.sql.debug.maxToStringFields": "1024",
 
-        "spark.redis.host": "cortex-redis-node-0.cortex-redis-headless.cortex.svc.cluster.local",
-        "spark.redis.port": "6379",
-        "spark.redis.timeout": "20000000",
-        "spark.redis.user": "default",
-        "spark.redis.auth": "something",
-
         "spark.cortex.client.secrets.url": "http://cortex-accounts.cortex.svc.cluster.local:5000",
         "spark.cortex.client.url": "https://api.test.cvstest.gke.insights.ai",
         "spark.cortex.storage.storageType": "gcs",
         "spark.cortex.storage.gcs.authType": "COMPUTE_ENGINE",
         "spark.kubernetes.namespace": "cortex-compute",
         "spark.kubernetes.driver.master": "https://kubernetes.default.svc",
-        "spark.kubernetes.driver.container.image": "private-registry.test.cvstest.gke.insights.ai/profiles-example:latestfs2",
-        "spark.kubernetes.executor.container.image": "private-registry.test.cvstest.gke.insights.ai/profiles-example:latestfs2",
+        "spark.kubernetes.driver.container.image": "private-registry.test.cvstest.gke.insights.ai/profiles-example:latest-k12",
+        "spark.kubernetes.executor.container.image": "private-registry.test.cvstest.gke.insights.ai/profiles-example:latest-k12",
         "spark.kubernetes.driver.podTemplateContainerName": "fabric-action",
         "spark.kubernetes.executor.annotation.traffic.sidecar.istio.io/excludeOutboundPorts": "7078,7079",
         "spark.kubernetes.driver.annotation.traffic.sidecar.istio.io/excludeInboundPorts": "7078,7079",
         "spark.kubernetes.container.image.pullPolicy": "Always",
         "spark.executor.processTreeMetrics.enabled": "false",
+        "spark.kubernetes.driver.annotation.prometheus.io/scrape": "true",
+        "spark.kubernetes.driver.annotation.prometheus.io/path": "/metrics/prometheus/",
+        "spark.kubernetes.driver.annotation.prometheus.io/port": "4040",
         "spark.metrics.conf.*.sink.prometheusServlet.class": "org.apache.spark.metrics.sink.PrometheusServlet",
         "spark.metrics.conf.*.sink.prometheusServlet.path": "/metrics/prometheus",
         "spark.metrics.conf.master.sink.prometheusServlet.path": "/metrics/master/prometheus",
