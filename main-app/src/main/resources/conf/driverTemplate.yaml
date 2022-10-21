@@ -11,4 +11,4 @@ metadata:
       uid: ${CONTROLLER_UID}
 spec:
   containers:
-    - name: spark-kubernetes-driver
+    - name: fabric-action
