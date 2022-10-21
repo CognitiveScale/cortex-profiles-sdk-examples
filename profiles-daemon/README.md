@@ -197,14 +197,14 @@ To invoke the skill
     ```
     1. This exposes the profiles-daemon wrapped as a skill as a service, which can be used as the below curl
    ```
-       curl --location --request POST 'https://api.test.cvstest.gke.insights.ai/fabric/v4/projects/bptest/agentinvoke/realtime2/services/input?sync=true' \
-       --header 'Authorization: Bearer ${CORTEX_TOKEN}' \
+       curl --location --request POST 'https://api.test.cvstest.gke.insights.ai/fabric/v4/projects/bptest/agentinvoke/realtime/services/input?sync=true' \
+       --header 'Authorization: Bearer '"$CORTEX_TOKEN"'' \
        --header 'Content-Type: application/json' \
        --data-raw '{
-       "payload": {
-       "profileSchema": "profile1",
-       "profileId": "MBR9370927"
-       }
+        "payload": {
+        "profileSchema": "profile1",
+        "profileId": "MBR5374944"
+        }
        }
        '
    ```
