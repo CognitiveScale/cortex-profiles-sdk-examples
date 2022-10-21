@@ -38,7 +38,7 @@ properties:
     description: Update default value to HTTP endpoint path in container
     required: true
     type: String
-    defaultValue: api/v1/profiles/listProfileIds
+    defaultValue: api/v1/profiles/profileById
   - name: daemon.port
     title: Daemon Port
     description: Update default value to port on which app will be running
