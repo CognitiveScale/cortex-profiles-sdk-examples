@@ -61,6 +61,15 @@ Here are some examples for the KPis that can be calculated:
     -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
 ```
 
+NOTES:
+ * `--name`, `--windowDuration`, `--project`, `--script`, `--profileSchema` are the only required arguments rest are optional*
+ * Examples of `--windowDuration` would be `1 day`, `1 week`, `365 days`
+ * Multiple Cohort Filters can be passed using `--cohortFilter` flag, all these filters are ORed to create a `cohort` dataset, which can be accesed using the `cohort` keyword, EX: `cohort.count()`
+ * A `cohort` is created only if either a `--cohortFilter`, `--startDate`, or an `--endDate` is set, and can only be accessed then
+ * A simple `count()` points to the entire profile
+ * `--startDate` and `--endDate` are applied on the `_timestamp` column on the profile
+ * The Usage for most of these have been discussed above
+
 This example is a CLI application that Uses Nashorn engine internally for parsing Javascript scripts for calculating KPIs(Key Performance Indicators
 ). 
 This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
@@ -170,7 +179,6 @@ To run this example in a Docker container with local Cortex clients (from the pa
     * The first volume mount is sharing the [Spark-submit config file](./src/main/resources/conf/spark-conf.json).
     * The second volume mount shares the LocalCatalog contents and other local application resources.
     * The third volume mount is the output location of the joined connection.
-    * Make sure the spark-conf point to `"spark.redis.host": "host.docker.internal",` for the container to be able to access redis.
 
 The end of the logs should be similar to:
 ```
