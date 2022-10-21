@@ -18,6 +18,7 @@ import com.c12e.cortex.examples.profile.BuildProfile;
 import com.c12e.cortex.examples.streaming.StreamingDataSource;
 import com.c12e.cortex.examples.bigquery.BigQuery;
 import com.c12e.cortex.examples.cache.CacheWrite;
+import com.c12e.cortex.examples.aggregate.KPIQueries;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -32,7 +33,8 @@ import picocli.CommandLine.Command;
         CData.class,
         StreamingDataSource.class,
         BigQuery.class,
-        CacheWrite.class
+        CacheWrite.class,
+        KPIQueries.class
 })
 public class Application {
     public static void main(String[] args) {
