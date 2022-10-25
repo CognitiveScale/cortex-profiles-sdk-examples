@@ -25,6 +25,12 @@ import java.util.Map;
 @CommandLine.Command(name = "catalog-management", description = "Managing Catalog with Side-loaded Config", mixinStandardHelpOptions = true)
 public class ManageCatalog extends RailedCommand {
 
+    public void buildDataSource(CortexSession cortexSession, String project, String dataSourceName) {
+        IngestDataSourceJob ingestMemberBase = cortexSession.job().ingestDataSource(project, dataSourceName, cortexSession.getContext());
+        ingestMemberBase.performFeatureCatalogCalculations = () -> false;
+        ingestMemberBase.run();
+
+    }
     @Override
     public void runApp(String project, CortexSession cortexSession, DocumentContext config) {
         List<Map> profiles = config.read(APP_PATH + ".profiles");
@@ -46,16 +52,12 @@ public class ManageCatalog extends RailedCommand {
 
                 //build primary datasource
                 System.out.println("Ingesting Primary DataSource: " + profileSchema.getPrimarySource().getName());
-                IngestDataSourceJob ingestMemberBase = cortexSession.job().ingestDataSource(project, profileSchema.getPrimarySource().getName(), cortexSession.getContext());
-                ingestMemberBase.performFeatureCatalogCalculations = () -> false;
-                ingestMemberBase.run();
+                buildDataSource(cortexSession, project, profileSchema.getPrimarySource().getName());
 
                 //build all joined datasources
                 profileSchema.getJoins().forEach(join -> {
                     System.out.println("Ingesting Joined DataSource: " + join.getName());
-                    IngestDataSourceJob ingestJoin = cortexSession.job().ingestDataSource(project, join.getName(), cortexSession.getContext());
-                    ingestJoin.performFeatureCatalogCalculations = () -> false;
-                    ingestJoin.run();
+                    buildDataSource(cortexSession, project, join.getName());
                 });
 
                 // Build profile
