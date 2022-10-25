@@ -16,6 +16,9 @@ Set skipDataSource to skip the data source ingest and instead build profile dire
 it may make sense to bypass the data source step. Data sources duplicate data and add to load times, but processing done in the data source
 may be used across multiple profile schemas. Profiles built without a data source can no longer be built through the console and must be
 built through a profile-sdk job.
+
+Not supported for streaming connections and requires the profile schema to be built off a single data source.
+Profile schemas with multiple data sources cannot be built directly from a connection.
 ```json
 {
   "process": {

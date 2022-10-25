@@ -58,7 +58,9 @@ public class ManageCatalog extends RailedCommand {
             // Build primary data source
             String profileSchemaName = (String) profile.get("name");
             if(skipDataSource) {
-                //build profile directly from connection, not supported for streaming connections
+                //Build profile directly from connection, not supported for streaming connections and requires
+                //the profile schema to be built off a single data source. Profile schemas with multiple data sources
+                //cannot be built directly from a connection.
                 System.out.println("Building profile: " + profileSchemaName);
                 BuildProfileJob buildProfileJob = cortexSession.job().buildProfile(project, profileSchemaName, cortexSession.getContext());
                 buildProfileJob.performFeatureCatalogCalculations = () -> false;
