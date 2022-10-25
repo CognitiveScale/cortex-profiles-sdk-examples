@@ -1,33 +1,34 @@
 package com.c12e.cortex.examples.aggregate;
 
+import com.google.type.DateTime;
+
 import java.io.Serializable;
 
 public class KPIvalue implements Serializable {
-    String name;
     Double value;
     String windowDuration;
     String startDate;
     String endDate;
+//    String description;
+    String timeOfExecution;
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
+    public void setTimeOfExecution(String timeOfExecution) { this.timeOfExecution = timeOfExecution; }
 
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
+    public String getTimeOfExecution() { return timeOfExecution; }
+
+//    public void setDescription(String description) { this.description = description; }
+
+//    public String getDescription() { return description; }
+
+    public void setStartDate(String startDate) { this.startDate = startDate; }
+
+    public void setEndDate(String endDate) { this.endDate = endDate; }
 
     public String getStartDate() {
         return startDate;
     }
 
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getEndDate() { return endDate; }
 
     public void setValue(Double value) {
         this.value = value;
@@ -35,10 +36,6 @@ public class KPIvalue implements Serializable {
 
     public void setWindowDuration(String windowDuration) {
         this.windowDuration = windowDuration;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Double getValue() {
