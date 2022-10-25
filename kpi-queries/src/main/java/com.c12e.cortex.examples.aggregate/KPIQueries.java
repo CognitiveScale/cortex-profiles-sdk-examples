@@ -111,6 +111,11 @@ public class KPIQueries implements Runnable {
 
     @Override
     public void run() {
+        var sessionExample = new SessionExample();
+        CortexSession cortexSession = sessionExample.getCortexSession();
+        String profilesBucket = cortexSession.getContext().getSparkSession().conf().getAll().get("spark.cortex.storage.bucket.profiles").get();
+        System.out.println(profilesBucket);
+
 
         String dataSourceConfig = "{\n" +
                 "                \"project\": \"" + project + "\",\n" +
@@ -122,19 +127,19 @@ public class KPIQueries implements Runnable {
                 "                  \"windowDuration\"\n" +
                 "                ],\n" +
                 "                \"connection\": {\n" +
-                "                  \"name\": \"KPI\"\n" +
+                "                  \"name\": \"KPI-" + name + "\"\n" +
                 "                },\n" +
                 "                \"description\": \""+description+"\",\n" +
                 "                \"kind\": \"batch\",\n" +
-                "                \"name\": \"" + name + "\",\n" +
+                "                \"name\": \"KPI-" + name + "\",\n" +
                 "                \"primaryKey\": \"timeOfExecution\",\n" +
-                "                \"title\": \"KPI\"\n" +
+                "                \"title\": \"" + name + "\"\n" +
                 "              }";
 
         String connectionConfig = "{\n" +
                 "                \"project\": \"" + project + "\",\n" +
-                "                \"name\": \"KPI\",\n" +
-                "                \"title\": \"KPI\",\n" +
+                "                \"name\": \"KPI-" + name + "\",\n" +
+                "                \"title\": \"" + name + "\",\n" +
                 "                \"connectionType\": \"gcs\",\n" +
                 "                \"contentType\": \"parquet\",\n" +
                 "                \"allowRead\": true,\n" +
@@ -142,7 +147,7 @@ public class KPIQueries implements Runnable {
                 "                \"params\": [\n" +
                 "                  {\n" +
                 "                    \"name\": \"uri\",\n" +
-                "                    \"value\": \"gs://cvs-synthetic/temp\"\n" +
+                "                    \"value\": \"gs://"+profilesBucket+"/sources/"+project+"/KPI-"+name+"-delta\"\n" +
                 "                  },\n" +
                 "                  {\n" +
                 "                    \"name\": \"workloadIdentityEnabled\",\n" +
@@ -151,8 +156,6 @@ public class KPIQueries implements Runnable {
                 "                ]\n" +
                 "              }";
 
-        var sessionExample = new SessionExample();
-        CortexSession cortexSession = sessionExample.getCortexSession();
         Double value = null;
         try {
             value = runKPI(cortexSession, project);
@@ -164,7 +167,6 @@ public class KPIQueries implements Runnable {
         kpiValue.setWindowDuration(windowDuration);
         kpiValue.setStartDate(startDate);
         kpiValue.setEndDate(endDate);
-//        kpiValue.setDescription(description);
         kpiValue.setTimeOfExecution(Instant.now().toString());
 
         // Encoders are created for Java beans
@@ -178,20 +180,20 @@ public class KPIQueries implements Runnable {
 
         // creating a Datasource for the KPIs
         DocumentContext config;
-//        config = JsonPath.parse(connectionConfig);
-//        Connection connection = config.read("$", new TypeRef<Connection>() {});
+        config = JsonPath.parse(connectionConfig);
+        Connection connection = config.read("$", new TypeRef<Connection>() {});
         config = JsonPath.parse(dataSourceConfig);
         DataSource dataSource = config.read("$", new TypeRef<DataSource>() {});
         System.out.println(dataSource);
-//        if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
-//            cortexSession.catalog().createConnection(connection);
-//        }
+
+        if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
+            cortexSession.catalog().createConnection(connection);
+        }
 
         if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
             System.out.println("Created the datasource");
             cortexSession.catalog().createDataSource(dataSource);
         }
-
         cortexSession.write()
                 .dataSource(javaBeanDS.toDF(), project, dataSource.getName())
                 .mode(SaveMode.Append)

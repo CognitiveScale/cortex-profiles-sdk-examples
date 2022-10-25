@@ -2,9 +2,13 @@
 
 ### Background
 
-This CLI Application enables users to be able to evaluate KPI expression written in Javascript, through the profiles-sdk, similar to [KPI Dashboard](https://cognitivescale.github.io/cortex-fabric/docs/campaigns/prepare-campaigns#configure-cohorts).
-The goal is to provide interface over profiles to evaluate straight forward KPI expressions or to define cohorts on the profiles to write complex KPI expressions to be aggregated over certain window duration between a timeframe.
-Explanation of different options provided:
+This CLI Application enables users to be able to evaluate KPI expression written in Javascript, through the
+profiles-sdk, similar
+to [KPI Dashboard](https://cognitivescale.github.io/cortex-fabric/docs/campaigns/prepare-campaigns#configure-cohorts).
+The goal is to provide interface over profiles to evaluate straight forward KPI expressions or to define cohorts on the
+profiles to write complex KPI expressions to be aggregated over certain window duration between a timeframe. Explanation
+of different options provided:
+
 ```
     [Usage: profiles-example kpi-query [-hV] -d=<windowDuration> [-ed=<endDate>]
                                       -n=<name> -p=<project>
@@ -12,10 +16,11 @@ Explanation of different options provided:
                                       [-sd=<startDate>] [-cf=<cohortFilters>]...
     Calculating KPI using aggregate using from Profiles
       -cf, --cohortFilters=<cohortFilters>   Cohort Filter
-      -d, --duration=<windowDuration>        Window Duration
+      -du, --duration=<windowDuration>       Window Duration
+      -d, --description=<Description>        KPI Description
       -ed, --endDate=<endDate>               End Date, Set the time-frame over which the KPI is calculated
       -h, --help                             Show this help message and exit.
-      -n, --name=<name>                      KPI name
+      -n, --name=<name>                      KPI name, This get's applied to KPI Datasource
       -p, --project=<project>                Cortex Project to use
       -ps, --profile=<profileSchemaName>     Profile Schema Name
       -s, --script=<script>                  KPI Script
@@ -23,38 +28,45 @@ Explanation of different options provided:
       -V, --version                          Print version information and exit.
   ```
 
-
 Here are some examples for the KPis that can be calculated:
+
 ```
-1. kpi-query -p local \ 
-    -n "Count people who want to continue getting mail" \
+1. kpi-query -p local \
+    -n "KPI 1" \
+    -d "Count people who want to continue getting mail" \
     -ps cvs \
     -s "filter(MAIL_STATUS.equalTo(\"MAIL CONTINUE\")).count()" \
-    -d "180 days"
+    -du "180 days"
 ```
+
 ```
 2. kpi-query -p local \
-    -n "Percentage of people who want to continue getting mail" \
+    -n "KPI 2" \
+    -d "Percentage of people who want to continue getting mail" \
     -ps cvs  \
-    -d "180 days" \
+    -du "180 days" \
     -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
     -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
 ``` 
+
 ```
 3. kpi-query -p local \
-    -n "Percentage of people who want to continue getting mail or are `ELIGIBLE`" \
+    -n "KPI 3" \
+    -d "Percentage of people who want to continue getting mail or are `ELIGIBLE`" \
     -ps cvs \
-    -d "180 days" \
+    -du "180 days" \
     -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
     -cf "PEER_DESC.equalTo(\"MAPD\")" \
     -cf "ELIGIBILITY.equalTo(\"ELIGIBLE\")" \
     -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
 ```
+
 ```
 4. kpi-query -p local \
-    -n "Percentage of people(registered within a timeperiod) who want to continue getting mail" \
+    -n "KPI 4" \
+    -d "Percentage of people(registered within a timeperiod) who want to continue getting mail" \
     -ps cvs \
-    -d "180 days" \
+    -du "180 days" \
     -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
     -sd "2020-01-01" \
     -ed "2022-12-31" \
@@ -62,27 +74,33 @@ Here are some examples for the KPis that can be calculated:
 ```
 
 NOTES:
- * `--name`, `--windowDuration`, `--project`, `--script`, `--profileSchema` are the only required arguments rest are optional*
- * Examples of `--windowDuration` would be `1 day`, `1 week`, `365 days`
- * Multiple Cohort Filters can be passed using `--cohortFilter` flag, all these filters are ORed to create a `cohort` dataset, which can be accesed using the `cohort` keyword, EX: `cohort.count()`
- * A `cohort` is created only if either a `--cohortFilter`, `--startDate`, or an `--endDate` is set, and can only be accessed then
- * A simple `count()` points to the entire profile
- * `--startDate` and `--endDate` are applied on the `_timestamp` column on the profile
- * The Usage for most of these have been discussed above
 
-This example is a CLI application that Uses Nashorn engine internally for parsing Javascript scripts for calculating KPIs(Key Performance Indicators
-). 
-This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
+* `--name`, `--windowDuration`, `--project`, `--script`, `--profileSchema` are the only required arguments rest are
+  optional*
+* Examples of `--windowDuration` would be `1 day`, `1 week`, `365 days`
+* Multiple Cohort Filters can be passed using `--cohortFilter` flag, all these filters are ORed to create a `cohort`
+  dataset, which can be accesed using the `cohort` keyword, EX: `cohort.count()`
+* A `cohort` is created only if either a `--cohortFilter`, `--startDate`, or an `--endDate` is set, and can only be
+  accessed then
+* A simple `count()` points to the entire profile
+* `--startDate` and `--endDate` are applied on the `_timestamp` column on the profile
+* The Usage for most of these have been discussed above
+
+This example is a CLI application that Uses Nashorn engine internally for parsing Javascript scripts for calculating
+KPIs(Key Performance Indicators
+). This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
 
 (See [KPIQueries.java](./src/main/java/com/c12e/cortex/examples/aggregate/KPIQueries.java) for the source code.)
 
 ## Prerequisites
 
-* This example evaluates a KPI expression on a built profile, and takes a profile Schema as input, so we expect a built profile before we run this example
+* This example evaluates a KPI expression on a built profile, and takes a profile Schema as input, so we expect a built
+  profile before we run this example
 
 ## Run Locally
 
 To run this example locally with local Cortex clients (from the parent directory):
+
 1. Build the application.
     ```
     make build
@@ -97,6 +115,7 @@ To run this example locally with local Cortex clients (from the parent directory
     ```
 
 The end of the log output should be similar to:
+
 ```
 14:17:06.644 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@7e0bc8a3{/static,null,AVAILABLE,@Spark}
 14:17:06.645 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@737d100a{/,null,AVAILABLE,@Spark}
@@ -143,6 +162,7 @@ BUILD SUCCESSFUL in 30s
 ## Run Locally in a Docker Container With Spark-submit
 
 To run this example in a Docker container with local Cortex clients (from the parent directory):
+
 1. Build the application.
     ```
     make build
@@ -181,6 +201,7 @@ To run this example in a Docker container with local Cortex clients (from the pa
     * The third volume mount is the output location of the joined connection.
 
 The end of the logs should be similar to:
+
 ```
 11:38:15.049 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@5fa23c{/environment,null,AVAILABLE,@Spark}
 11:38:15.052 [main] INFO  o.s.j.server.handler.ContextHandler - Started o.s.j.s.ServletContextHandler@433348bc{/environment/json,null,AVAILABLE,@Spark}
@@ -228,34 +249,45 @@ Exit Code: 0
 ### Run as a Skill
 
 ### Prerequisites
-* Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying data source of the Profile does not need to exist.**
+
+* Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying data
+  source of the Profile does not need to exist.**
 * Generate a `CORTEX_TOKEN`.
-  * Update/Add the [spark-conf.json](./src/main/resources/conf/spark-conf.json) file to:
-      - Use the [Remote Catalog](../docs/catalog.md#remote-catalog) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the in-cluster GraphQL API endpoint (`"http://cortex-api.cortex.svc.cluster.local:8080"`) and removing the Local Catalog implementation (`spark.cortex.catalog.impl`).
-      - Use the [remote storage client](../docs/backendstorage.md#remote-storage-client) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the GraphQL API endpoint, and remove the local storage client implementation (`spark.cortex.client.storage.impl`).
-      - Remove the local Secret client implementation (`spark.cortex.client.secrets.impl`).
-      - Update the `app_command` arguments to match your Cortex Project and Profile Schema and other available options (`--project`, `--profile`, `--table`, `--output`, `--secret`).
-        - Explanation of different options provided:
-           ```
-          [Usage: profiles-example kpi-query [-hV] -d=<windowDuration> [-ed=<endDate>]
-                                            -n=<name> -p=<project>
-                                            -ps=<profileSchemaName> -s=<script>
-                                            [-sd=<startDate>] [-cf=<cohortFilters>]...
-          Calculating KPI using aggregate using from Profiles
-            -cf, --cohortFilters=<cohortFilters>   Cohort Filter
-            -d, --duration=<windowDuration>        Window Duration
-            -ed, --endDate=<endDate>               End Date, Set the time-frame over which the KPI is calculated
-            -h, --help                             Show this help message and exit.
-            -n, --name=<name>                      KPI name
-            -p, --project=<project>                Cortex Project to use
-            -ps, --profile=<profileSchemaName>     Profile Schema Name
-            -s, --script=<script>                  KPI Script
-            -sd, --startDate=<startDate>           Start Date, Set the time-frame over which the KPI is calculated
-            -V, --version                          Print version information and exit.
-            ```
-    
+    * Update/Add the [spark-conf.json](./src/main/resources/conf/spark-conf.json) file to:
+        - Use the [Remote Catalog](../docs/catalog.md#remote-catalog) implementation by setting the Cortex
+          URL (`spark.cortex.client.phoenix.url`) to the in-cluster GraphQL API
+          endpoint (`"http://cortex-api.cortex.svc.cluster.local:8080"`) and removing the Local Catalog
+          implementation (`spark.cortex.catalog.impl`).
+        - Use the [remote storage client](../docs/backendstorage.md#remote-storage-client) implementation by setting the
+          Cortex URL (`spark.cortex.client.phoenix.url`) to the GraphQL API endpoint, and remove the local storage
+          client implementation (`spark.cortex.client.storage.impl`).
+        - Remove the local Secret client implementation (`spark.cortex.client.secrets.impl`).
+        - Update the `app_command` arguments to match your Cortex Project and Profile Schema and other available
+          options (`--project`, `--profile`, `--table`, `--output`, `--secret`).
+            - Explanation of different options provided:
+               ```
+              [Usage: profiles-example kpi-query [-hV] -d=<windowDuration> [-ed=<endDate>]
+                                                -n=<name> -p=<project>
+                                                -ps=<profileSchemaName> -s=<script>
+                                                [-sd=<startDate>] [-cf=<cohortFilters>]...
+              Calculating KPI using aggregate using from Profiles
+                -cf, --cohortFilters=<cohortFilters>   Cohort Filter
+                -du, --duration=<windowDuration>       Window Duration
+                -d, --description=<Description>        KPI Description
+                -ed, --endDate=<endDate>               End Date, Set the time-frame over which the KPI is calculated
+                -h, --help                             Show this help message and exit.
+                -n, --name=<name>                      KPI name, This get's applied to KPI Datasource
+                -p, --project=<project>                Cortex Project to use
+                -ps, --profile=<profileSchemaName>     Profile Schema Name
+                -s, --script=<script>                  KPI Script
+                -sd, --startDate=<startDate>           Start Date, Set the time-frame over which the KPI is calculated
+                -V, --version                          Print version information and exit.
+                ```
+
 To Build and run the skill:
+
 1. Run the following make commands:
+
 ```
 make build create-app-image deploy-skill invoke
 ```
@@ -276,8 +308,10 @@ make build create-app-image deploy-skill invoke
       "filter(MAIL_STATUS.equalTo(\"MAIL CONTINUE\")).count()",
       "--duration",
       "180 days",
+      "--description",
+      "Count people who want to continue getting mail",
       "--name",
-      "Count people who want to continue getting mail"
+      "KPI1"
     ],
     "app_location": "local:///app/libs/app.jar",
     "options": {
@@ -304,7 +338,6 @@ make build create-app-image deploy-skill invoke
         "spark.task.cpus": "1",
         "spark.executor.cores": "3",
         "spark.sql.debug.maxToStringFields": "1024",
-
         "spark.cortex.client.secrets.url": "http://cortex-accounts.cortex.svc.cluster.local:5000",
         "spark.cortex.client.url": "https://api.test.cvstest.gke.insights.ai",
         "spark.cortex.storage.storageType": "gcs",
@@ -341,8 +374,11 @@ make build create-app-image deploy-skill invoke
 ```
 
 Notes on the above example:
+
 * The `--master` and `--deploy-mode` have been set to run the Spark job in the Cortex (Kubernetes) Cluster.
 * The Cortex API Client URL and Secret Client URL are referring to services in Kubernetes Cluster.
-* The Spark Driver and Spark Executors (`"spark.executor.instances"`) have a 2g and 4g of memory respectively. **Adjust the amount of resources used for your cluster/data.**
-* The Cortex [Backend Storage configuration](../docs/config.md#cortex-backend-storage) is configured by the default remote  storage client implementation.
+* The Spark Driver and Spark Executors (`"spark.executor.instances"`) have a 2g and 4g of memory respectively. **Adjust
+  the amount of resources used for your cluster/data.**
+* The Cortex [Backend Storage configuration](../docs/config.md#cortex-backend-storage) is configured by the default
+  remote storage client implementation.
 * The `--secret` is set in the `app_command`.
