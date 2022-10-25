@@ -2,7 +2,7 @@
 
 This example is a CLI application that uses a secondary configuration, the `app-config.json`, to define a number of
 catalog entities to be managed during execution. The connections/data sources/profile schema in the app-config.json
-are created wtih the attributes defined in the configuration and are then available to use through the profiles-sdk
+are created with the attributes defined in the configuration and are then available to use through the profiles-sdk
 This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
 
 (See [RailedCommand.java](./src/main/java/com/c12e/cortex/examples/catalog/RailedCommand.java) for config driven catalog management.)
@@ -307,4 +307,3 @@ Notes on the above example:
 * The Cortex API Client URL and Secret Client URL are referring to services in Kubernetes Cluster.
 * The Spark Driver and Spark Executors (`"spark.executor.instances"`) have a 2g and 4g of memory respectively. **Adjust the amount of resources used for your cluster/data.**
 * The Cortex [Backend Storage configuration](../docs/config.md#cortex-backend-storage) is configured by the default remote  storage client implementation.
-* The `--secret` is set in the `app_command`.
