@@ -81,6 +81,22 @@ public abstract class RailedCommand implements Runnable {
     protected final String APP_PATH = "$.app";
 
 
+    /**
+     * Test for the existence of a supplied value
+     * @param function - the supplier
+     * @return - true if the supplier returns a non-null value
+     */
+    protected Boolean exists(Supplier<?> function) {
+        return getOrDefault(function, null) != null;
+    }
+
+    /**
+     * Retrieve the supplied value. If functions returns null or throws an exception, return the defaultValue
+     * @param function - the supplier
+     * @param defaultValue - the default value to return
+     * @return - the supplied value if exists, otherwise the default value
+     * @param <T> - The type
+     */
     protected <T> T getOrDefault(Supplier<T> function, T defaultValue) {
         try {
             T value = function.get();
@@ -94,6 +110,10 @@ public abstract class RailedCommand implements Runnable {
         }
     }
 
+    /**
+     * Safely deletes, catches any exception
+     * @param deleteFunction - the delete function to call
+     */
     protected void safeDelete(Supplier<Boolean> deleteFunction) {
         try {
             deleteFunction.get();
@@ -209,7 +229,7 @@ public abstract class RailedCommand implements Runnable {
 
         //create connections if they do not exist
         for (Connection connection : connections) {
-            if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
+            if (!exists(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()))) {
                 System.out.println("Creating Connection: " + connection.getName());
                 cortexSession.catalog().createConnection(connection);
             }
@@ -217,7 +237,7 @@ public abstract class RailedCommand implements Runnable {
 
         //create data sources if they do not exist
         for (DataSource dataSource : dataSources) {
-            if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
+            if (!exists(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()))) {
                 System.out.println("Creating DataSource: " + dataSource.getName());
                 cortexSession.catalog().createDataSource(dataSource);
             }
@@ -225,7 +245,7 @@ public abstract class RailedCommand implements Runnable {
 
         //create profile schemas if they do not exist
         for (ProfileSchema profileSchema : profileSchemas) {
-            if (getOrDefault(() -> cortexSession.catalog().getProfileSchema(profileSchema.getProject(), profileSchema.getName()), null) == null) {
+            if (!exists(() -> cortexSession.catalog().getProfileSchema(profileSchema.getProject(), profileSchema.getName()))) {
                 System.out.println("Creating ProfileSchema: " + profileSchema.getName());
                 cortexSession.catalog().createProfileSchema(profileSchema);
             }
