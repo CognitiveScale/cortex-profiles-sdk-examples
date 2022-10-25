@@ -9,6 +9,37 @@ This builds off of the [Local Clients](../local-clients/README.md) example for i
 
 (See [ManageCatalog.java](./src/main/java/com/c12e/cortex/examples/catalog/ManageCatalog.java) for config driven Profile Build job.)
 
+```mermaid
+graph TD
+    main_start[Start]-->startup[Startup - Create Cortex Session]
+    startup-->Read
+    subgraph Load JSON Config file - Catalog Resources
+        %% Resources: Connections, Data Sources, Profile Schemas
+        Read[Read Resources from Config]-->SafeDelete(Delete Resources, if they exist)
+        SafeDelete-->Create[Create Resources, if they do not exist]
+    end
+    
+    Create-- Resources -->Skip
+
+    subgraph For Each Profile Schema in the Config File
+        Skip{Skip Data Source Ingestion?}
+        Skip-- Yes -->ConnectionProfileBuild[Create & Run BuildProfile Job<br>Using Connection as the Dataset]
+        Skip-- No -->IngestPrimary[Create & Run IngestDataSource Job<br>Ingest Primary Data Source]
+
+        %% Uncomment below to show a simpler view of the loop
+        %%IngestPrimary-->IngestSecondary[Create & Run IngestDataSource Job<br>Ingest Secondary Data Sources]
+        %%IngestSecondary-->ProfileBuild[Create & Run BuildProfile Job]
+        
+        IngestPrimary-->start
+        subgraph Ingest Secondary Data Sources
+            start-->condition
+            condition{ProfileSchema has Joined DataSources?}-- yes -->effect[Create & Run IngestDataSource Job<br>Ingest Secondary Data Sources]
+            effect-->start
+        end
+        condition -- no -->ProfileBuild[Create & Run BuildProfile Job]
+    end
+```
+
 ## Prerequisites
 The app-config.json has a number of attributes which change how the example behaves.
 
