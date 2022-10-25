@@ -51,7 +51,8 @@ To recreate resources that already exist (used in case of spec configuration cha
 }
 ```
 
-To define the specification for any number of Connections, Data Sources, and Profile Schemas
+To define the specification for any number of Connections, Data Sources, and Profile Schemas. Resource schema deserializes
+into Local Catalog entities.
 
 ```json
 {
