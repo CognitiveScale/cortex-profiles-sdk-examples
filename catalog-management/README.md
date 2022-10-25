@@ -131,8 +131,6 @@ See https://docs.gradle.org/7.4/userguide/command_line_interface.html#sec:comman
 BUILD SUCCESSFUL in 24s
 ```
 
-More configurations can be found [here](https://github.com/RedisLabs/spark-redis/blob/master/doc/configuration.md)
-
 ## Run Locally in a Docker Container With Spark-submit
 
 To run this example in a Docker container with local Cortex clients (from the parent directory):
