@@ -48,7 +48,7 @@ dependencies {
     implementation(project(":datasource-streaming"))
     implementation(project(":bigquery-connection"))
     implementation(project(":cache-profile"))
-    implementation(project(":aggregate-queries"))
+    implementation(project(":kpi-queries"))
 
     // CLI framework
     implementation("info.picocli:picocli:4.6.3")
@@ -68,7 +68,7 @@ dependencies {
     testImplementation(project(":datasource-streaming"))
     testImplementation(project(":bigquery-connection"))
     testImplementation(project(":cache-profile"))
-    testImplementation(project(":aggregate-queries"))
+    testImplementation(project(":kpi-queries"))
 }
 
 // application entrypoint
@@ -116,5 +116,5 @@ tasks.withType<Jar> {
     from(project(":datasource-streaming").sourceSets["main"].output)
     from(project(":bigquery-connection").sourceSets["main"].output)
     from(project(":cache-profile").sourceSets["main"].output)
-    from(project(":aggregate-queries").sourceSets["main"].output)
+    from(project(":kpi-queries").sourceSets["main"].output)
 }
