@@ -27,7 +27,7 @@ Profile schemas with multiple Data Sources cannot be built directly from a Conne
 }
 ```
 
-The list Profile Schemas to run the Profile Build job on
+To set the list of Profile Schemas to build:
 
 ```json
 {  
