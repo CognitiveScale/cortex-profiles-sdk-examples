@@ -12,7 +12,10 @@ This builds off of the [Local Clients](../local-clients/README.md) example for i
 ## Prerequisites
 The app-config.json has a number of attributes which change how the example behaves.
 
-To skip the data source ingest and instead just build profile directly from the defined connection
+Set skipDataSource to skip the data source ingest and instead build profile directly from the defined connection. If loading a large dataset,
+it may make sense to bypass the data source step. Data sources duplicate data and add to load times, but processing done in the data source
+may be used across multiple profile schemas. Profiles built without a data source can no longer be built through the console and must be
+built through a profile-sdk job.
 ```json
 {
   "process": {
