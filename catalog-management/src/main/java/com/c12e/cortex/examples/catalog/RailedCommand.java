@@ -19,7 +19,6 @@ import com.c12e.cortex.phoenix.NotFoundException;
 import com.c12e.cortex.phoenix.ProfileSchema;
 import com.c12e.cortex.phoenix.spec.*;
 import com.c12e.cortex.profiles.CortexSession;
-import com.c12e.cortex.profiles.client.LocalSecretClient;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -36,24 +35,18 @@ import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import com.jcraft.jsch.Session;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
@@ -153,7 +146,7 @@ public abstract class RailedCommand implements Runnable {
     }
 
     /**
-     * Custom profile schema deserializer to convert from app config to Cortex type
+     * Custom Profile Schema deserializer to convert from app config to Cortex type
      */
     public class ProfileSchemaDeserializer extends StdDeserializer<ProfileSchema> {
 
@@ -222,7 +215,7 @@ public abstract class RailedCommand implements Runnable {
             }
         }
 
-        //create connections if they do not exist
+        //create Connections if they do not exist
         for (Connection connection : connections) {
             if (!exists(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()))) {
                 logger.info("Creating Connection: " + connection.getName());
@@ -230,7 +223,7 @@ public abstract class RailedCommand implements Runnable {
             }
         }
 
-        //create data sources if they do not exist
+        //create Data Sources if they do not exist
         for (DataSource dataSource : dataSources) {
             if (!exists(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()))) {
                 logger.info("Creating DataSource: " + dataSource.getName());
@@ -238,7 +231,7 @@ public abstract class RailedCommand implements Runnable {
             }
         }
 
-        //create profile schemas if they do not exist
+        //create Profile Schemas if they do not exist
         for (ProfileSchema profileSchema : profileSchemas) {
             if (!exists(() -> cortexSession.catalog().getProfileSchema(profileSchema.getProject(), profileSchema.getName()))) {
                 logger.info("Creating ProfileSchema: " + profileSchema.getName());

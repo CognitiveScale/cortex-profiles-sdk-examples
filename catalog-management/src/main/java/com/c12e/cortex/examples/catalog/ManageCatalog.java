@@ -20,7 +20,6 @@ import com.jayway.jsonpath.DocumentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import scala.annotation.meta.field;
 
 import java.util.List;
 import java.util.Map;
@@ -35,10 +34,10 @@ public class ManageCatalog extends RailedCommand {
     Logger logger = LoggerFactory.getLogger(ManageCatalog.class);
 
     /**
-     * Ingest a data source
+     * Ingest a Data Source
      * @param cortexSession - the Cortex session
-     * @param project - the data source project name
-     * @param dataSourceName - the data source name
+     * @param project - the Data Source project name
+     * @param dataSourceName - the Data Source name
      */
     protected void buildDataSource(CortexSession cortexSession, String project, String dataSourceName) {
         IngestDataSourceJob ingestMemberBase = cortexSession.job().ingestDataSource(project, dataSourceName, cortexSession.getContext());
@@ -49,7 +48,7 @@ public class ManageCatalog extends RailedCommand {
 
     /**
      * Handles user defined process after catalog management occurs, currently builds all defined profiles in app config.
-     * May ingest data sources associated with the profiles if skipDataSource flag is not set.
+     * May ingest Data Sources associated with the profiles if skipDataSource flag is not set.
      * @param project - the project name
      * @param cortexSession - the Cortex session
      * @param config - the loaded app config
@@ -58,14 +57,14 @@ public class ManageCatalog extends RailedCommand {
     public void runApp(String project, CortexSession cortexSession, DocumentContext config) {
         List<Map> profiles = config.read(APP_PATH + ".profiles");
         Boolean skipDataSource = config.read("$.process.skipDataSource");
-            // Iterate over profiles in config
+            // Iterate over Profiles in config
         for (Map profile : profiles) {
-            // Build primary data source
+            // Build primary Data Source
             String profileSchemaName = (String) profile.get("name");
             if(skipDataSource) {
-                //Build profile directly from connection, not supported for streaming connections and requires
-                //the profile schema to be built off a single data source. Profile schemas with multiple data sources
-                //cannot be built directly from a connection.
+                //Build Profile directly from a Connection, not supported for streaming Connections and requires
+                //the Profile Schema to be built off a single Data Source. Profile Schemas with multiple Data Sources
+                //cannot be built directly from a Connection.
                 logger.info("Building profile: " + profileSchemaName);
                 BuildProfileJob buildProfileJob = cortexSession.job().buildProfile(project, profileSchemaName, cortexSession.getContext());
                 buildProfileJob.performFeatureCatalogCalculations = () -> false;
@@ -75,18 +74,18 @@ public class ManageCatalog extends RailedCommand {
             } else {
                 ProfileSchema profileSchema = cortexSession.catalog().getProfileSchema(project, profileSchemaName);
 
-                //build primary datasource
+                //build primary DataSource
                 logger.info("Ingesting Primary DataSource: " + profileSchema.getPrimarySource().getName());
                 buildDataSource(cortexSession, project, profileSchema.getPrimarySource().getName());
 
-                //build all joined datasources
+                //build all joined DataSources
                 profileSchema.getJoins().forEach(join -> {
                     logger.info("Ingesting Joined DataSource: " + join.getName());
                     buildDataSource(cortexSession, project, join.getName());
                 });
 
                 // Build profile
-                logger.info("Building profile: " + profileSchemaName);
+                logger.info("Building Profile Schema: " + profileSchemaName);
                 BuildProfileJob buildProfileJob = cortexSession.job().buildProfile(project, profileSchemaName, cortexSession.getContext());
                 buildProfileJob.performFeatureCatalogCalculations = () -> false;
                 buildProfileJob.run();

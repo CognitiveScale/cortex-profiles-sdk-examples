@@ -1,24 +1,24 @@
 # Managing Catalog Resources
 
 This example is a CLI application that uses a secondary configuration, the `app-config.json`, to define a number of
-catalog entities to be managed during execution. The connections/data sources/profile schema in the app-config.json
-are created with the attributes defined in the configuration and are then available to use through the profiles-sdk
+catalog entities to be managed during execution. The Connections/Data Sources/Profile Schema in the app-config.json
+are created with the attributes defined in the configuration and are then available to use through the Profiles SDK
 This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
 
-(See [RailedCommand.java](./src/main/java/com/c12e/cortex/examples/catalog/RailedCommand.java) for config driven catalog management.)
+(See [RailedCommand.java](./src/main/java/com/c12e/cortex/examples/catalog/RailedCommand.java) for config driven Catalog management.)
 
-(See [ManageCatalog.java](./src/main/java/com/c12e/cortex/examples/catalog/ManageCatalog.java) for config driven profile build job.)
+(See [ManageCatalog.java](./src/main/java/com/c12e/cortex/examples/catalog/ManageCatalog.java) for config driven Profile Build job.)
 
 ## Prerequisites
 The app-config.json has a number of attributes which change how the example behaves.
 
-Set skipDataSource to skip the data source ingest and instead build profile directly from the defined connection. If loading a large dataset,
-it may make sense to bypass the data source step. Data sources duplicate data and add to load times, but processing done in the data source
-may be used across multiple profile schemas. Profiles built without a data source can no longer be built through the console and must be
-built through a profile-sdk job.
+Set skipDataSource to skip the Data Source ingest and instead build Profile directly from the defined Connection. If loading a large dataset,
+it may make sense to bypass the Data Source step. Data Sources duplicate data and add to load times, but processing done in the Data Source
+may be used across multiple Profile Schemas. Profiles built without a Data Source can no longer be built through the console and must be
+built through a Profiles SDK job.
 
-Not supported for streaming connections and requires the profile schema to be built off a single data source.
-Profile schemas with multiple data sources cannot be built directly from a connection.
+Not supported for streaming Connections and requires the Profile Schema to be built off a single Data Source.
+Profile schemas with multiple Data Sources cannot be built directly from a Connection.
 ```json
 {
   "process": {
@@ -27,7 +27,7 @@ Profile schemas with multiple data sources cannot be built directly from a conne
 }
 ```
 
-The list profile schemas to run the profile build job on
+The list Profile Schemas to run the Profile Build job on
 
 ```json
 {  
@@ -51,7 +51,7 @@ To recreate resources that already exist (used in case of spec configuration cha
 }
 ```
 
-To define the specification for any number of connections, datasources, and profile schemas
+To define the specification for any number of Connections, Data Sources, and Profile Schemas
 
 ```json
 {
