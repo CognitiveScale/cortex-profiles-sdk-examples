@@ -1,0 +1,72 @@
+{
+  "camel": "1.0.0",
+  "name": "kpi",
+  "title": "kpi",
+  "tags": [],
+  "properties": [],
+  "inputs": [
+    {
+      "name": "test",
+      "title": "Profiles Example Request",
+      "parameters": {
+        "$ref": "ProfilesExampleReq"
+      },
+      "signalId": "686f407c-558c-42c3-b4b9-0e7887cb08a2",
+      "output": "test",
+      "signalType": "Service"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "test",
+      "title": "Profiles Example Response",
+      "parameters": {
+        "$ref": "ProfilesExampleRes"
+      },
+      "signalId": "f6b7cb1a-a33b-410a-9b54-545b006ec54c",
+      "signalType": "Service"
+    }
+  ],
+  "skills": [
+    {
+      "skillName": "profiles-example",
+      "title": "Fabric profiles example",
+      "description": "Fabric profiles example",
+      "refId": "fd2d177b-d735-4c67-be46-6913279294a5",
+      "_layout": {
+        "cellIndex": 70
+      },
+      "properties": []
+    }
+  ],
+  "mappings": [
+    {
+      "from": {
+        "input": {
+          "signalId": "686f407c-558c-42c3-b4b9-0e7887cb08a2"
+        }
+      },
+      "to": {
+        "skill": {
+          "refId": "fd2d177b-d735-4c67-be46-6913279294a5",
+          "input": "params"
+        }
+      },
+      "rules": []
+    },
+    {
+      "from": {
+        "skill": {
+          "refId": "fd2d177b-d735-4c67-be46-6913279294a5",
+          "output": "response"
+        }
+      },
+      "to": {
+        "output": {
+          "signalId": "f6b7cb1a-a33b-410a-9b54-545b006ec54c"
+        }
+      },
+      "rules": []
+    }
+  ]
+}

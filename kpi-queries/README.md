@@ -373,6 +373,21 @@ make build create-app-image deploy-skill invoke
 }
 ```
 
+### Run as an Agent
+
+Make sure to save the skills as pointed out in the above steps.
+Run the below command:
+```
+cortex agents save templates/agent.json --project <project>
+cortex agents invoke --params-file templates/payload.json kpi test --project <project>
+```
+
+To schedule the job every 
+
+```
+cortex agents invoke --params-file templates/payload.json kpi test --scheduleName every10mins --scheduleCron "*/10 * * * *" --project bptest
+```
+
 Notes on the above example:
 
 * The `--master` and `--deploy-mode` have been set to run the Spark job in the Cortex (Kubernetes) Cluster.
