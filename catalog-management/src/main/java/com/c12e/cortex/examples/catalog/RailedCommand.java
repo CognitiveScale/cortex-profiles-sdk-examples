@@ -225,7 +225,7 @@ public abstract class RailedCommand implements Runnable {
         //create connections if they do not exist
         for (Connection connection : connections) {
             if (!exists(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()))) {
-                System.out.println("Creating Connection: " + connection.getName());
+                logger.info("Creating Connection: " + connection.getName());
                 cortexSession.catalog().createConnection(connection);
             }
         }
@@ -233,7 +233,7 @@ public abstract class RailedCommand implements Runnable {
         //create data sources if they do not exist
         for (DataSource dataSource : dataSources) {
             if (!exists(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()))) {
-                System.out.println("Creating DataSource: " + dataSource.getName());
+                logger.info("Creating DataSource: " + dataSource.getName());
                 cortexSession.catalog().createDataSource(dataSource);
             }
         }
@@ -241,7 +241,7 @@ public abstract class RailedCommand implements Runnable {
         //create profile schemas if they do not exist
         for (ProfileSchema profileSchema : profileSchemas) {
             if (!exists(() -> cortexSession.catalog().getProfileSchema(profileSchema.getProject(), profileSchema.getName()))) {
-                System.out.println("Creating ProfileSchema: " + profileSchema.getName());
+                logger.info("Creating ProfileSchema: " + profileSchema.getName());
                 cortexSession.catalog().createProfileSchema(profileSchema);
             }
         }

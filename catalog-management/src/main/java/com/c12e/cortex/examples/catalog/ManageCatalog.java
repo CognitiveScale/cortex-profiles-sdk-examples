@@ -17,7 +17,10 @@ import com.c12e.cortex.profiles.CortexSession;
 import com.c12e.cortex.profiles.module.job.BuildProfileJob;
 import com.c12e.cortex.profiles.module.job.IngestDataSourceJob;
 import com.jayway.jsonpath.DocumentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scala.annotation.meta.field;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,8 @@ import java.util.Map;
  */
 @CommandLine.Command(name = "catalog-management", description = "Managing Catalog with Side-loaded Config", mixinStandardHelpOptions = true)
 public class ManageCatalog extends RailedCommand {
+
+    Logger logger = LoggerFactory.getLogger(ManageCatalog.class);
 
     /**
      * Ingest a data source
@@ -61,7 +66,7 @@ public class ManageCatalog extends RailedCommand {
                 //Build profile directly from connection, not supported for streaming connections and requires
                 //the profile schema to be built off a single data source. Profile schemas with multiple data sources
                 //cannot be built directly from a connection.
-                System.out.println("Building profile: " + profileSchemaName);
+                logger.info("Building profile: " + profileSchemaName);
                 BuildProfileJob buildProfileJob = cortexSession.job().buildProfile(project, profileSchemaName, cortexSession.getContext());
                 buildProfileJob.performFeatureCatalogCalculations = () -> false;
                 buildProfileJob.getDataset = (p, n) -> IngestDataSourceJob.DEFAULT_DATASOURCE_FORMATTER
@@ -71,17 +76,17 @@ public class ManageCatalog extends RailedCommand {
                 ProfileSchema profileSchema = cortexSession.catalog().getProfileSchema(project, profileSchemaName);
 
                 //build primary datasource
-                System.out.println("Ingesting Primary DataSource: " + profileSchema.getPrimarySource().getName());
+                logger.info("Ingesting Primary DataSource: " + profileSchema.getPrimarySource().getName());
                 buildDataSource(cortexSession, project, profileSchema.getPrimarySource().getName());
 
                 //build all joined datasources
                 profileSchema.getJoins().forEach(join -> {
-                    System.out.println("Ingesting Joined DataSource: " + join.getName());
+                    logger.info("Ingesting Joined DataSource: " + join.getName());
                     buildDataSource(cortexSession, project, join.getName());
                 });
 
                 // Build profile
-                System.out.println("Building profile: " + profileSchemaName);
+                logger.info("Building profile: " + profileSchemaName);
                 BuildProfileJob buildProfileJob = cortexSession.job().buildProfile(project, profileSchemaName, cortexSession.getContext());
                 buildProfileJob.performFeatureCatalogCalculations = () -> false;
                 buildProfileJob.run();
