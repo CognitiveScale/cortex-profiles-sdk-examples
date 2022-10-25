@@ -57,6 +57,9 @@ import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
+/**
+ * Base class for a command with catalog management.
+ */
 public abstract class RailedCommand implements Runnable {
 
     @CommandLine.Option(names = {"-p", "--project"}, description = "Project to use", required = true)
@@ -103,6 +106,7 @@ public abstract class RailedCommand implements Runnable {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(ProfileSchema.class, new ProfileSchemaDeserializer());
 
+        //Add custom serializer to Jackson module
         com.jayway.jsonpath.Configuration.setDefaults(new com.jayway.jsonpath.Configuration.Defaults() {
             private final JsonProvider jsonProvider = new JacksonJsonProvider(JsonMapper.builder()
                     .addModules(new KotlinModule.Builder().build(), module)
@@ -128,6 +132,9 @@ public abstract class RailedCommand implements Runnable {
         });
     }
 
+    /**
+     * Custom profile schema deserializer to convert from app config to Cortex type
+     */
     public class ProfileSchemaDeserializer extends StdDeserializer<ProfileSchema> {
 
         public ProfileSchemaDeserializer() {
@@ -161,38 +168,12 @@ public abstract class RailedCommand implements Runnable {
         }
     }
 
-    protected Boolean isProcessed(String checkpointDir) {
-        System.out.println("Checking for processed batch...");
-        Configuration conf = new Configuration();
-        try {
-            FileSystem hdfs = FileSystem.get(new URI(checkpointDir), conf);
-            Path file = new Path(checkpointDir + "/" + checkpointFileName);
-            return hdfs.exists(file);
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    protected void writeCheckpoint(String checkpointDir) {
-        System.out.println("Writing checkpoint...");
-        Configuration conf = new Configuration();
-        try {
-            FileSystem hdfs = FileSystem.get(new URI(checkpointDir), conf);
-            Path file = new Path(checkpointDir + "/" + checkpointFileName);
-            if (hdfs.exists(file)) {
-                throw new RuntimeException("Checkpoint filee already exists, shouldn't have continued in the first place.");
-            }
-            OutputStream os = hdfs.create(file);
-            BufferedWriter br = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            br.write("processed: true");
-            br.close();
-            hdfs.close();
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Manage catalog entities defined in the app configuration
+     * @param cortexSession - the Cortex session
+     * @param config - the app config
+     * @param project- the project name
+     */
     public void handleResourceEntities(CortexSession cortexSession, DocumentContext config, String project) {
         config.put(CONNECTIONS_PATH + "[*]", "project", project);
         config.put(DATA_SOURCES_PATH + "[*]", "project", project);
@@ -209,6 +190,7 @@ public abstract class RailedCommand implements Runnable {
         //Boolean recreate = true;
 
         try {
+            //if recreate is set, then first delete all defined entities in reverse order of creation
             if (recreate) {
                 for (ProfileSchema profileSchema : profileSchemas) {
                     safeDelete(() -> cortexSession.catalog().deleteProfileSchema(profileSchema.getProject(), profileSchema.getName()));
@@ -225,6 +207,7 @@ public abstract class RailedCommand implements Runnable {
         }
 
 
+        //create connections if they do not exist
         for (Connection connection : connections) {
             if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
                 System.out.println("Creating Connection: " + connection.getName());
@@ -232,6 +215,7 @@ public abstract class RailedCommand implements Runnable {
             }
         }
 
+        //create data sources if they do not exist
         for (DataSource dataSource : dataSources) {
             if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
                 System.out.println("Creating DataSource: " + dataSource.getName());
@@ -239,6 +223,7 @@ public abstract class RailedCommand implements Runnable {
             }
         }
 
+        //create profile schemas if they do not exist
         for (ProfileSchema profileSchema : profileSchemas) {
             if (getOrDefault(() -> cortexSession.catalog().getProfileSchema(profileSchema.getProject(), profileSchema.getName()), null) == null) {
                 System.out.println("Creating ProfileSchema: " + profileSchema.getName());
@@ -247,6 +232,9 @@ public abstract class RailedCommand implements Runnable {
         }
     }
 
+    /**
+     * Listener that shuts down data source stream after countBeforeStop intervals without a change in source location
+     */
     public class SingleLoopQueryListener extends StreamingQueryListener {
         SparkSession sparkSession;
         Long countBeforeStop = 1L;
@@ -299,12 +287,14 @@ public abstract class RailedCommand implements Runnable {
             throw new RuntimeException(e);
         }
 
+        //catalog management
         handleResourceEntities(cortexSession, config, project);
 
         //set listener for streaming sources
         SingleLoopQueryListener queryListener = new SingleLoopQueryListener(cortexSession.spark());
         cortexSession.spark().streams().addListener(queryListener);
 
+        //run user code
         runApp(project, cortexSession, config);
     }
 

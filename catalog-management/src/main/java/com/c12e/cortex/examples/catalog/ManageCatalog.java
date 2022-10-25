@@ -22,15 +22,33 @@ import picocli.CommandLine;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Example CLI application that uses a secondary configuration, the `app-config.json`, to define a number of
+ * catalog entities to be managed during execution
+ */
 @CommandLine.Command(name = "catalog-management", description = "Managing Catalog with Side-loaded Config", mixinStandardHelpOptions = true)
 public class ManageCatalog extends RailedCommand {
 
-    public void buildDataSource(CortexSession cortexSession, String project, String dataSourceName) {
+    /**
+     * Ingest a data source
+     * @param cortexSession - the Cortex session
+     * @param project - the data source project name
+     * @param dataSourceName - the data source name
+     */
+    protected void buildDataSource(CortexSession cortexSession, String project, String dataSourceName) {
         IngestDataSourceJob ingestMemberBase = cortexSession.job().ingestDataSource(project, dataSourceName, cortexSession.getContext());
         ingestMemberBase.performFeatureCatalogCalculations = () -> false;
         ingestMemberBase.run();
 
     }
+
+    /**
+     * Handles user defined process after catalog management occurs, currently builds all defined profiles in app config.
+     * May ingest data sources associated with the profiles if skipDataSource flag is not set.
+     * @param project - the project name
+     * @param cortexSession - the Cortex session
+     * @param config - the loaded app config
+     */
     @Override
     public void runApp(String project, CortexSession cortexSession, DocumentContext config) {
         List<Map> profiles = config.read(APP_PATH + ".profiles");
