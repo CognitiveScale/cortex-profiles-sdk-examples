@@ -2,13 +2,6 @@
   "pyspark": {
     "pyspark_bin": "bin/spark-submit",
     "app_command": [
-      "build-profile",
-      "--project",
-      "local",
-      "--profile-schema",
-      "member-profile"
-    ],
-    "app_command": [
       "catalog-management",
       "--project",
       "local",
