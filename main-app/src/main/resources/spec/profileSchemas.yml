@@ -37,9 +37,6 @@ spec:
       - last_flu_shot_date
       - pcp_name
       - pcp_address
-      - email
-      - address
-      - pcp_address
 
   # List of sources to join into this profile schema
   joins:
