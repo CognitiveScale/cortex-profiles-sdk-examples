@@ -209,23 +209,18 @@ public abstract class RailedCommand implements Runnable {
         Boolean recreate = config.read("resources.recreate");
         //Boolean recreate = true;
 
-        try {
-            //if recreate is set, then first delete all defined entities in reverse order of creation
-            if (recreate) {
-                for (ProfileSchema profileSchema : profileSchemas) {
-                    safeDelete(() -> cortexSession.catalog().deleteProfileSchema(profileSchema.getProject(), profileSchema.getName()));
-                }
-                for (DataSource dataSource : dataSources) {
-                    safeDelete(() -> cortexSession.catalog().deleteDataSource(dataSource.getProject(), dataSource.getName()));
-                }
-                for (Connection connection : connections) {
-                    safeDelete(() -> cortexSession.catalog().deleteConnection(connection.getProject(), connection.getName()));
-                }
+        //if recreate is set, then first delete all defined entities in reverse order of creation
+        if (recreate) {
+            for (ProfileSchema profileSchema : profileSchemas) {
+                safeDelete(() -> cortexSession.catalog().deleteProfileSchema(profileSchema.getProject(), profileSchema.getName()));
             }
-        } catch (Exception e) {
-            //pass
+            for (DataSource dataSource : dataSources) {
+                safeDelete(() -> cortexSession.catalog().deleteDataSource(dataSource.getProject(), dataSource.getName()));
+            }
+            for (Connection connection : connections) {
+                safeDelete(() -> cortexSession.catalog().deleteConnection(connection.getProject(), connection.getName()));
+            }
         }
-
 
         //create connections if they do not exist
         for (Connection connection : connections) {
