@@ -140,7 +140,7 @@ if __name__ == '__main__':
             driver_spec = replace_template_variables(driver_template, driver_variables)
             write_driver("driverSpec.yaml", driver_spec)
             driverOptions = {"spark.kubernetes.driver.podTemplateFile": "driverSpec.yaml",
-                             "spark.kubernetes.executor.podTemplateContainerName": "spark-kubernetes-driver"}
+                             "spark.kubernetes.executor.podTemplateContainerName": "fabric-action"}
             spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(driverOptions)
 
         # create spark-submit call
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
         cmd = subprocess.Popen(run_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         pod = ''
-        container_name = 'spark-kubernetes-driver'
+        container_name = 'fabric-action'
         container_state = ''
         exit_code = '0'
         termination_reason = ''
