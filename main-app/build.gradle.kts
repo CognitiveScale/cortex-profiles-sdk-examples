@@ -49,6 +49,7 @@ dependencies {
     implementation(project(":bigquery-connection"))
     implementation(project(":cache-profile"))
     implementation(project(":kpi-queries"))
+    implementation(project(":filter-queries"))
 
     // CLI framework
     implementation("info.picocli:picocli:4.6.3")
@@ -69,6 +70,7 @@ dependencies {
     testImplementation(project(":bigquery-connection"))
     testImplementation(project(":cache-profile"))
     testImplementation(project(":kpi-queries"))
+    testImplementation(project(":filter-queries"))
 }
 
 // application entrypoint
@@ -117,4 +119,5 @@ tasks.withType<Jar> {
     from(project(":bigquery-connection").sourceSets["main"].output)
     from(project(":cache-profile").sourceSets["main"].output)
     from(project(":kpi-queries").sourceSets["main"].output)
+    from(project(":filter-queries").sourceSets["main"].output)
 }

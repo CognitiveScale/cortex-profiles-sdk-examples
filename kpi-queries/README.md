@@ -90,7 +90,7 @@ This example is a CLI application that Uses Nashorn engine internally for parsin
 KPIs(Key Performance Indicators
 ). This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
 
-(See [KPIQueries.java](./src/main/java/com/c12e/cortex/examples/aggregate/KPIQueries.java) for the source code.)
+(See [KPIQueries.java](./src/main/java/com.c12e.cortex.examples.aggregate/KPIQueries.java) for the source code.)
 
 ## Prerequisites
 
@@ -189,7 +189,7 @@ To run this example in a Docker container with local Cortex clients (from the pa
     docker run -p 4040:4040 \
       --entrypoint="python" \
       -e CORTEX_TOKEN="${CORTEX_TOKEN}" \
-      -v $(pwd)/aggregate-queries/src/main/resources/conf:/app/conf \
+      -v $(pwd)/filter-queries/src/main/resources/conf:/app/conf \
       -v $(pwd)/main-app/src:/opt/spark/work-dir/src \
       -v $(pwd)/main-app/build:/opt/spark/work-dir/build \
       profiles-example submit_job.py "{\"payload\" : {\"config\": \"/app/conf/spark-conf.json\"}}"

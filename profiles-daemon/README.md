@@ -3,7 +3,7 @@
 This example is a Spring API server application that exposes some APIs for realtime Profile fetch. 
 This works in conjunction with [Cache Profile](../cache-profile/README.md) example for its initial setup.
 
-(See [ProfileApplication.java](./src/main/java/com/c12e/cortex/examples/profilesDaemon/ProfileApplication.java) for the source code.)
+(See [ProfileApplication.java](./src/main/java/com/c12e/cortex/examples/profilesDaemon/ProfilesApplication.java) for the source code.)
 
 ```mermaid
 sequenceDiagram
@@ -208,6 +208,19 @@ To invoke the skill
        }
        '
    ```
+   
+### Performance numbers
+
+In cluster readings using Jmeter for the agentInvoke APIs with processor-gateway at default scalecount of 3 and profiles-daemon at scalecount of 1 
+
+| Sequence | Concurrency          | 95th Percentile    (Response Time in ms)                                                                                                                                                  | #Samples                                        |
+|----------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| 1        | 1                    | 69.25                                                                                                                                                                                     | 4254                                            |
+| 2        | 10                   | 149.00                                                                                                                                                                                    | 24637                                           |
+| 3        | 20                   | 196.00                                                                                                                                                                                    | 29627                                           |
+| 4        | 40                   | 250.00                                                                                                                                                                                    | 30713                                           |
+| 5        | 80                   | 263.95                                                                                                                                                                                    | 28402                                           |
+
 
 
 
