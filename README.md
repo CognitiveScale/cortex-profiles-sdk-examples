@@ -127,6 +127,10 @@ examples:
 * [Streaming to a Data Source](./datasource-streaming/README.md)
 * [Using a CData Connection](./cdata-connection/README.md)
 * [Reading From BigQuery](./bigquery-connection/README.md)
+* [Caching Profiles](./cache-profile/README.md)
+* [Profiles Daemon for Realtime Query](./profiles-daemon/README.md)
+* [KPI Queries](./kpi-queries/README.md)
+* [Filter and Aggregate Query examples](./filter-queries/README.md)
 
 [picocli](https://picocli.info/) is used by each example to create a minimal CLI application for running the example.
 Refer to the instructions in each example.
