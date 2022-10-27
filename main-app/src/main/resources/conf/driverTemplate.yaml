@@ -1,6 +1,8 @@
 apiVersion: v1
 kind: Pod
 metadata:
+  labels:
+    owner: ${CONTROLLER_NAME}
   ownerReferences:
     - apiVersion: v1
       controller: true
@@ -9,4 +11,4 @@ metadata:
       uid: ${CONTROLLER_UID}
 spec:
   containers:
-    - name: spark-kubernetes-driver
+    - name: fabric-action
