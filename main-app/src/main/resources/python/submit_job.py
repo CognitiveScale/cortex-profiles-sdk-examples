@@ -122,6 +122,12 @@ if __name__ == '__main__':
         if override_app_command:
             spark_config.get("pyspark", {})["app_command"] = override_app_command
 
+        # set app config in shared dir for driver
+        app_config = input_params.get("app_config")
+        if app_config:
+            with open("/opt/spark/conf/app-conf.json", 'w') as file:
+                file.write(json.dumps(app_config))
+
         # TODO: Verify conf overrides is a dict
         config_option_overrides = input_params.get("conf")
         if config_option_overrides:

@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":cdata-connection"))
     implementation(project(":datasource-streaming"))
     implementation(project(":bigquery-connection"))
+    implementation(project(":catalog-management"))
 
     // CLI framework
     implementation("info.picocli:picocli:4.6.3")
@@ -65,6 +66,7 @@ dependencies {
     testImplementation(project(":cdata-connection"))
     testImplementation(project(":datasource-streaming"))
     testImplementation(project(":bigquery-connection"))
+    testImplementation(project(":catalog-management"))
 }
 
 // application entrypoint
@@ -111,4 +113,5 @@ tasks.withType<Jar> {
     from(project(":cdata-connection").sourceSets["main"].output)
     from(project(":datasource-streaming").sourceSets["main"].output)
     from(project(":bigquery-connection").sourceSets["main"].output)
+    from(project(":catalog-management").sourceSets["main"].output)
 }
