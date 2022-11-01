@@ -63,6 +63,9 @@ public class KPIQueries implements Runnable {
     @Option(names = {"-ed", "--endDate"}, defaultValue = "", description = "End Date, Set the time-frame over which the KPI is calculated", required = false)
     String endDate;
 
+    @Option(names = {"-ss", "--skip-save"}, description = "Set this to skip save the KPI as a datasource", required = false)
+    boolean skipSave;
+
     public class ProfileSchemaDeserializer extends StdDeserializer<ProfileSchema> {
 
         public ProfileSchemaDeserializer() {
@@ -114,7 +117,6 @@ public class KPIQueries implements Runnable {
         var sessionExample = new SessionExample();
         CortexSession cortexSession = sessionExample.getCortexSession();
         String profilesBucket = cortexSession.getContext().getSparkSession().conf().getAll().get("spark.cortex.storage.bucket.profiles").get();
-        System.out.println(profilesBucket);
 
 
         String dataSourceConfig = "{\n" +
@@ -176,28 +178,31 @@ public class KPIQueries implements Runnable {
                 KPIEncoder
         );
         javaBeanDS.show();
-        railCommand();
+        if(!skipSave) {
+            railCommand();
 
-        // creating a Datasource for the KPIs
-        DocumentContext config;
-        config = JsonPath.parse(connectionConfig);
-        Connection connection = config.read("$", new TypeRef<Connection>() {});
-        config = JsonPath.parse(dataSourceConfig);
-        DataSource dataSource = config.read("$", new TypeRef<DataSource>() {});
-        System.out.println(dataSource);
+            // creating a Datasource for the KPIs
+            DocumentContext config;
+            config = JsonPath.parse(connectionConfig);
+            Connection connection = config.read("$", new TypeRef<Connection>() {});
+            config = JsonPath.parse(dataSourceConfig);
+            DataSource dataSource = config.read("$", new TypeRef<DataSource>() {});
+            System.out.println(dataSource);
 
-        if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
-            cortexSession.catalog().createConnection(connection);
+            if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
+                cortexSession.catalog().createConnection(connection);
+            }
+
+            if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
+                System.out.println("Created the datasource");
+                cortexSession.catalog().createDataSource(dataSource);
+            }
+
+            cortexSession.write()
+                    .dataSource(javaBeanDS.toDF(), project, dataSource.getName())
+                    .mode(SaveMode.Append)
+                    .save();
         }
-
-        if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
-            System.out.println("Created the datasource");
-            cortexSession.catalog().createDataSource(dataSource);
-        }
-        cortexSession.write()
-                .dataSource(javaBeanDS.toDF(), project, dataSource.getName())
-                .mode(SaveMode.Append)
-                .save();
     }
 
     public void railCommand() {

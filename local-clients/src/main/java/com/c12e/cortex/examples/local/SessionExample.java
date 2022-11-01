@@ -67,6 +67,7 @@ public class SessionExample {
         options.put("spark.redis.timeout", "20000000");
         options.put("spark.redis.user", "default");
         options.put("spark.redis.auth", "");
+        options.put("spark.cortex.storage.bucket.profiles", "cortex-profiles");
         return options;
     }
 

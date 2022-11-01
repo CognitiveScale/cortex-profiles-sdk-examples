@@ -10,7 +10,7 @@ profiles to write complex KPI expressions to be aggregated over certain window d
 of different options provided:
 
 ```
-    [Usage: profiles-example kpi-query [-hV] -d=<windowDuration> [-ed=<endDate>]
+    [Usage: profiles-example kpi-query [-hV] [-ss] -d=<windowDuration> [-ed=<endDate>]
                                       -n=<name> -p=<project>
                                       -ps=<profileSchemaName> -s=<script>
                                       [-sd=<startDate>] [-cf=<cohortFilters>]...
@@ -25,6 +25,7 @@ of different options provided:
       -ps, --profile=<profileSchemaName>     Profile Schema Name
       -s, --script=<script>                  KPI Script
       -sd, --startDate=<startDate>           Start Date, Set the time-frame over which the KPI is calculated
+      -ss, --skip-save                       Set this to skip save the KPI as a datasource
       -V, --version                          Print version information and exit.
   ```
 
@@ -266,7 +267,7 @@ Exit Code: 0
           options (`--project`, `--profile`, `--table`, `--output`, `--secret`).
             - Explanation of different options provided:
                ```
-              [Usage: profiles-example kpi-query [-hV] -d=<windowDuration> [-ed=<endDate>]
+              [Usage: profiles-example kpi-query [-hV] [-ss] -d=<windowDuration> [-ed=<endDate>]
                                                 -n=<name> -p=<project>
                                                 -ps=<profileSchemaName> -s=<script>
                                                 [-sd=<startDate>] [-cf=<cohortFilters>]...
@@ -281,6 +282,7 @@ Exit Code: 0
                 -ps, --profile=<profileSchemaName>     Profile Schema Name
                 -s, --script=<script>                  KPI Script
                 -sd, --startDate=<startDate>           Start Date, Set the time-frame over which the KPI is calculated
+                -ss, --skip-save                       Set this to skip save the KPI as a datasource
                 -V, --version                          Print version information and exit.
                 ```
 

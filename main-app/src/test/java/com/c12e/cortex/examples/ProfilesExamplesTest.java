@@ -141,6 +141,29 @@ public class ProfilesExamplesTest {
     }
 
     @Test
+    @DisplayName("(local) filter-query --project local --profile-schema member-profile")
+    public void testFilterQueries() {
+        int exitCode = execute("filter-query --project local --profile-schema member-profile");
+        assertExitWithoutError(exitCode);
+    }
+
+    @Test
+    @Disabled("Errors with exit code 2(only for this test) needs more investigation")
+    @DisplayName("(local) kpi-query -p local -n \"KPI 1\" -d \"Member population of sate of New York\" -ps member-profile -s \"filter(state.equalTo('New York')).count()\" -du \"180 days\" -ss")
+    public void testKPIQueries() {
+        int exitCode = execute("kpi-query -p local -n 'KPI 1' -d 'Member population of sate of New York' -ps member-profile -s \"filter(state.equalTo('New York')).count()\" -du '180 days' -ss");
+        assertExitWithoutError(exitCode);
+    }
+
+    @Test
+    @Disabled("Requires Redis to be running locally at 6379")
+    @DisplayName("(local) cache-profile -p local -ps member-profile")
+    public void testCacheProfile() {
+        int exitCode = execute("cache-profile -p local -ps member-profile");
+        assertExitWithoutError(exitCode);
+    }
+
+    @Test
     @Disabled("Requires S3 filestream and access keys setup (along with expectedRows)")
     @DisplayName("ds-streaming -p local -d member-base-s3-stream-write")
     public void testStreamingDataSource() {
