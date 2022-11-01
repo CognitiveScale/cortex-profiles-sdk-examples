@@ -133,6 +133,7 @@ public class ProfilesExamplesTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("(local) build-profile -p local -ps member-profile")
     public void testProfileBuild() {
         int exitCode = execute("build-profile -p local -ps member-profile");
@@ -141,6 +142,7 @@ public class ProfilesExamplesTest {
     }
 
     @Test
+    @Order(2)
     @DisplayName("(local) filter-query --project local --profile-schema member-profile")
     public void testFilterQueries() {
         int exitCode = execute("filter-query --project local --profile-schema member-profile");
@@ -149,6 +151,7 @@ public class ProfilesExamplesTest {
 
     @Test
     @Disabled("Errors with exit code 2(only for this test) needs more investigation")
+    @Order(2)
     @DisplayName("(local) kpi-query -p local -n \"KPI 1\" -d \"Member population of sate of New York\" -ps member-profile -s \"filter(state.equalTo('New York')).count()\" -du \"180 days\" -ss")
     public void testKPIQueries() {
         int exitCode = execute("kpi-query -p local -n 'KPI 1' -d 'Member population of sate of New York' -ps member-profile -s \"filter(state.equalTo('New York')).count()\" -du '180 days' -ss");
@@ -157,6 +160,7 @@ public class ProfilesExamplesTest {
 
     @Test
     @Disabled("Requires Redis to be running locally at 6379")
+    @Order(2)
     @DisplayName("(local) cache-profile -p local -ps member-profile")
     public void testCacheProfile() {
         int exitCode = execute("cache-profile -p local -ps member-profile");
