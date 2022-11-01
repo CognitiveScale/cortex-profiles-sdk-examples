@@ -122,6 +122,12 @@ if __name__ == '__main__':
         if override_app_command:
             spark_config.get("pyspark", {})["app_command"] = override_app_command
 
+        # set app config in shared dir for driver
+        app_config = input_params.get("app_config")
+        if app_config:
+            with open("/opt/spark/conf/app-conf.json", 'w') as file:
+                file.write(json.dumps(app_config))
+
         # TODO: Verify conf overrides is a dict
         config_option_overrides = input_params.get("conf")
         if config_option_overrides:
@@ -140,7 +146,7 @@ if __name__ == '__main__':
             driver_spec = replace_template_variables(driver_template, driver_variables)
             write_driver("driverSpec.yaml", driver_spec)
             driverOptions = {"spark.kubernetes.driver.podTemplateFile": "driverSpec.yaml",
-                             "spark.kubernetes.executor.podTemplateContainerName": "spark-kubernetes-driver"}
+                             "spark.kubernetes.executor.podTemplateContainerName": "fabric-action"}
             spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(driverOptions)
 
         # create spark-submit call
@@ -150,7 +156,7 @@ if __name__ == '__main__':
 
         cmd = subprocess.Popen(run_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         pod = ''
-        container_name = 'spark-kubernetes-driver'
+        container_name = 'fabric-action'
         container_state = ''
         exit_code = '0'
         termination_reason = ''

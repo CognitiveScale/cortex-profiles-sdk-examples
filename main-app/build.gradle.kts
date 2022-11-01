@@ -50,6 +50,7 @@ dependencies {
     implementation(project(":cache-profile"))
     implementation(project(":kpi-queries"))
     implementation(project(":filter-queries"))
+    implementation(project(":catalog-management"))
 
     // CLI framework
     implementation("info.picocli:picocli:4.6.3")
@@ -71,6 +72,7 @@ dependencies {
     testImplementation(project(":cache-profile"))
     testImplementation(project(":kpi-queries"))
     testImplementation(project(":filter-queries"))
+    testImplementation(project(":catalog-management"))
 }
 
 // application entrypoint
@@ -120,4 +122,5 @@ tasks.withType<Jar> {
     from(project(":cache-profile").sourceSets["main"].output)
     from(project(":kpi-queries").sourceSets["main"].output)
     from(project(":filter-queries").sourceSets["main"].output)
+    from(project(":catalog-management").sourceSets["main"].output)
 }
