@@ -1,7 +1,7 @@
 .PHONY: clean build build-daemon create-app-image create-daemon-image test start-daemon deploy-daemon start-daemon-container
 -include .build_file
 
-TAG := latest-k12
+TAG := latest
 DOCKER_IMAGE := profiles-example
 DAEMON_IMAGE := pdaemon
 ifndef DAEMON_TAG
