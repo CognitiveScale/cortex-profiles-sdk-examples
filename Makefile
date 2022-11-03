@@ -82,6 +82,10 @@ daemon-skill-save: check-env
 types-save: check-env
 	cortex types save -y templates/types.yaml --project ${PROJECT_NAME}
 
+# Start redis locally in a container
+start-redis:
+	cd services/redis && docker-compose up -d && cd ../..
+
 # Building and pushing the skill container, saving the skill and the types
 deploy-skill: tag-container push-container types-save skill-save
 

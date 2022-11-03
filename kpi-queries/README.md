@@ -76,16 +76,16 @@ Here are some examples for the KPis that can be calculated:
 
 NOTES:
 
-* `--name`, `--windowDuration`, `--project`, `--script`, `--profileSchema` are the only required arguments rest are
-  optional*
-* Examples of `--windowDuration` would be `1 day`, `1 week`, `365 days`
-* Multiple Cohort Filters can be passed using `--cohortFilter` flag, all these filters are ORed to create a `cohort`
-  dataset, which can be accesed using the `cohort` keyword, EX: `cohort.count()`
+* `--name`, `--windowDuration`, `--project`, `--script`, `--profileSchema` are the only required arguments, the rest are
+  optional.
+* Examples of `--windowDuration` would be `1 day`, `1 week`, `365 days`.
+* Multiple Cohort Filters can be passed using `--cohortFilter` flag, all these filters are ORed( Union-ed ) to create a `cohort`
+  dataset, which can be accessed using the `cohort` keyword, EX: `cohort.count()`.
 * A `cohort` is created only if either a `--cohortFilter`, `--startDate`, or an `--endDate` is set, and can only be
-  accessed then
-* A simple `count()` points to the entire profile
-* `--startDate` and `--endDate` are applied on the `_timestamp` column on the profile
-* The Usage for most of these have been discussed above
+  accessed then.
+* A simple `count()` points to the entire Profile.
+* `--startDate` and `--endDate` are applied on the `_timestamp` column on the profile.
+* The Usage for most of these have been discussed above.
 
 This example is a CLI application that Uses Nashorn engine internally for parsing Javascript scripts for calculating
 KPIs(Key Performance Indicators
@@ -110,7 +110,7 @@ To run this example locally with local Cortex clients (from the parent directory
    ```
    ./gradlew main-app:run --args="build-profile --project local --profile-schema member-profile"
    ```
-3. Run the application with Gradle.
+3. Run the `kpi-quer` application to evaluate a KPI expression on the Profiles built in the previous step. 
     ```
     ./gradlew main-app:run --args="kpi-query -p local -n \"Member count from NY state\" -ps member-profile -s \"filter(state_code.equalTo('NY')).count()\" -d \"180 days\""
     ```
@@ -251,8 +251,8 @@ Exit Code: 0
 
 ### Prerequisites
 
-* Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying data
-  source of the Profile does not need to exist.**
+* Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying Data
+  Source of the Profile does not need to exist.**
 * Generate a `CORTEX_TOKEN`.
     * Update/Add the [spark-conf.json](./src/main/resources/conf/spark-conf.json) file to:
         - Use the [Remote Catalog](../docs/catalog.md#remote-catalog) implementation by setting the Cortex
@@ -264,7 +264,7 @@ Exit Code: 0
           client implementation (`spark.cortex.client.storage.impl`).
         - Remove the local Secret client implementation (`spark.cortex.client.secrets.impl`).
         - Update the `app_command` arguments to match your Cortex Project and Profile Schema and other available
-          options (`--project`, `--profile`, `--table`, `--output`, `--secret`).
+          options:
             - Explanation of different options provided:
                ```
               [Usage: profiles-example kpi-query [-hV] [-ss] -d=<windowDuration> [-ed=<endDate>]
@@ -377,18 +377,19 @@ make build create-app-image deploy-skill invoke
 
 ### Run as an Agent
 
-Make sure to save the skills as pointed out in the above steps.
-Run the below command:
-```
-cortex agents save templates/agent.json --project <project>
-cortex agents invoke --params-file templates/payload.json kpi test --project <project>
-```
+1. Make sure to save the skills as pointed out in the above steps. 
 
-To schedule the job every 
+2. Run the below command:
+    ```
+    cortex agents save templates/agent.json --project <project>
+    cortex agents invoke --params-file templates/payload.json kpi test --project <project>
+    ```
 
-```
-cortex agents invoke --params-file templates/payload.json kpi test --scheduleName every10mins --scheduleCron "*/10 * * * *" --project bptest
-```
+3. To schedule the job every: 
+
+    ```
+    cortex agents invoke --params-file templates/payload.json kpi test --scheduleName every10mins --scheduleCron "*/10 * * * *" --project bptest
+    ```
 
 Notes on the above example:
 
@@ -398,4 +399,3 @@ Notes on the above example:
   the amount of resources used for your cluster/data.**
 * The Cortex [Backend Storage configuration](../docs/config.md#cortex-backend-storage) is configured by the default
   remote storage client implementation.
-* The `--secret` is set in the `app_command`.

@@ -8,9 +8,9 @@ import picocli.CommandLine.Option;
 
 
 /**
- * Sample CLI application that uses KPI expressions in Javascript to evaluate KPIs
+ * Sample CLI application that uses profiles-sdk to perform filter and aggregation queries
  */
-@Command(name = "filter-query", description = "Calculating KPI using aggregate using from Profiles", mixinStandardHelpOptions = true)
+@Command(name = "filter-query", description = "Example writing Filter and Aggregate Queries using profiles-sdk", mixinStandardHelpOptions = true)
 public class FilterQueries implements Runnable {
     @Option(names = {"-p", "--project"}, description = "Cortex Project to use", required = true)
     String project;

@@ -2,8 +2,8 @@
 
 ### Background
 
-This CLI Application showcases filter and aggregate queries for `member-profile` profile-schema using profiles-sdk. 
-We run these queries on already built profile, the below table documents the queries:
+This CLI Application showcases filter and aggregate queries for `member-profile` Profile Schema using profiles-sdk. 
+We run these queries on already built Profiles, the below table documents the queries:
 
 | Sequence | Query type           | Query                                                                                                                                                                                                                                                                         | About                                           |
 |----------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
@@ -18,8 +18,8 @@ We run these queries on already built profile, the below table documents the que
 
 ## Prerequisites
 
-* This example evaluates a KPI expression on a built profile, and takes a profile Schema as input, so we expect a built
-  profile before we run this example
+* This example evaluates a list of filter and aggregate queries sequentially, for on a Profile, it takes a Profile Schema as input, so we expect a built
+  profile before we run this example.
 
 ## Run Locally
 
@@ -29,7 +29,7 @@ To run this example locally with local Cortex clients (from the parent directory
     ```
     make build
     ```
-2. Run the `build-profiles` example to build the profile, since here we write the profiles data to rsedis
+2. Run the `build-profiles` example to build the profile.
    ```
    ./gradlew main-app:run --args="build-profile --project local --profile-schema member-profile"
    ```
@@ -276,8 +276,8 @@ Exit Code: 0
 
 ### Prerequisites
 
-* Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying data
-  source of the Profile does not need to exist.**
+* Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying Data
+  Source of the Profile does not need to exist.**
 * Generate a `CORTEX_TOKEN`.
     * Update/Add the [spark-conf.json](./src/main/resources/conf/spark-conf.json) file to:
         - Use the [Remote Catalog](../docs/catalog.md#remote-catalog) implementation by setting the Cortex
@@ -394,4 +394,3 @@ Notes on the above example:
   the amount of resources used for your cluster/data.**
 * The Cortex [Backend Storage configuration](../docs/config.md#cortex-backend-storage) is configured by the default
   remote storage client implementation.
-* The `--secret` is set in the `app_command`.

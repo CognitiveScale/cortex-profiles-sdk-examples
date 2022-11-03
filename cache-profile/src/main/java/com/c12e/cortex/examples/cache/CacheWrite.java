@@ -10,10 +10,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 /**
- * Sample CLI application that writes the underlying Profile data to an Redis.
+ * Sample CLI application that writes the underlying Profile data to Redis.
  * Caches the Profile on profile_id
  */
-@Command(name = "cache-profile", description = "Example Redis write form profile", mixinStandardHelpOptions = true)
+@Command(name = "cache-profile", description = "Example writing Profiles to Redis", mixinStandardHelpOptions = true)
 public class CacheWrite implements Runnable {
     @Option(names = {"-p", "--project"}, description = "Cortex Project to use", required = true)
     String project;

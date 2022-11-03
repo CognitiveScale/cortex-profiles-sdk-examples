@@ -1,6 +1,6 @@
-# Writing Profiles to cache(redis)
+# Writing Profiles to cache(Redis)
 
-This example is a CLI application that writes profile data from a Delta table to redis, for real time profile fetch.
+This example is a CLI application that writes profile data from a Delta table to Redis, for real time profile fetch.
 This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
 
 (See [RedisWrite.java](./src/main/java/com/c12e/cortex/examples/cache/CacheWrite.java) for the source code.)
@@ -12,7 +12,7 @@ sequenceDiagram
     note right of cache-wrtie: cache-write job
     rect rgb(191, 223, 255)
     profiles-deltalake->>+cache-wrtie: Reads the profile
-    cache-wrtie->>Redis: Writes profiles to redis
+    cache-wrtie->>Redis: Writes profiles to Redis
     end
     User->>+profiles-daemon: Daemon invoke
     profiles-daemon-->>Redis: profile lookup
@@ -27,34 +27,40 @@ sequenceDiagram
 * The Redis Spark connector is required to run this example (`com.redislabs:spark-redis_2.12:3.1.0`). 
   Download the [Redis Spark Connector](https://repo1.maven.org/maven2/com/redislabs/spark-redis_2.12/3.1.0/spark-redis_2.12-3.1.0-jar-with-dependencies.jar) and 
   save the files in [../main-ap/src/main/resources/lib/](../main-app/src/main/resources/lib/).
-* A separate redis infra is suggested to be used, separate from the internal/external cortex redis cluster, used by other services
+* A separate Redis infrastructure is suggested to be used, separate from the internal/external cortex Redis cluster, used by other services
 * Redis configurations supported
   * No (out of the box)sentinel support, the standalone node to which this is connected, if restarts, the job goes down, There is a PR out for the support (https://github.com/RedisLabs/spark-redis/pull/245) [Not OK]
   * Cluster support, Tested with GCP memoryStore [OK]
   * Standalone support, single node [OK]
   * Enterprise Redis [Not Tested]
-* Data size vs Redis Mem (to determine redis cluster sizing)
-    * 1M records X 150 columns -> 3.41Gb
-    * 2340223(2.3M) records  X 150 columns -> 8Gb
-    * 2764171(2.7M) records  X 150 columns-> 9.42Gb
-    * 8.37M records X 150 columns- ->  32 Gb
-    * The profile hashes stored in redis take up, each key+value(150 columns) 3357bytes (approx)
+* <b>Redis cluster sizing is highly dependent on the Data size</b> 
+  * Here is a Data size vs Redis Memory table for reference
+  
+    | Data size                           | Redis Memory |
+    |-------------------------------------|--------------|
+    | 1M records X 150 columns            | 3.41Gb       |
+    | 2340223(2.3M) records X 150 columns | 8Gb          |
+    | 2764171(2.7M) records X 150 columns | 9.42Gb       |
+    | 8.37M records X 150 columns         | 32 Gb        |
 
 
 
 ## Run Locally
 
 To run this example locally with local Cortex clients (from the parent directory):
-1. Start up a redis instance locally
+1. Start up a Redis instance locally, in a docker container.
+   ```
+   make start-redis
+   ```
 2. Build the application.
     ```
     make build
     ```
-3. Run the `build-profiles` example to build the profile, since here we write the profiles data to rsedis
+3. Run the `build-profiles` example to build the profile, since here we write the Profiles data to Redis
    ```
    ./gradlew main-app:run --args="build-profile --project local --profile-schema member-profile"
    ```
-4. Run the application with Gradle.
+4. Run the `cache-profile` application to load the Profiles built in the previous step.
     ```
     ./gradlew main-app:run --args="cache-profile -p local -ps member-profile"
     ```
@@ -83,7 +89,7 @@ BUILD SUCCESSFUL in 36s
 43 actionable tasks: 1 executed, 42 up-to-date
 ```
 
-The redis connection details have been defined in the [SessionExample.java](../local-clients/src/main/java/com/c12e/cortex/examples/local/SessionExample.java) file
+The Redis connection details have been defined in the [SessionExample.java](../local-clients/src/main/java/com/c12e/cortex/examples/local/SessionExample.java) file
 for local connections and can be passed via [spark-conf.json](../cache-profile/src/main/resources/conf/spark-conf.json)`./main-app/build/tmp/test-data/sink-ds` for jobs that need to be run in cluster.
 More configurations can be found [here](https://github.com/RedisLabs/spark-redis/blob/master/doc/configuration.md)
 
@@ -159,19 +165,18 @@ Exit Code: 0
 The redis connection details have been defined in the [SessionExample.java](../local-clients/src/main/java/com/c12e/cortex/examples/local/SessionExample.java) file
 for local connections and can be passed via [spark-conf.json](../cache-profile/src/main/resources/conf/spark-conf.json)`./main-app/build/tmp/test-data/sink-ds` for jobs that need to be run in cluster.
 More configurations can be found [here](https://github.com/RedisLabs/spark-redis/blob/master/doc/configuration.md).
-In this case 
 
 ### Run as a Skill
 
 ### Prerequisites
-* Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying data source of the Profile does not need to exist.**
+* Ensure that the Cortex resources exist, specifically the Cortex Project and Profiles (built). **The underlying Data Source of the Profile does not need to exist.**
 * Generate a `CORTEX_TOKEN`.
 * Update/Add the [spark-conf.json](./src/main/resources/conf/spark-conf.json) file to:
     - Use the [Remote Catalog](../docs/catalog.md#remote-catalog) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the in-cluster GraphQL API endpoint (`"http://cortex-api.cortex.svc.cluster.local:8080"`) and removing the Local Catalog implementation (`spark.cortex.catalog.impl`).
     - Use the [remote storage client](../docs/backendstorage.md#remote-storage-client) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the GraphQL API endpoint, and remove the local storage client implementation (`spark.cortex.client.storage.impl`).
     - Remove the local Secret client implementation (`spark.cortex.client.secrets.impl`).
-    - Update the `app_command` arguments to match your Cortex Project and Profile Schema (`--project`, `--profile`, `--table`, `--output`, `--secret`).
-    - Update the `spark.redis.*` [configurations](https://github.com/RedisLabs/spark-redis/blob/master/doc/configuration.md) in the spark-conf
+    - Update the `app_command` arguments to match your Cortex Project and Profile Schema (`--project`, `--profile`).
+    - Update the `spark.redis.*` [configurations](https://github.com/RedisLabs/spark-redis/blob/master/doc/configuration.md) in the spark-conf.
     
 To Build and run the skill:
 1. Run the following make commands:
@@ -261,4 +266,3 @@ Notes on the above example:
 * The Cortex API Client URL and Secret Client URL are referring to services in Kubernetes Cluster.
 * The Spark Driver and Spark Executors (`"spark.executor.instances"`) have a 2g and 4g of memory respectively. **Adjust the amount of resources used for your cluster/data.**
 * The Cortex [Backend Storage configuration](../docs/config.md#cortex-backend-storage) is configured by the default remote  storage client implementation.
-* The `--secret` is set in the `app_command`.
