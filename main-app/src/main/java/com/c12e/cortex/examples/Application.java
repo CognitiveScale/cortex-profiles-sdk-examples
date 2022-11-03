@@ -38,7 +38,6 @@ import picocli.CommandLine.Command;
         CacheWrite.class,
         KPIQueries.class,
         FilterQueries.class,
-        BigQuery.class,
         ManageCatalog.class
 })
 public class Application {
