@@ -24,7 +24,7 @@ sequenceDiagram
 * The Redis Spark connector is required to run this example (`com.redislabs:spark-redis_2.12:3.1.0`). 
   Download the [Redis Spark Connector](https://repo1.maven.org/maven2/com/redislabs/spark-redis_2.12/3.1.0/spark-redis_2.12-3.1.0-jar-with-dependencies.jar) and 
   save the files in [../main-ap/src/main/resources/lib/](../main-app/src/main/resources/lib/).
-* A separate Redis infrastructure is suggested to be used, separate from the internal/external cortex Redis cluster, used by other services
+* A separate Redis infrastructure is suggested to be used, separate from the internal/external Cortex Redis cluster, used by other services
 * Redis configurations supported
   * No (out of the box)sentinel support, the standalone node to which this is connected, if restarts, the job goes down, There is a PR out for the support (https://github.com/RedisLabs/spark-redis/pull/245) [Not OK]
   * Cluster support, Tested with GCP memoryStore [OK]
