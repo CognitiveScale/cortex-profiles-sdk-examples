@@ -17,9 +17,6 @@ sequenceDiagram
     User->>+profiles-daemon: Daemon invoke
     profiles-daemon-->>Redis: profile lookup
     profiles-daemon->>-User: resposnse
-    User->>+profiles-daemon: Daemon invoke
-    profiles-daemon-->>Redis: profile lookup
-    profiles-daemon->>-User: resposnse
 ```
 
 ## Prerequisites

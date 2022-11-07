@@ -9,16 +9,11 @@ public class KPIvalue implements Serializable {
     String windowDuration;
     String startDate;
     String endDate;
-//    String description;
     String timeOfExecution;
 
     public void setTimeOfExecution(String timeOfExecution) { this.timeOfExecution = timeOfExecution; }
 
     public String getTimeOfExecution() { return timeOfExecution; }
-
-//    public void setDescription(String description) { this.description = description; }
-
-//    public String getDescription() { return description; }
 
     public void setStartDate(String startDate) { this.startDate = startDate; }
 

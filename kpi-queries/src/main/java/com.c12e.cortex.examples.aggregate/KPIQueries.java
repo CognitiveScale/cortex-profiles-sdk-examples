@@ -250,8 +250,10 @@ public class KPIQueries implements Runnable {
         }
         if (!String.join("", cohortFilters).isBlank()) {
             String finalFilter = cohortFilters[0];
-            if (cohortFilters.length > 1) for (int i = 1; i < cohortFilters.length; i = i + 1) {
-                finalFilter = finalFilter + ".or(" + cohortFilters[i] + ")";
+            if (cohortFilters.length > 1) {
+                for (int i = 1; i < cohortFilters.length; i = i + 1) {
+                    finalFilter = finalFilter + ".or(" + cohortFilters[i] + ")";
+                }
             }
             if (filterStr.toString().isBlank()) {
                 filterStr.append(finalFilter);

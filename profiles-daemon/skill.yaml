@@ -45,10 +45,3 @@ properties:
     required: true
     type: String
     defaultValue: 8080
-
-#actions:
-#  - name: pdaemon
-#    type: daemon
-#    image: private-registry.test.cvstest.gke.insights.ai/pdaemon:latest
-#    environmentVariables: '"REDIS_HOST"="localhost","REDIS_PORT"="6379","REDIS_USER"="default","REDIS_PASSWORD"=""'
-#    port: 8080
