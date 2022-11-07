@@ -74,8 +74,8 @@ The redis connection details have been defined in the [application.yaml](../prof
 ## Run Locally in a Docker Container With Spark-submit
 
 To run this Daemon in a Docker container with local Redis clients:
-1. Start up a redis instance locally
-2. Setup redis env vars using
+1. Start up a redis instance locally.
+2. Setup redis env vars using.
      ```
      export REDIS_HOST=host.docker.internal
      export REDIS_PORT=6379
@@ -153,19 +153,21 @@ make deploy-daemon
 
 To invoke the skill
 1. Use the below command to invoke the skill
-    ```
-    cortex skills invoke --params-file ./profiles-daemon/src/main/resources/payload.json pdaemon request --project <projectName>
+     ```
+     cortex skills invoke --params-file ./profiles-daemon/src/main/resources/payload.json pdaemon request --project <projectName>
    
-   
-    {
-       "success": true,
-       "activationId": "f8520e95-5416-490c-9d52-a6cb108234cb"
-    }
-    ```
+     ```
+      ```
+     {
+        "success": true,
+        "activationId": "f8520e95-5416-490c-9d52-a6cb108234cb"
+     }
+      ```
    1. output for the above can be looked at be
        ```
        cortex agents get-activation f8520e95-5416-490c-9d52-a6cb108234cb --project <projectName>
-   
+      ```
+       ```
       {
        "success": true,
        "requestId": "f8520e95-5416-490c-9d52-a6cb108234cb",
@@ -192,7 +194,7 @@ To invoke the skill
     ```
        cortex agents save agent.json --project <projectName>
     ```
-    1. This exposes the profiles-daemon wrapped as a skill as a service, which can be used as the below curl
+    1. Invoke the profiles-daemon skill as a service, using the below curl command. Update the endpoint to match your cluster:
    ```
        curl --location --request POST 'https://api.test.cvstest.gke.insights.ai/fabric/v4/projects/bptest/agentinvoke/realtime/services/input?sync=true' \
        --header 'Authorization: Bearer '"$CORTEX_TOKEN"'' \
@@ -221,7 +223,7 @@ In cluster readings using Jmeter for the agentInvoke APIs with processor-gateway
 
 
 
-The APIs we expose:
+The APIs exposed by the Spring application:
 * GET request:
   * `http://localhost:8080/api/v1/profiles/<profileSchema>` lists the indexed profile_ids
     ```

@@ -21,6 +21,8 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.apache.spark.sql.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -65,6 +67,8 @@ public class KPIQueries implements Runnable {
 
     @Option(names = {"-ss", "--skip-save"}, description = "Set this to skip save the KPI as a datasource", required = false)
     boolean skipSave;
+
+    Logger logger = LoggerFactory.getLogger(KPIQueries.class);
 
     public class ProfileSchemaDeserializer extends StdDeserializer<ProfileSchema> {
 
@@ -187,14 +191,14 @@ public class KPIQueries implements Runnable {
             Connection connection = config.read("$", new TypeRef<Connection>() {});
             config = JsonPath.parse(dataSourceConfig);
             DataSource dataSource = config.read("$", new TypeRef<DataSource>() {});
-            System.out.println(dataSource);
+            logger.info(dataSource.getName());
 
             if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
                 cortexSession.catalog().createConnection(connection);
             }
 
             if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
-                System.out.println("Created the datasource");
+                logger.info("Created the datasource");
                 cortexSession.catalog().createDataSource(dataSource);
             }
 
