@@ -167,6 +167,10 @@ public class KPIQueries implements Runnable {
                 "                    \"value\": \"http://managed\",\n" +
                 "                    \"name\": \""+ bucketApiEndpoint.getSecond() +"\"\n" +
                 "                  }\n" +
+                "                  {\n" +
+                "                    \"value\": \"stream_read_dir\",\n" +
+                "                    \"name\": \"" + bucketProtocol + profilesBucket + "/sources/" + project + "/KPI-" + name + "delta\"\n" +
+                "                  }\n" +
                 "                ]\n" +
                 "              }";
 
