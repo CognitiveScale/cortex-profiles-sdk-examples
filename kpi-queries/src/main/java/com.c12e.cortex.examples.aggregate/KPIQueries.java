@@ -171,11 +171,7 @@ public class KPIQueries implements Runnable {
                 "              }";
 
         Double value = null;
-        try {
-            value = runKPI(cortexSession, project);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        value = runKPI(cortexSession, project);
         KPIvalue kpiValue = new KPIvalue();
         kpiValue.setValue(value);
         kpiValue.setWindowDuration(windowDuration);
@@ -247,7 +243,7 @@ public class KPIQueries implements Runnable {
         });
     }
 
-    public String buildFilter(String[] cohortFilters, String startDate, String endDate) throws ParseException {
+    public String buildFilter(String[] cohortFilters, String startDate, String endDate) {
         StringBuilder filterStr = new StringBuilder("");
         if (!startDate.isBlank()) {
             filterStr.append("_timestamp.gte('" + startDate + "')");
@@ -282,7 +278,7 @@ public class KPIQueries implements Runnable {
     }
 
 
-    public Double runKPI(CortexSession cortexSession, String project) throws ParseException {
+    public Double runKPI(CortexSession cortexSession, String project) {
         Dataset<Row> profileData = cortexSession.read().profile(project, profileSchemaName).load().toDF();
         System.out.println(script);
 
