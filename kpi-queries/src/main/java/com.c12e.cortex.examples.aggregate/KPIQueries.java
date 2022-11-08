@@ -5,6 +5,8 @@ import com.c12e.cortex.examples.local.SessionExample;
 import com.c12e.cortex.phoenix.*;
 import com.c12e.cortex.phoenix.spec.*;
 import com.c12e.cortex.profiles.CortexSession;
+import com.c12e.cortex.profiles.client.LocalRemoteStorageClient;
+import com.c12e.cortex.profiles.storage.RemoteStorageEnvLocator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -20,6 +22,7 @@ import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import kotlin.Pair;
 import org.apache.spark.sql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,8 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Supplier;
+
+import static scala.collection.JavaConverters.mapAsJavaMap;
 
 
 /**
@@ -120,8 +125,11 @@ public class KPIQueries implements Runnable {
     public void run() {
         var sessionExample = new SessionExample();
         CortexSession cortexSession = sessionExample.getCortexSession();
-        String profilesBucket = cortexSession.getContext().getSparkSession().conf().getAll().get("spark.cortex.storage.bucket.profiles").get();
-
+        RemoteStorageEnvLocator remoteStorageEnvLocator = new RemoteStorageEnvLocator(mapAsJavaMap(cortexSession.getContext().getSparkSession().conf().getAll()), new LocalRemoteStorageClient(null));
+        String bucketProtocol = remoteStorageEnvLocator.get().getProtocol();
+        String connectionType = remoteStorageEnvLocator.get().getType().toString();
+        Pair<String, String> bucketApiEndpoint = remoteStorageEnvLocator.get().getFeedbackAggregatorConfig();
+        String profilesBucket = remoteStorageEnvLocator.get().getBucketName("cortex-profiles");
 
         String dataSourceConfig = "{\n" +
                 "                \"project\": \"" + project + "\",\n" +
@@ -135,7 +143,7 @@ public class KPIQueries implements Runnable {
                 "                \"connection\": {\n" +
                 "                  \"name\": \"KPI-" + name + "\"\n" +
                 "                },\n" +
-                "                \"description\": \""+description+"\",\n" +
+                "                \"description\": \"" + description + "\",\n" +
                 "                \"kind\": \"batch\",\n" +
                 "                \"name\": \"KPI-" + name + "\",\n" +
                 "                \"primaryKey\": \"timeOfExecution\",\n" +
@@ -146,18 +154,18 @@ public class KPIQueries implements Runnable {
                 "                \"project\": \"" + project + "\",\n" +
                 "                \"name\": \"KPI-" + name + "\",\n" +
                 "                \"title\": \"" + name + "\",\n" +
-                "                \"connectionType\": \"gcs\",\n" +
+                "                \"connectionType\": \"" + bucketApiEndpoint.getFirst() + "\",\n" +
                 "                \"contentType\": \"parquet\",\n" +
                 "                \"allowRead\": true,\n" +
                 "                \"allowWrite\": false,\n" +
                 "                \"params\": [\n" +
                 "                  {\n" +
                 "                    \"name\": \"uri\",\n" +
-                "                    \"value\": \"gs://"+profilesBucket+"/sources/"+project+"/KPI-"+name+"-delta\"\n" +
+                "                    \"value\": \"" + bucketProtocol + profilesBucket + "/sources/" + project + "/KPI-" + name + "-delta\"\n" +
                 "                  },\n" +
                 "                  {\n" +
-                "                    \"name\": \"workloadIdentityEnabled\",\n" +
-                "                    \"value\": \"true\"\n" +
+                "                    \"value\": \"http://managed\",\n" +
+                "                    \"name\": \""+ bucketApiEndpoint.getSecond() +"\"\n" +
                 "                  }\n" +
                 "                ]\n" +
                 "              }";
@@ -182,7 +190,7 @@ public class KPIQueries implements Runnable {
                 KPIEncoder
         );
         javaBeanDS.show();
-        if(!skipSave) {
+        if(!skipSave && connectionType != "file") {
             railCommand();
 
             // creating a Datasource for the KPIs
