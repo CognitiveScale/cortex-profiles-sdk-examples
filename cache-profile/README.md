@@ -24,7 +24,7 @@ sequenceDiagram
 * The Redis Spark connector is required to run this example (`com.redislabs:spark-redis_2.12:3.1.0`). 
   Download the [Redis Spark Connector](https://repo1.maven.org/maven2/com/redislabs/spark-redis_2.12/3.1.0/spark-redis_2.12-3.1.0-jar-with-dependencies.jar) and 
   save the files in [../main-ap/src/main/resources/lib/](../main-app/src/main/resources/lib/).
-* A separate Redis infrastructure is suggested to be used, separate from the internal/external Cortex Redis cluster, used by other services
+* A separate Redis infrastructure is suggested to be used, separate from the internal/external Cortex Redis cluster, used by other services.
 * Redis configurations supported
   * No (out of the box)sentinel support, the standalone node to which this is connected, if restarts, the job goes down, There is a PR out for the support (https://github.com/RedisLabs/spark-redis/pull/245) [Not OK]
   * Cluster support, Tested with GCP memoryStore [OK]
@@ -53,7 +53,7 @@ To run this example locally with local Cortex clients (from the parent directory
     ```
     make build
     ```
-3. Run the `build-profiles` example to build the profile, since here we write the Profiles data to Redis
+3. Run the `build-profiles` example to build the Profiles, since here we write the Profiles' data to Redis.
    ```
    ./gradlew main-app:run --args="build-profile --project local --profile-schema member-profile"
    ```
@@ -263,3 +263,4 @@ Notes on the above example:
 * The Cortex API Client URL and Secret Client URL are referring to services in Kubernetes Cluster.
 * The Spark Driver and Spark Executors (`"spark.executor.instances"`) have a 2g and 4g of memory respectively. **Adjust the amount of resources used for your cluster/data.**
 * The Cortex [Backend Storage configuration](../docs/config.md#cortex-backend-storage) is configured by the default remote  storage client implementation.
+* - Update the `spark.redis.*` [configurations](https://github.com/RedisLabs/spark-redis/blob/master/doc/configuration.md) in the spark-conf.

@@ -34,41 +34,40 @@ Here are some examples for the KPis that can be calculated:
 ```
 1. kpi-query -p local \
     -n "KPI 1" \
-    -d "Count people who want to continue getting mail" \
-    -ps cvs \
-    -s "filter(MAIL_STATUS.equalTo(\"MAIL CONTINUE\")).count()" \
+    -d "Member population in Indiana" \
+    -ps member-profile \
+    -s "filter(state.equalTo(\"Indiana\")).count()" \
     -du "180 days"
 ```
 
 ```
 2. kpi-query -p local \
     -n "KPI 2" \
-    -d "Percentage of people who want to continue getting mail" \
-    -ps cvs  \
+    -d "Percentage of total members from Inidiana" \
+    -ps member-profile  \
     -du "180 days" \
-    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
+    -cf "state.equalTo(\"Indiana\")" \
     -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
 ``` 
 
 ```
 3. kpi-query -p local \
     -n "KPI 3" \
-    -d "Percentage of people who want to continue getting mail or are `ELIGIBLE`" \
-    -ps cvs \
+    -d "Percentage of total members from Inidiana with flu_risk_score more than 0.5" \
+    -ps member-profile \
     -du "180 days" \
-    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
-    -cf "PEER_DESC.equalTo(\"MAPD\")" \
-    -cf "ELIGIBILITY.equalTo(\"ELIGIBLE\")" \
+    -cf "state.equalTo(\"Indiana\")" \
+    -cf "flu_risk_score.gt(0.5)" \
     -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
 ```
 
 ```
 4. kpi-query -p local \
     -n "KPI 4" \
-    -d "Percentage of people(registered within a timeperiod) who want to continue getting mail" \
+    -d "Percentage of total members(registered within a timeperiod) who are from Inidiana" \
     -ps cvs \
     -du "180 days" \
-    -cf "MAIL_STATUS.equalTo(\"MAIL CONTINUE\")" \
+    -cf "state.equalTo(\"Indiana\")" \
     -sd "2020-01-01" \
     -ed "2022-12-31" \
     -s "var profileCount = count(); var cohortCount = cohort.count(); cohortCount.divide(profileCount)"
@@ -106,13 +105,13 @@ To run this example locally with local Cortex clients (from the parent directory
     ```
     make build
     ```
-2. Run the `build-profiles` example to build the profile, since here we write the profiles data to rsedis
+2. Run the `build-profiles` example to build the profile.
    ```
    ./gradlew main-app:run --args="build-profile --project local --profile-schema member-profile"
    ```
-3. Run the `kpi-quer` application to evaluate a KPI expression on the Profiles built in the previous step. 
+3. Run the `kpi-query` application to evaluate a KPI expression on the Profiles built in the previous step. 
     ```
-    ./gradlew main-app:run --args="kpi-query -p local -n \"Member count from NY state\" -ps member-profile -s \"filter(state_code.equalTo('NY')).count()\" -d \"180 days\""
+    ./gradlew main-app:run --args="kpi-query -p local -n \"KPI 1\" -d \"Count people who want to continue getting mail\" -ps member-profile -s \"filter(flu_risk_score.gt(0.5)).count()\" -du \"180 days\""
     ```
 
 The end of the log output should be similar to:
@@ -176,7 +175,7 @@ To run this example in a Docker container with local Cortex clients (from the pa
     ```
     export CORTEX_TOKEN=<token>
     ```
-4. Run the `build-profiles` example to build the profile, since here we write the profiles data to redis
+4. Run the `build-profiles` example to build the profile.
    ```
    docker run -p 4040:4040 --entrypoint="python" \
       -e CORTEX_TOKEN="${CORTEX_TOKEN}" \
@@ -385,7 +384,7 @@ make build create-app-image deploy-skill invoke
     cortex agents invoke --params-file templates/payload.json kpi test --project <project>
     ```
 
-3. To schedule the job every: 
+3. To schedule the job every 10 minutes: 
 
     ```
     cortex agents invoke --params-file templates/payload.json kpi test --scheduleName every10mins --scheduleCron "*/10 * * * *" --project bptest

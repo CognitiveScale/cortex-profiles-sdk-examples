@@ -5,7 +5,7 @@ LABEL name="cortex-actions-service" \
       vendor="CognitiveScale" \
       version=6 \
       summary="Service for management of profileById api." \
-      description="Darmon for profile fetch"
+      description="Daemon for profile fetch"
 WORKDIR /app
 RUN apt update \
     && apt upgrade -y \
