@@ -94,8 +94,8 @@ KPIs(Key Performance Indicators
 
 ## Prerequisites
 
-* This example evaluates a KPI expression on a built profile, and takes a profile Schema as input, so we expect a built
-  profile before we run this example
+* This example evaluates a KPI expression on a built Profiles, and takes a Profile Schema as input, so we expect a built
+  profile before we run this example.
 
 ## Run Locally
 

@@ -150,7 +150,7 @@ public class ProfilesExamplesTest {
     }
 
     @Test
-    @Disabled("Errors with exit code 2(only for this test) needs more investigation")
+    @Disabled("Errors with exit code 2(only for this test), because the execute method splits the command on whitespace '//s', the regex needs to be updated to skip quoted whitespaces")
     @Order(2)
     @DisplayName("(local) kpi-query -p local -n \"KPI 1\" -d \"Member population of sate of New York\" -ps member-profile -s \"filter(state.equalTo('New York')).count()\" -du \"180 days\" -ss")
     public void testKPIQueries() {
