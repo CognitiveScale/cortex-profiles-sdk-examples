@@ -23,6 +23,7 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import kotlin.Pair;
+import kotlin.Triple;
 import org.apache.spark.sql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.*;
@@ -125,57 +127,9 @@ public class KPIQueries implements Runnable {
     public void run() {
         var sessionExample = new SessionExample();
         CortexSession cortexSession = sessionExample.getCortexSession();
-        RemoteStorageEnvLocator remoteStorageEnvLocator = new RemoteStorageEnvLocator(mapAsJavaMap(cortexSession.getContext().getSparkSession().conf().getAll()), new LocalRemoteStorageClient(null));
-        String bucketProtocol = remoteStorageEnvLocator.get().getProtocol();
-        String connectionType = remoteStorageEnvLocator.get().getType().toString();
-        Pair<String, String> bucketApiEndpoint = remoteStorageEnvLocator.get().getFeedbackAggregatorConfig();
-        String profilesBucket = remoteStorageEnvLocator.get().getBucketName("cortex-profiles");
+        Triple configs = getConfigs(cortexSession);
 
-        String dataSourceConfig = "{\n" +
-                "                \"project\": \"" + project + "\",\n" +
-                "                \"attributes\": [\n" +
-                "                  \"timeOfExecution\",\n" +
-                "                  \"value\",\n" +
-                "                  \"startDate\",\n" +
-                "                  \"endDate\",\n" +
-                "                  \"windowDuration\"\n" +
-                "                ],\n" +
-                "                \"connection\": {\n" +
-                "                  \"name\": \"KPI-" + name + "\"\n" +
-                "                },\n" +
-                "                \"description\": \"" + description + "\",\n" +
-                "                \"kind\": \"batch\",\n" +
-                "                \"name\": \"KPI-" + name + "\",\n" +
-                "                \"primaryKey\": \"timeOfExecution\",\n" +
-                "                \"title\": \"" + name + "\"\n" +
-                "              }";
-
-        String connectionConfig = "{\n" +
-                "                \"project\": \"" + project + "\",\n" +
-                "                \"name\": \"KPI-" + name + "\",\n" +
-                "                \"title\": \"" + name + "\",\n" +
-                "                \"connectionType\": \"" + bucketApiEndpoint.getFirst() + "\",\n" +
-                "                \"contentType\": \"parquet\",\n" +
-                "                \"allowRead\": true,\n" +
-                "                \"allowWrite\": false,\n" +
-                "                \"params\": [\n" +
-                "                  {\n" +
-                "                    \"name\": \"uri\",\n" +
-                "                    \"value\": \"" + bucketProtocol + profilesBucket + "/sources/" + project + "/KPI-" + name + "-delta\"\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                    \"value\": \"http://managed\",\n" +
-                "                    \"name\": \""+ bucketApiEndpoint.getSecond() +"\"\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                    \"name\": \"stream_read_dir\",\n" +
-                "                    \"value\": \"" + bucketProtocol + profilesBucket + "/sources/" + project + "/KPI-" + name + "-delta\"\n" +
-                "                  }\n" +
-                "                ]\n" +
-                "              }";
-
-        Double value = null;
-        value = runKPI(cortexSession, project);
+        Double value = runKPI(cortexSession, project);
         KPIvalue kpiValue = new KPIvalue();
         kpiValue.setValue(value);
         kpiValue.setWindowDuration(windowDuration);
@@ -190,25 +144,33 @@ public class KPIQueries implements Runnable {
                 KPIEncoder
         );
         javaBeanDS.show();
-        if(!skipSave && connectionType != "file") {
+
+        if(!skipSave && configs.getThird().toString() != "file") {
             railCommand();
 
             // creating a Datasource for the KPIs
             DocumentContext config;
-            config = JsonPath.parse(connectionConfig);
-            Connection connection = config.read("$", new TypeRef<Connection>() {});
-            config = JsonPath.parse(dataSourceConfig);
+            config = JsonPath.parse(configs.getFirst().toString());
             DataSource dataSource = config.read("$", new TypeRef<DataSource>() {});
+            config = JsonPath.parse(configs.getSecond().toString());
+            Connection connection = config.read("$", new TypeRef<Connection>() {});
             logger.info(dataSource.getName());
 
             if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
                 cortexSession.catalog().createConnection(connection);
+            } else {
+                cortexSession.catalog().updateConnection(connection);
             }
 
             if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
                 logger.info("Created the datasource");
                 cortexSession.catalog().createDataSource(dataSource);
+            } else {
+                logger.info("Updated the datasource");
+                cortexSession.catalog().updateDataSource(dataSource);
             }
+
+            logger.info("Writing Data");
 
             cortexSession.write()
                     .dataSource(javaBeanDS.toDF(), project, dataSource.getName())
@@ -284,7 +246,7 @@ public class KPIQueries implements Runnable {
 
     public Double runKPI(CortexSession cortexSession, String project) {
         Dataset<Row> profileData = cortexSession.read().profile(project, profileSchemaName).load().toDF();
-        System.out.println(script);
+        logger.info("Script running: "+ script);
 
         ProfileWindowedAggregation engine = new ProfileWindowedAggregation(profileData, windowDuration);
         String filter = buildFilter(cohortFilters, startDate, endDate);
@@ -298,5 +260,72 @@ public class KPIQueries implements Runnable {
         result.getDf().show();
         Double KPI = Double.valueOf(result.getDf().select(result.getColName()).collectAsList().get(0).get(0).toString());
         return KPI;
+    }
+
+    public Triple<String, String, String> getConfigs(CortexSession cortexSession) {
+        /**
+         * Method that generates connection and datasource config from cortexSession for storing
+         * KPI datasource in profiles bucket (backend agnostically)
+         */
+        RemoteStorageEnvLocator remoteStorageEnvLocator = new RemoteStorageEnvLocator(mapAsJavaMap(cortexSession.getContext().getSparkSession().conf().getAll()), new LocalRemoteStorageClient(null));
+        String bucketProtocol = remoteStorageEnvLocator.get().getProtocol();
+        String connectionType = remoteStorageEnvLocator.get().getType().toString();
+        Pair<String, String> bucketApiEndpoint = remoteStorageEnvLocator.get().getFeedbackAggregatorConfig();
+        String profilesBucket = remoteStorageEnvLocator.get().getBucketName("cortex-profiles");
+
+
+        //TODO: Convert this into a resource config file and .put or .add to the parsed config for dynamic fiels
+        /**
+         * DocumentContext config;
+         * config = JsonPath.parse(Paths.get(configFilePath).toFile());
+         * config.put("$" + "[*]", "project", project);
+         */
+
+        String dataSourceConfig = "{\n" +
+                "                \"project\": \"" + project + "\",\n" +
+                "                \"attributes\": [\n" +
+                "                  \"timeOfExecution\",\n" +
+                "                  \"value\",\n" +
+                "                  \"startDate\",\n" +
+                "                  \"endDate\",\n" +
+                "                  \"windowDuration\"\n" +
+                "                ],\n" +
+                "                \"connection\": {\n" +
+                "                  \"name\": \"KPI-" + name + "\"\n" +
+                "                },\n" +
+                "                \"description\": \"" + description + "\",\n" +
+                "                \"kind\": \"batch\",\n" +
+                "                \"name\": \"KPI-" + name + "\",\n" +
+                "                \"primaryKey\": \"timeOfExecution\",\n" +
+                "                \"title\": \"" + name + "\"\n" +
+                "              }";
+
+        String connectionConfig = "{\n" +
+                "                \"project\": \"" + project + "\",\n" +
+                "                \"name\": \"KPI-" + name + "\",\n" +
+                "                \"title\": \"" + name + "\",\n" +
+                "                \"connectionType\": \"" + bucketApiEndpoint.getFirst() + "\",\n" +
+                "                \"contentType\": \"parquet\",\n" +
+                "                \"allowRead\": true,\n" +
+                "                \"allowWrite\": false,\n" +
+                "                \"params\": [\n" +
+                "                  {\n" +
+                "                    \"name\": \"uri\",\n" +
+                "                    \"value\": \"" + bucketProtocol + profilesBucket + "/sources/" + project + "/KPI-" + name + "-delta\"\n" +
+                "                  },\n" +
+                "                  {\n" +
+                "                    \"value\": \"http://managed\",\n" +
+                "                    \"name\": \""+ bucketApiEndpoint.getSecond() +"\"\n" +
+                "                  },\n" +
+                "                  {\n" +
+                "                    \"name\": \"stream_read_dir\",\n" +
+                "                    \"value\": \"" + bucketProtocol + profilesBucket + "/sources/" + project + "/KPI-" + name + "-delta\"\n" +
+                "                  }\n" +
+                "                ]\n" +
+                "              }";
+        logger.info("Connection Config: "+ connectionConfig);
+        logger.info("DataSource Config: "+ dataSourceConfig);
+
+        return new Triple(dataSourceConfig, connectionConfig, connectionType);
     }
 }
