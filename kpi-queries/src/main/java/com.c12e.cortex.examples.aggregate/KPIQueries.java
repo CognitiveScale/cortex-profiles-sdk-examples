@@ -1,133 +1,26 @@
 package com.c12e.cortex.examples.aggregate;
 
-import com.amazonaws.thirdparty.joda.time.DateTime;
-import com.c12e.cortex.examples.local.SessionExample;
 import com.c12e.cortex.phoenix.*;
-import com.c12e.cortex.phoenix.spec.*;
 import com.c12e.cortex.profiles.CortexSession;
-import com.c12e.cortex.profiles.client.LocalRemoteStorageClient;
-import com.c12e.cortex.profiles.storage.RemoteStorageEnvLocator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.module.kotlin.KotlinModule;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.TypeRef;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import kotlin.Pair;
-import kotlin.Triple;
 import org.apache.spark.sql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
+import picocli.CommandLine;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.text.ParseException;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Supplier;
-
-import static scala.collection.JavaConverters.mapAsJavaMap;
 
 
 /**
  * Sample CLI application that uses KPI expressions in Javascript to evaluate KPIs
  */
-@Command(name = "kpi-query", description = "Calculating KPI using aggregate using from Profiles", mixinStandardHelpOptions = true)
-public class KPIQueries implements Runnable {
-    @Option(names = {"-p", "--project"}, description = "Cortex Project to use", required = true)
-    String project;
-
-    @Option(names = {"-ps", "--profile"}, description = "Profile Schema Name", required = true)
-    String profileSchemaName;
-
-    @Option(names = {"-s", "--script"}, description = "KPI Script", required = true)
-    String script;
-
-    @Option(names = {"-d", "--description"}, description = "KPI description", required = true)
-    String description;
-
-    @Option(names = {"-du", "--duration"}, description = "Window Duration", required = true)
-    String windowDuration;
-
-    @Option(names = {"-n", "--name"}, description = "KPI name", required = true)
-    String name;
-
-    @Option(names = {"-cf", "--cohortFilters"}, defaultValue = "", description = "Cohort Filter", required = false)
-    String[] cohortFilters;
-
-    @Option(names = {"-sd", "--startDate"}, defaultValue = "", description = "Start Date, Set the time-frame over which the KPI is calculated", required = false)
-    String startDate;
-
-    @Option(names = {"-ed", "--endDate"}, defaultValue = "", description = "End Date, Set the time-frame over which the KPI is calculated", required = false)
-    String endDate;
-
-    @Option(names = {"-ss", "--skip-save"}, description = "Set this to skip save the KPI as a datasource", required = false)
-    boolean skipSave;
+@CommandLine.Command(name = "kpi-query", description = "Calculating KPI using aggregate using from Profiles", mixinStandardHelpOptions = true)
+public class KPIQueries extends RailedCommand {
 
     Logger logger = LoggerFactory.getLogger(KPIQueries.class);
 
-    public class ProfileSchemaDeserializer extends StdDeserializer<ProfileSchema> {
-
-        public ProfileSchemaDeserializer() {
-            this(null);
-        }
-
-        public ProfileSchemaDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public ProfileSchema deserialize(JsonParser jp, DeserializationContext ctxt)
-                throws IOException, JsonProcessingException {
-            JsonNode node = jp.getCodec().readTree(jp);
-
-            List<AttributeSpec> attributes = Arrays.asList(ctxt.readTreeAsValue(node.get("customAttributes"), CustomAttributeSpec[].class));
-            attributes.addAll(Arrays.asList(ctxt.readTreeAsValue(node.get("bucketAttributes"), BucketAttributeSpec[].class)));
-
-            return new ProfileSchema(
-                    node.get("project").asText(),
-                    node.get("name").asText(),
-                    node.has("title") ? node.get("title").asText(null) : null,
-                    node.has("description") ? node.get("description").asText(null) : null,
-                    ctxt.readTreeAsValue(node.get("names"), ProfileNames.class),
-                    ctxt.readTreeAsValue(node.get("primarySource"), DataSourceSelection.class),
-                    Arrays.asList(ctxt.readTreeAsValue(node.get("joins"), JoinSourceSelection[].class)),
-                    node.has("userId") ? node.get("userId").asText(null) : null,
-                    attributes,
-                    Arrays.asList(ctxt.readTreeAsValue(node.get("attributeTags"), AttributeTag[].class))
-            );
-        }
-    }
-
-    protected <T> T getOrDefault(Supplier<T> function, T defaultValue) {
-        try {
-            T value = function.get();
-            if (value == null) {
-                return defaultValue;
-            }
-            return value;
-
-        } catch (NullPointerException | NotFoundException e) {
-            return defaultValue;
-        }
-    }
-
     @Override
-    public void run() {
-        var sessionExample = new SessionExample();
-        CortexSession cortexSession = sessionExample.getCortexSession();
-        Triple configs = getConfigs(cortexSession);
+    public Dataset<KPIvalue> runApp(String connectionType, CortexSession cortexSession) {
 
         Double value = runKPI(cortexSession, project);
         KPIvalue kpiValue = new KPIvalue();
@@ -145,68 +38,7 @@ public class KPIQueries implements Runnable {
         );
         javaBeanDS.show();
 
-        if(!skipSave && configs.getThird().toString() != "file") {
-            railCommand();
-
-            // creating a Datasource for the KPIs
-            DocumentContext config;
-            config = JsonPath.parse(configs.getFirst().toString());
-            DataSource dataSource = config.read("$", new TypeRef<DataSource>() {});
-            config = JsonPath.parse(configs.getSecond().toString());
-            Connection connection = config.read("$", new TypeRef<Connection>() {});
-            logger.info(dataSource.getName());
-
-            if (getOrDefault(() -> cortexSession.catalog().getConnection(connection.getProject(), connection.getName()), null) == null) {
-                cortexSession.catalog().createConnection(connection);
-            } else {
-                cortexSession.catalog().updateConnection(connection);
-            }
-
-            if (getOrDefault(() -> cortexSession.catalog().getDataSource(dataSource.getProject(), dataSource.getName()), null) == null) {
-                logger.info("Created the datasource");
-                cortexSession.catalog().createDataSource(dataSource);
-            } else {
-                logger.info("Updated the datasource");
-                cortexSession.catalog().updateDataSource(dataSource);
-            }
-
-            logger.info("Writing Data");
-
-            cortexSession.write()
-                    .dataSource(javaBeanDS.toDF(), project, dataSource.getName())
-                    .mode(SaveMode.Append)
-                    .save();
-        }
-    }
-
-    public void railCommand() {
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(ProfileSchema.class, new ProfileSchemaDeserializer());
-
-        com.jayway.jsonpath.Configuration.setDefaults(new com.jayway.jsonpath.Configuration.Defaults() {
-            private final JsonProvider jsonProvider = new JacksonJsonProvider(JsonMapper.builder()
-                    .addModules(new KotlinModule.Builder().build(), module)
-                    .build());
-            private final MappingProvider mappingProvider = new JacksonMappingProvider(JsonMapper.builder()
-                    .addModules(new KotlinModule.Builder().build(), module)
-                    .build());
-
-            @Override
-            public JsonProvider jsonProvider() {
-                return jsonProvider;
-            }
-
-            @Override
-            public Set<com.jayway.jsonpath.Option> options() {
-                return EnumSet.noneOf(com.jayway.jsonpath.Option.class);
-            }
-
-            @Override
-            public MappingProvider mappingProvider() {
-                return mappingProvider;
-            }
-
-        });
+        return javaBeanDS;
     }
 
     public String buildFilter(String[] cohortFilters, String startDate, String endDate) {
@@ -260,72 +92,5 @@ public class KPIQueries implements Runnable {
         result.getDf().show();
         Double KPI = Double.valueOf(result.getDf().select(result.getColName()).collectAsList().get(0).get(0).toString());
         return KPI;
-    }
-
-    public Triple<String, String, String> getConfigs(CortexSession cortexSession) {
-        /**
-         * Method that generates connection and datasource config from cortexSession for storing
-         * KPI datasource in profiles bucket (backend agnostically)
-         */
-        RemoteStorageEnvLocator remoteStorageEnvLocator = new RemoteStorageEnvLocator(mapAsJavaMap(cortexSession.getContext().getSparkSession().conf().getAll()), new LocalRemoteStorageClient(null));
-        String bucketProtocol = remoteStorageEnvLocator.get().getProtocol();
-        String connectionType = remoteStorageEnvLocator.get().getType().toString();
-        Pair<String, String> bucketApiEndpoint = remoteStorageEnvLocator.get().getFeedbackAggregatorConfig();
-        String profilesBucket = remoteStorageEnvLocator.get().getBucketName("cortex-profiles");
-
-
-        //TODO: Convert this into a resource config file and .put or .add to the parsed config for dynamic fiels
-        /**
-         * DocumentContext config;
-         * config = JsonPath.parse(Paths.get(configFilePath).toFile());
-         * config.put("$" + "[*]", "project", project);
-         */
-
-        String dataSourceConfig = "{\n" +
-                "                \"project\": \"" + project + "\",\n" +
-                "                \"attributes\": [\n" +
-                "                  \"timeOfExecution\",\n" +
-                "                  \"value\",\n" +
-                "                  \"startDate\",\n" +
-                "                  \"endDate\",\n" +
-                "                  \"windowDuration\"\n" +
-                "                ],\n" +
-                "                \"connection\": {\n" +
-                "                  \"name\": \"KPI-" + name + "\"\n" +
-                "                },\n" +
-                "                \"description\": \"" + description + "\",\n" +
-                "                \"kind\": \"batch\",\n" +
-                "                \"name\": \"KPI-" + name + "\",\n" +
-                "                \"primaryKey\": \"timeOfExecution\",\n" +
-                "                \"title\": \"" + name + "\"\n" +
-                "              }";
-
-        String connectionConfig = "{\n" +
-                "                \"project\": \"" + project + "\",\n" +
-                "                \"name\": \"KPI-" + name + "\",\n" +
-                "                \"title\": \"" + name + "\",\n" +
-                "                \"connectionType\": \"" + bucketApiEndpoint.getFirst() + "\",\n" +
-                "                \"contentType\": \"parquet\",\n" +
-                "                \"allowRead\": true,\n" +
-                "                \"allowWrite\": false,\n" +
-                "                \"params\": [\n" +
-                "                  {\n" +
-                "                    \"name\": \"uri\",\n" +
-                "                    \"value\": \"" + bucketProtocol + profilesBucket + "/sources/" + project + "/KPI-" + name + "-delta\"\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                    \"value\": \"http://managed\",\n" +
-                "                    \"name\": \""+ bucketApiEndpoint.getSecond() +"\"\n" +
-                "                  },\n" +
-                "                  {\n" +
-                "                    \"name\": \"stream_read_dir\",\n" +
-                "                    \"value\": \"" + bucketProtocol + profilesBucket + "/sources/" + project + "/KPI-" + name + "-delta\"\n" +
-                "                  }\n" +
-                "                ]\n" +
-                "              }";
-        logger.info("Connection Config: "+ connectionConfig);
-        logger.info("DataSource Config: "+ dataSourceConfig);
-
-        return new Triple(dataSourceConfig, connectionConfig, connectionType);
     }
 }

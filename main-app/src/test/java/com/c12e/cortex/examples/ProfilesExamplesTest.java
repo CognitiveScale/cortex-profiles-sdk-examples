@@ -74,6 +74,16 @@ public class ProfilesExamplesTest {
     }
 
     /**
+     * Executes the given command in the CLI application.
+     *
+     * @param command String[] command to execute.
+     * @return The integer exit code from executing the command.
+     */
+    int execute(String[] command) {
+        return new CommandLine(app).execute(command);
+    }
+
+    /**
      * Standard output ({@code System.out}) captured during each test execution.
      *
      * @return String value from standard output.
@@ -150,11 +160,10 @@ public class ProfilesExamplesTest {
     }
 
     @Test
-    @Disabled("Errors with exit code 2(only for this test), because the execute method splits the command on whitespace '//s', the regex needs to be updated to skip quoted whitespaces")
     @Order(2)
     @DisplayName("(local) kpi-query -p local -n \"KPI 1\" -d \"Member population of sate of New York\" -ps member-profile -s \"filter(state.equalTo('New York')).count()\" -du \"180 days\" -ss")
     public void testKPIQueries() {
-        int exitCode = execute("kpi-query -p local -n 'KPI 1' -d 'Member population of sate of New York' -ps member-profile -s \"filter(state.equalTo('New York')).count()\" -du '180 days' -ss");
+        int exitCode = execute(new String[] {"kpi-query", "-p", "local", "-n", "KPI 1", "-d", "Member population of sate of New York", "-ps", "member-profile", "-s", "filter(state.equalTo('New York')).count()", "-du", "180 days", "-ss"});
         assertExitWithoutError(exitCode);
     }
 
