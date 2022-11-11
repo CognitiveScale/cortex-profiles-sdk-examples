@@ -26,7 +26,10 @@ sequenceDiagram
 ## Run Locally
 
 To run this Daemon locally with local Redis Setup:
-1. Start up a redis instance locally
+1. Start up a Redis instance locally, in a docker container(this should be the same redis instance used for [Cache Profile](../cache-profile/README.md) example).
+   ```
+   make start-redis
+   ```
 2. Setup redis env vars using
     ```
     export REDIS_HOST=localhost
