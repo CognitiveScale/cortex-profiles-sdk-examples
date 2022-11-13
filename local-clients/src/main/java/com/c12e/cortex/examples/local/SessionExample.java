@@ -60,6 +60,14 @@ public class SessionExample {
         options.put("spark.databricks.delta.schema.autoMerge.enabled", "true");
         options.put("spark.databricks.delta.merge.repartitionBeforeWrite.enabled", "true");
         options.put("spark.sql.shuffle.partitions", "10");
+
+        // redis
+        options.put("spark.redis.host", "localhost");
+        options.put("spark.redis.port", "6379");
+        options.put("spark.redis.timeout", "20000000");
+        options.put("spark.redis.user", "default");
+        options.put("spark.redis.auth", "");
+        options.put("spark.cortex.storage.bucket.profiles", "cortex-profiles");
         return options;
     }
 

@@ -1,0 +1,16 @@
+version: "3.2"
+services:
+
+  redis:
+    image: "bitnami/redis:6.0.12-debian-10-r33"
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - $PWD/redis-data:/bitnami
+#      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - ALLOW_EMPTY_PASSWORD=yes

@@ -25,6 +25,9 @@ spec:
     - age
     - last_flu_shot_date
     - pcp_name
+    - email
+    - address
+    - pcp_address
 ---
 apiVersion: cognitivescale.io/v1
 kind: DataSource
@@ -58,3 +61,19 @@ spec:
     - flu_risk_score
     - date
     - member_id
+---
+apiVersion: cognitivescale.io/v1
+kind: DataSource
+metadata:
+  name: KPI 1
+spec:
+  kind: batch
+  primaryKey: timeOfExecution
+  connection:
+    name: KPI
+  attributes:
+    - timeOfExecution
+    - value
+    - startDate
+    - endDate
+    - windowDuration

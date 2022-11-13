@@ -47,6 +47,9 @@ dependencies {
     implementation(project(":cdata-connection"))
     implementation(project(":datasource-streaming"))
     implementation(project(":bigquery-connection"))
+    implementation(project(":cache-profile"))
+    implementation(project(":kpi-queries"))
+    implementation(project(":filter-queries"))
     implementation(project(":catalog-management"))
 
     // CLI framework
@@ -66,6 +69,9 @@ dependencies {
     testImplementation(project(":cdata-connection"))
     testImplementation(project(":datasource-streaming"))
     testImplementation(project(":bigquery-connection"))
+    testImplementation(project(":cache-profile"))
+    testImplementation(project(":kpi-queries"))
+    testImplementation(project(":filter-queries"))
     testImplementation(project(":catalog-management"))
 }
 
@@ -113,5 +119,8 @@ tasks.withType<Jar> {
     from(project(":cdata-connection").sourceSets["main"].output)
     from(project(":datasource-streaming").sourceSets["main"].output)
     from(project(":bigquery-connection").sourceSets["main"].output)
+    from(project(":cache-profile").sourceSets["main"].output)
+    from(project(":kpi-queries").sourceSets["main"].output)
+    from(project(":filter-queries").sourceSets["main"].output)
     from(project(":catalog-management").sourceSets["main"].output)
 }

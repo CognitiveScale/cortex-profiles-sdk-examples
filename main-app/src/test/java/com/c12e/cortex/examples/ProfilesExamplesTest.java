@@ -74,6 +74,16 @@ public class ProfilesExamplesTest {
     }
 
     /**
+     * Executes the given command in the CLI application.
+     *
+     * @param command String[] command to execute.
+     * @return The integer exit code from executing the command.
+     */
+    int execute(String[] command) {
+        return new CommandLine(app).execute(command);
+    }
+
+    /**
      * Standard output ({@code System.out}) captured during each test execution.
      *
      * @return String value from standard output.
@@ -133,11 +143,37 @@ public class ProfilesExamplesTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("(local) build-profile -p local -ps member-profile")
     public void testProfileBuild() {
         int exitCode = execute("build-profile -p local -ps member-profile");
         assertExitWithoutError(exitCode);
         assertProfilesHasData("local", "member-profile", EXPECTED_COUNT);
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("(local) filter-query --project local --profile-schema member-profile")
+    public void testFilterQueries() {
+        int exitCode = execute("filter-query --project local --profile-schema member-profile");
+        assertExitWithoutError(exitCode);
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("(local) kpi-query -p local -n \"KPI 1\" -d \"Member population of sate of New York\" -ps member-profile -s \"filter(state.equalTo('New York')).count()\" -du \"180 days\" -ss")
+    public void testKPIQueries() {
+        int exitCode = execute(new String[] {"kpi-query", "-p", "local", "-n", "KPI 1", "-d", "Member population of sate of New York", "-ps", "member-profile", "-s", "filter(state.equalTo('New York')).count()", "-du", "180 days", "-ss"});
+        assertExitWithoutError(exitCode);
+    }
+
+    @Test
+    @Disabled("Requires Redis to be running locally at 6379")
+    @Order(2)
+    @DisplayName("(local) cache-profile -p local -ps member-profile")
+    public void testCacheProfile() {
+        int exitCode = execute("cache-profile -p local -ps member-profile");
+        assertExitWithoutError(exitCode);
     }
 
     @Test

@@ -1,0 +1,69 @@
+{
+  "camel": "1.0.0",
+  "name": "realtime",
+  "title": "realtime",
+  "tags": [],
+  "properties": [],
+  "inputs": [
+    {
+      "name": "input",
+      "title": "Hello Daemon Request",
+      "parameters": {
+        "$ref": "HdReq"
+      },
+      "signalId": "e2402b0a-5d27-4316-9817-84b8d35d5f46",
+      "output": "input",
+      "signalType": "Service"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "input",
+      "title": "Hello Daemon Response",
+      "parameters": {
+        "$ref": "HdRes"
+      },
+      "signalId": "4be38cb5-528d-4449-bf57-9eb711e7e848",
+      "signalType": "Service"
+    }
+  ],
+  "skills": [
+    {
+      "skillName": "pdaemon",
+      "title": "Profiles Daemon",
+      "description": "Daemon to expose com.example.profiles realtime API",
+      "refId": "f810e086-3326-41e5-9a4d-dee269d4b98b",
+      "properties": []
+    }
+  ],
+  "mappings": [
+    {
+      "from": {
+        "input": {
+          "signalId": "e2402b0a-5d27-4316-9817-84b8d35d5f46"
+        }
+      },
+      "to": {
+        "skill": {
+          "refId": "f810e086-3326-41e5-9a4d-dee269d4b98b",
+          "input": "request"
+        }
+      },
+      "rules": []
+    },
+    {
+      "from": {
+        "skill": {
+          "refId": "f810e086-3326-41e5-9a4d-dee269d4b98b",
+          "output": "response"
+        }
+      },
+      "to": {
+        "output": {
+          "signalId": "4be38cb5-528d-4449-bf57-9eb711e7e848"
+        }
+      },
+      "rules": []
+    }
+  ]
+}

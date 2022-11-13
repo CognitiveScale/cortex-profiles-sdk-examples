@@ -11,6 +11,7 @@
  */
 package com.c12e.cortex.examples;
 
+import com.c12e.cortex.examples.aggregate.FilterQueries;
 import com.c12e.cortex.examples.catalog.ManageCatalog;
 import com.c12e.cortex.examples.cdata.CData;
 import com.c12e.cortex.examples.datasource.DataSourceRW;
@@ -18,6 +19,8 @@ import com.c12e.cortex.examples.joinconn.JoinConnections;
 import com.c12e.cortex.examples.profile.BuildProfile;
 import com.c12e.cortex.examples.streaming.StreamingDataSource;
 import com.c12e.cortex.examples.bigquery.BigQuery;
+import com.c12e.cortex.examples.cache.CacheWrite;
+import com.c12e.cortex.examples.aggregate.KPIQueries;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -32,6 +35,9 @@ import picocli.CommandLine.Command;
         CData.class,
         StreamingDataSource.class,
         BigQuery.class,
+        CacheWrite.class,
+        KPIQueries.class,
+        FilterQueries.class,
         ManageCatalog.class
 })
 public class Application {
