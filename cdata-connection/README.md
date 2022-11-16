@@ -22,7 +22,7 @@ Three example JDBC CData Connections are defined in the [Local Catalog](../local
 * The `classname` is the class path of to your JDBC Driver.
 * The Profiles SDK expects the CDATA OEM Key and Product Checksum to be Secrets in the `"shared"` project, but Secrets and Project name are configurable.
 * The Profiles SDK **does not** inject the driver into the classpath (like the cortex-cdata-plugin does).
-* Update spark conf to use local spark master `"--master": "local[*]"` as installing CData license on executors has issues
+* When using CData Connections, you must update the spark-conf.json file to use a local Spark master (`"--master": "local[*]"`), otherwise the application will fail with the CData license not installed error. Currently we are not able to install CData license on Spark executors, but only on Spark driver.
 
 ## Prerequisites
 * Get a CData OEM Key and CData Product Checksum and save these values for later use. If you do not have one, then check with your SRE team or Systems Administrator. Otherwise, try running this example as a Skill.
@@ -369,10 +369,20 @@ docker run -p 4040:4040 \
     profiles-example submit_job.py "{\"payload\" : {\"config\": \"/app/conf/spark-conf.json\"}}"
 ```
 
-### Notes on JDBC CData BigQuery Connection deployed in GCP cluster with Workload Identity
-* Create secret `bq-props` as ```{"AuthScheme": "GCPInstanceAccount", "ProjectId": "<GCP Project>", "DatasetId": "<BigQuery Dataset Id>"}```
-* Create connection with this secret as plugin properties and driver name as `cdata.jdbc.googlebigquery.GoogleBigQueryDriver`
-* Add a custom parameter in connection with name `query` and value as query string like `SELECT * FROM bigquery-public-data.covid19_weathersource_com.postal_code_day_forecast WHERE forecast_date = '2022-10-30' LIMIT 10`
+### Notes on JDBC CData BigQuery Connection for skill deployed in GCP cluster with Workload Identity enabled
+* Create a secret named `bq-props` matching the following example
+   ```json
+  {
+    "AuthScheme": "GCPInstanceAccount", 
+    "ProjectId": "<GCP Project>", 
+    "DatasetId": "<BigQuery Dataset Id>"
+  }
+  ```
+* Create a CData Connection with the `Plugin Properties` field set to the name of the Secret created in the previous step, and set the `Driver Class Name` to `cdata.jdbc.googlebigquery.GoogleBigQueryDriver`
+* Add a custom parameter in connection with name `query` and value with the query string. For example: 
+   ```sql
+    SELECT * FROM bigquery-public-data.covid19_weathersource_com.postal_code_day_forecast WHERE forecast_date = '2022-10-30' LIMIT 10
+  ```
 
 (See [Run locally in a Docker container](#run-locally-in-a-docker-container-with-spark-submit) for instructions to build
 the application and create the Docker container).

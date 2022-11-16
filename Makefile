@@ -11,7 +11,7 @@ SPARK_CONTAINER := ${DOCKER_PREGISTRY_URL}/${DOCKER_IMAGE}:${TAG}
 all: clean build create-app-image deploy-skill
 
 create-app-image:
-	docker build --build-arg base_img=c12e/spark-template:profile-jar-base-6.3.2-rc.2 -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
+	docker build --build-arg base_img=c12e/spark-template:profile-jar-base-6.4.0-RC.1 -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
 
 # Build the Application
 build:
