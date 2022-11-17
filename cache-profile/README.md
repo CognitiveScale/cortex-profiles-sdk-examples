@@ -1,7 +1,7 @@
 # Writing Profiles to cache(Redis)
 
-This example is a CLI application that writes profile data from a Delta table to Redis, for real time profile fetch.
-This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
+This example is a CLI application that writes Profiles Data from a Delta table to Redis, for real-time profile fetch.
+This builds off of the [Local Clients](../local-clients/README.md) and [Build Profiles](../build-profiles/README.md)example for its initial setup.
 
 (See [RedisWrite.java](./src/main/java/com/c12e/cortex/examples/cache/CacheWrite.java) for the source code.)
 
