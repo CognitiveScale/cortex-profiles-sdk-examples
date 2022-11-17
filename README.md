@@ -116,6 +116,25 @@ To work with a local (developer) installation of the Cortex Profiles SDK see [de
 
 ## Examples
 
+![Examples Mindmap](docs/example-mindmap.svg)
+
+<!-- Component diagram is still experimental and not viewable on Github, hence using an SVG. 
+```mermaid
+mindmap
+  root((Local Client))
+    Build Profiles
+      KPI Queries
+      Filter and Aggregate Query examples
+      Caching Profiles
+        Profiles Daemon for Realtime Query
+    Join Two Connection
+      CData Connection
+        Reading From BigQuery
+    Refresh Datasource
+      Streaming to a Data Source
+``` -->
+
+
 Examples are structured to build upon themselves and grow in complexity. Each provides its own instructions for
 running as well as additional context. The top level [main-app](./main-app/README.md) is a CLI wrapper around the other
 examples:
@@ -137,22 +156,7 @@ examples:
 [picocli](https://picocli.info/) is used by each example to create a minimal CLI application for running the example.
 Refer to the instructions in each example.
 
-Here is a Mindmap for the examples:
 
-```mermaid
-mindmap
-  root((Local Client))
-    Build Profiles
-      KPI Queries
-      Filter and Aggregate Query examples
-      Caching Profiles
-        Profiles Daemon for Realtime Query
-    Join Two Connection
-      CData Connection
-        Reading From BigQuery
-    Refresh Datasource
-      Streaming to a Data Source
-```
 
 ### Add a Java Module Example
 
