@@ -5,6 +5,15 @@ dataset to the Data Source. This builds off of the [Local Clients](../local-clie
 
 (See [DataSourceRW.java](./src/main/java/com/c12e/cortex/examples/datasource/DataSourceRW.java) for the full source).
 
+## Create Datasource with query
+* Create using GQL like ```mutation {
+  createDataSource(input:{project: "sstest", name:"ds1", title: "ds1", kind: batch, connection: {name: "members3"}, primaryKey: "member_id", attributes: ["member_id", "date", "flu_risk_score"], query: { dialect: "SparkSQL", queryString: "select * from ds1 where member_id > ${filter_id} ", variables: [{"name": "filter_id", "default": "92623227", "dataType": "LONG"}] } }) {
+  name, query {queryString}
+  }
+  }
+    ```
+* Override query variables map at runtime in `DataSourceRW.java`
+
 ## Run Locally
 
 To run this example locally with local Cortex clients (from the parent directory):
