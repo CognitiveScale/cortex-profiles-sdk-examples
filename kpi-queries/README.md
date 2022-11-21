@@ -5,8 +5,8 @@
 This CLI Application enables users to be able to evaluate KPI expression written in Javascript, through the
 profiles-sdk, similar
 to [KPI Dashboard](https://cognitivescale.github.io/cortex-fabric/docs/campaigns/prepare-campaigns#configure-cohorts).
-The goal is to provide interface over profiles to evaluate straight forward KPI expressions or to define cohorts on the
-profiles to write complex KPI expressions to be aggregated over certain window duration between a timeframe. Explanation
+The goal is to provide an interface over profiles to evaluate straight forward KPI expressions or to define cohorts on the
+profiles to write complex KPI expressions to be aggregated over certain window duration between a timeframe. This example builds off of the [Local Clients](../local-clients/README.md) and [Build Profiles](../build-profiles/README.md)example for its initial setup. Explanation
 of different options provided:
 
 ```

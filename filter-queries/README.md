@@ -2,8 +2,7 @@
 
 ### Background
 
-This CLI Application showcases filter and aggregate queries for `member-profile` Profile Schema using profiles-sdk. 
-We run these queries on already built Profiles, the below table documents the queries:
+This CLI Application showcases filter and aggregate queries for `member-profile` Profile Schema using profiles-sdk. This example builds off of the [Local Clients](../local-clients/README.md) and [Build Profiles](../build-profiles/README.md)example for its initial setup. We run these queries on already built Profiles, the below table documents the queries:
 
 | Sequence | Query type           | Query                                                                                                                           | Code                                                                                                                                                                                                                                                                                                                                                                                         | About                                           |
 |----------|----------------------|---------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|

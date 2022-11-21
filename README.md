@@ -116,25 +116,51 @@ To work with a local (developer) installation of the Cortex Profiles SDK see [de
 
 ## Examples
 
+![Examples Mindmap](docs/example-mindmap.svg)
+
+<!-- ![Examples Mindmap](docs/example-mindmap.svg) -->
+
+<!-- Component diagram is still experimental and not viewable on Github, hence using an SVG. 
+```mermaid
+mindmap
+  root((Local Client))
+    Build Profiles
+      KPI Queries
+      Filter and Aggregate Query examples
+      Caching Profiles
+        Profiles Daemon for Realtime Query
+    Catalog Management
+    Join Two Connection
+      CData Connection
+        Reading From BigQuery
+    Refresh Datasource
+      Streaming to a Data Source
+``` -->
+
+
 Examples are structured to build upon themselves and grow in complexity. Each provides its own instructions for
 running as well as additional context. The top level [main-app](./main-app/README.md) is a CLI wrapper around the other
 examples:
 
-* [Using Local Cortex Clients](./local-clients/README.md)
-* [Join Two Connections](./join-connections/README.md)
-* [Refresh a DataSource](./datasource-refresh/README.md)
-* [Build Profiles](./build-profiles/README.md)
-* [Streaming to a Data Source](./datasource-streaming/README.md)
-* [Using a CData Connection](./cdata-connection/README.md)
-* [Reading From BigQuery](./bigquery-connection/README.md)
-* Profile Caching and retrieval
-  * [Caching Profiles](./cache-profile/README.md)
-  * [Profiles Daemon for Realtime Query](./profiles-daemon/README.md) <!-- Note: we should specify this and the previous example are used together for a larger example/use case-->
-* [KPI Queries](./kpi-queries/README.md)
-* [Filter and Aggregate Query examples](./filter-queries/README.md)
+| Sequence | Example                                                               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|----------|-----------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1        | [ Using Local Cortex Clients ]( ./local-clients/README.md )           | This example is intended to introduce working with the Cortex Profiles SDK in local development environment.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 2        | [ Join Two Connections ]( ./join-connections/README.md )              | This example is a CLI application for Joining two Cortex Connections and saving the resulting dataset to another Cortex Connection.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 3        | [ Refresh a DataSource ]( ./datasource-refresh/README.md )            | This example is a CLI application for refreshing a Data Source by reading its Cortex Connection and writing the dataset to the Data Source.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 4        | [ Build Profiles ]( ./build-profiles/README.md )                      | This example is a CLI application for building Cortex Profiles.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 5        | [ Streaming to a Data Source ]( ./datasource-streaming/README.md )    | This example contains a CLI application for refreshing a Data Source via streaming.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 6        | [ Using a CData Connection ]( ./cdata-connection/README.md )          | This example is a CLI application for reading data from a [JDBC CData Cortex Connection](https://cognitivescale.github.io/cortex-fabric/docs/reference-guides/connection-types#jdbc-cdata-connections) and writing that data to a separate Connection.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 7        | [ Reading From BigQuery ]( ./bigquery-connection/README.md )          | This example is a CLI application that writes data from a Google BigQuery Table to the location of a Cortex Connection. This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 8        | [ Caching Profiles ]( ./cache-profile/README.md )                     | This example is a CLI application that writes Profiles Data from a Delta table to Redis, for real-time profile fetch. This builds off of the [Local Clients](../local-clients/README.md) and [Build Profiles](../build-profiles/README.md)example for its initial setup.                                                                                                                                                                                                                                                                                                                                                                                     |
+| 9        | [ Profiles Daemon for Realtime Query ]( ./profiles-daemon/README.md ) | This example is a Spring API server application that exposes some APIs for realtime Profile fetch. This works in conjunction with [Cache Profile](../cache-profile/README.md) example for its initial setup.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 10       | [ KPI Queries ]( ./kpi-queries/README.md )                            | This CLI Application enables users to be able to evaluate KPI expression written in Javascript, through the profiles-sdk, similar to [KPI Dashboard](https://cognitivescale.github.io/cortex-fabric/docs/campaigns/prepare-campaigns#configure-cohorts). The goal is to provide an interface over profiles to evaluate straight forward KPI expressions or to define cohorts on the profiles to write complex KPI expressions to be aggregated over certain window duration between a timeframe. This example builds off of the [Local Clients](../local-clients/README.md) and [Build Profiles](../build-profiles/README.md) example for its initial setup. |
+| 11       | [ Filter and Aggregate Query examples ]( ./filter-queries/README.md ) | This CLI Application showcases filter and aggregate queries for `member-profile` Profile Schema using profiles-sdk. This example builds off of the [Local Clients](../local-clients/README.md) and [Build Profiles](../build-profiles/README.md)example for its initial setup.                                                                                                                                                                                                                                                                                                                                                                               |
+| 12       | [Catalog Management]( ./catalog-management/README.md )                | This example is a CLI application that uses a secondary configuration, app-config.json, to define a number of catalog entities to be managed during execution. The Connections/Data Sources/Profile Schema in the app-config.json are created with the attributes defined in the configuration and are then available to use through the Profiles SDK.                                                                                                                                                                                                                                                                                                       |                                                                                                     |
 
 [picocli](https://picocli.info/) is used by each example to create a minimal CLI application for running the example.
 Refer to the instructions in each example.
+
+
 
 ### Add a Java Module Example
 
