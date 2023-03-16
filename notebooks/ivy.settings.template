@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-settings>
+  <include url="${ivy.default.settings.dir}/ivysettings.xml"/>
+  <!--Authentication required for publishing (deployment). 'Artifactory Realm' is the realm used by Artifactory so don't change it.-->
+  <credentials host="cognitivescale.jfrog.io" realm="Artifactory Realm" username="{jfrog.username}" passwd="{jfrog.password}" />
+  <resolvers>
+    <chain name="default">
+      <ibiblio name="jfrog" m2compatible="true" root="https://cognitivescale.jfrog.io/artifactory/cs-maven-local" />
+      <ibiblio name="local-m2" m2compatible="true" root="file://${user.home}/.m2/repository" />
+      <resolver ref="shared"/>
+      <resolver ref="public"/>
+      <resolver ref="local"/>
+    </chain>
+  </resolvers>
+</ivy-settings>

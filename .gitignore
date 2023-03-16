@@ -49,3 +49,4 @@ main-app/src/main/resources/lib/*.jar
 
 ### Credentials ###
 main-app/src/main/resources/credentials/*
+ivy.settings
