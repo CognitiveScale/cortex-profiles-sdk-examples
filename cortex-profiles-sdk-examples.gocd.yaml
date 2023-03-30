@@ -10,7 +10,7 @@ common:
               - script: |
                   set -eu
                   echo "artifactoryUser=${JFROG_USER}
-                  artifactoryPassword=${JFROG_USER}" > gradle.properties
+                  artifactoryPassword=${JFROG_PASS}" > gradle.properties
               - script: |
                   c12e-ci
 pipelines:
