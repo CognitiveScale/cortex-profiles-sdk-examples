@@ -16,7 +16,7 @@ import com.c12e.cortex.phoenix.ProfileSchema;
 import com.c12e.cortex.profiles.CortexSession;
 import com.c12e.cortex.profiles.module.job.BuildProfileJob;
 import com.c12e.cortex.profiles.module.job.IngestDataSourceJob;
-import com.jayway.jsonpath.DocumentContext;
+import com.c12e.shadow.com.jayway.jsonpath.DocumentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -55,10 +55,10 @@ public class ManageCatalog extends RailedCommand {
      */
     @Override
     public void runApp(String project, CortexSession cortexSession, DocumentContext config) {
-        List<Map> profiles = config.read(APP_PATH + ".profiles");
+        List<Map<Object,Object>> profiles = config.read(APP_PATH + ".profiles");
         Boolean skipDataSource = config.read("$.process.skipDataSource");
             // Iterate over Profiles in config
-        for (Map profile : profiles) {
+        for (Map<Object,Object> profile : profiles) {
             // Build primary Data Source
             String profileSchemaName = (String) profile.get("name");
             if(skipDataSource) {

@@ -22,7 +22,7 @@ public class DataSourceRW implements Runnable {
 
     @Override
     public void run() {
-        var sessionExample = new SessionExample();
+        SessionExample sessionExample = new SessionExample();
         CortexSession cortexSession = sessionExample.getCortexSession();
         IngestDataSourceJob job = cortexSession.job().ingestDataSource(project, dataSourceName, cortexSession.getContext());
         job.performFeatureCatalogCalculations = () -> true;

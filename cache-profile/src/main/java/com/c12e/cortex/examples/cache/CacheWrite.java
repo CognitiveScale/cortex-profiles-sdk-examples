@@ -35,7 +35,7 @@ public class CacheWrite implements Runnable {
 
     @Override
     public void run() {
-        var sessionExample = new SessionExample();
+        SessionExample sessionExample = new SessionExample();
         CortexSession cortexSession = sessionExample.getCortexSession();
         writeProfileToRedis(cortexSession, project, profileSchemaName);
     }

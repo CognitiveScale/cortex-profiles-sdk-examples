@@ -2,18 +2,14 @@ package com.c12e.cortex.examples.aggregate;
 
 import com.c12e.cortex.examples.local.SessionExample;
 import com.c12e.cortex.profiles.CortexSession;
-import com.google.flatbuffers.FlexBuffers;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import com.c12e.cortex.phoenix.*;
-
-import com.cognitivescale.services.CortexManagedContent;
 
 import java.util.Map;
 
@@ -36,13 +32,13 @@ public class FilterQuery implements Runnable {
 
     @Override
     public void run() {
-        var sessionExample = new SessionExample();
+        SessionExample sessionExample = new SessionExample();
         CortexSession cortexSession = sessionExample.getCortexSession();
         Dataset<Row> profileData = cortexSession.read().profile(project, profileSchemaName).load().toDF();
 
         logger.info("Running Filter Query : " + filter);
         ProfileScriptEngine engine = new ProfileScriptEngine(profileData, Map.of());
-        Dataset filteredData = engine.applyFilter(filter);
+        Dataset<Row> filteredData = engine.applyFilter(filter);
         filteredData.show();
 
 //        CortexManagedContent cortexManagedContent = new CortexManagedContent("", "");
@@ -53,7 +49,7 @@ public class FilterQuery implements Runnable {
 
     private void filter(Dataset<Row> profileData, String s) {
         logger.info(s + profileSchemaName);
-        Dataset out1 = profileData
+        Dataset<Row> out1 = profileData
                 .filter((functions.col("state").equalTo("Indiana")).or(functions.col("segment").equalTo("Local Group")));
         logger.info(String.valueOf(out1.count()));
         out1.show();

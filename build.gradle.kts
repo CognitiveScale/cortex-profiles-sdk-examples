@@ -35,14 +35,14 @@ allprojects {
 	}
 
 	tasks.withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "8"
+        targetCompatibility = "8"
     }
 
 	tasks.withType<KotlinCompile> {
 		kotlinOptions {
 			freeCompilerArgs = listOf("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
-			jvmTarget = "11"
+			jvmTarget = "8"
 			apiVersion = "1.6"
 			languageVersion = "1.6"
 		}

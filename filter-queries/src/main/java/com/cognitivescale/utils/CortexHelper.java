@@ -49,7 +49,7 @@ public class CortexHelper {
     protected HttpRequest.Builder withParameters(String project, NameValuePair... parameters) throws URISyntaxException {
         URI url = getUrl(project, null);
         return HttpRequest.newBuilder(
-                        new URIBuilder(getUrl(project, null)).setParameters(parameters).build())
+                        new URIBuilder(url).setParameters(parameters).build())
                 .setHeader("Authorization", String.format("Bearer %s", token));
     }
 }

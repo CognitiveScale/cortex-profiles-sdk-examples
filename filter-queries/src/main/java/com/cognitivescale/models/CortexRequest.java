@@ -42,7 +42,7 @@ public class CortexRequest<T, U> {
     }
 
     public void setProjectId(String project) {
-        this.projectId = projectId;
+        this.projectId = project;
     }
 
     public String getApiEndpoint() {
