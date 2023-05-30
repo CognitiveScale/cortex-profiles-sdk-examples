@@ -149,6 +149,12 @@ if __name__ == '__main__':
                              "spark.kubernetes.executor.podTemplateContainerName": "fabric-action"}
             spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(driverOptions)
 
+        project = payload.get('projectId', None)
+        if project:
+            projectOptions = {"spark.kubernetes.driverEnv.CORTEX_PROJECT": project,
+                             "spark.cortex.phoenix.project": project}
+            spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(projectOptions)
+
         # create spark-submit call
         run_args = get_runtime_args(spark_config, token, payload.get('apiEndpoint'))
 
