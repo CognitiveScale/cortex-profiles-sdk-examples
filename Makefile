@@ -31,7 +31,7 @@ DAEMON_CONTAINER := ${DOCKER_PREGISTRY_URL}/${DAEMON_IMAGE}:${DAEMON_TAG}
 all: clean build create-app-image deploy-skill
 
 create-app-image:
-	docker build --build-arg base_img=c12e/spark-template:profile-jar-base-6.4.0-RC.1 -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
+	docker build --build-arg base_img=c12e/profiles-sdk:1.2.3-gec36747 -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
 
 create-daemon-image:
 	docker build --no-cache -t ${DAEMON_IMAGE}:${DAEMON_TAG}  -f ./profiles-daemon/Dockerfile .

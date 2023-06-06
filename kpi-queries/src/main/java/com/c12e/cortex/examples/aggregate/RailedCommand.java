@@ -20,17 +20,17 @@ import com.c12e.cortex.phoenix.ProfileSchema;
 import com.c12e.cortex.profiles.CortexSession;
 import com.c12e.cortex.profiles.client.LocalRemoteStorageClient;
 import com.c12e.cortex.profiles.storage.RemoteStorageEnvLocator;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.module.kotlin.KotlinModule;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.TypeRef;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import com.c12e.shadow.com.fasterxml.jackson.databind.json.JsonMapper;
+import com.c12e.shadow.com.fasterxml.jackson.databind.module.SimpleModule;
+import com.c12e.shadow.com.fasterxml.jackson.module.kotlin.KotlinModule;
+import com.c12e.shadow.com.jayway.jsonpath.DocumentContext;
+import com.c12e.shadow.com.jayway.jsonpath.JsonPath;
+import com.c12e.shadow.com.jayway.jsonpath.Option;
+import com.c12e.shadow.com.jayway.jsonpath.TypeRef;
+import com.c12e.shadow.com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.c12e.shadow.com.jayway.jsonpath.spi.json.JsonProvider;
+import com.c12e.shadow.com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.c12e.shadow.com.jayway.jsonpath.spi.mapper.MappingProvider;
 import kotlin.Pair;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SaveMode;
@@ -38,8 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -109,7 +107,7 @@ public abstract class RailedCommand implements Runnable {
         module.addDeserializer(ProfileSchema.class, new ProfileSchemaDeserializer());
 
         //Add custom serializer to Jackson module
-        com.jayway.jsonpath.Configuration.setDefaults(new com.jayway.jsonpath.Configuration.Defaults() {
+        com.c12e.shadow.com.jayway.jsonpath.Configuration.setDefaults(new com.c12e.shadow.com.jayway.jsonpath.Configuration.Defaults() {
             private final JsonProvider jsonProvider = new JacksonJsonProvider(JsonMapper.builder()
                     .addModules(new KotlinModule.Builder().build(), module)
                     .build());

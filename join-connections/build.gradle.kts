@@ -19,7 +19,6 @@ dependencies {
     implementation(project(":local-clients"))
 
     // CLI framework
-    api("info.picocli:picocli:4.6.3")
     annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
     // test dependencies

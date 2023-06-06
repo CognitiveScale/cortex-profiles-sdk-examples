@@ -14,11 +14,11 @@ package com.c12e.cortex.examples.aggregate;
 
 import com.c12e.cortex.phoenix.*;
 import com.c12e.cortex.phoenix.spec.*;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.c12e.shadow.com.fasterxml.jackson.core.JsonParser;
+import com.c12e.shadow.com.fasterxml.jackson.core.JsonProcessingException;
+import com.c12e.shadow.com.fasterxml.jackson.databind.DeserializationContext;
+import com.c12e.shadow.com.fasterxml.jackson.databind.JsonNode;
+import com.c12e.shadow.com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
 import java.util.*;

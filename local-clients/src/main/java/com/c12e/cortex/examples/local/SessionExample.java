@@ -23,7 +23,7 @@ public class SessionExample {
     }
 
     protected Map<String, String> getDefaultOptions() {
-        var options = new HashMap<>(Map.of(
+        Map<String, String> options = new HashMap<String, String>(Map.of(
                 // Use local catalog implementation
                 CortexSession.CATALOG_KEY, LocalCatalog.class.getName(),
                 CortexSession.LOCAL_CATALOG_DIR_KEY, "src/main/resources/spec",
@@ -100,7 +100,7 @@ public class SessionExample {
 
     public CortexSession getCortexSessionWithOverrides(Map<String, String> overrides) {
         if (shouldUseDefaultOptions()) {
-            var options = new HashMap<>(getDefaultOptions());
+            Map<String, String> options = new HashMap<String, String>(getDefaultOptions());
             options.putAll(overrides);
             return CortexSession.newSession(sparkSessionWithOptions(options), options);
         }

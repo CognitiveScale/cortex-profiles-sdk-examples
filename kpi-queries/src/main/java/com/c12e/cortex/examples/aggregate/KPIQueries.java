@@ -96,7 +96,7 @@ public class KPIQueries extends RailedCommand {
         String filter = buildFilter(cohortFilters, startDate, endDate);
 
         if (!filter.isBlank()) {
-            Dataset cohortData = applyFilter(profileData.toDF(), filter);
+            Dataset<Row> cohortData = applyFilter(profileData.toDF(), filter);
             engine.addDataset("cohort", cohortData);
         }
 

@@ -17,6 +17,7 @@ dependencies {
     api("com.c12e.cortex.profiles:profiles-sdk")
     implementation(project(":local-clients"))
 
+    annotationProcessor("info.picocli:picocli-codegen:4.6.3")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }

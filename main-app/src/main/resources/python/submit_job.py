@@ -1,13 +1,22 @@
-"""
-Copyright (c) 2021. Cognitive Scale Inc. All rights reserved.
+#  Copyright 2023 Cognitive Scale, Inc. All Rights Reserved.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
 
-"""
 import os
 import subprocess
 import yaml
 import sys
 import json
-
 
 def get_runtime_args(config, token, url):
     pyspark_args = config['pyspark']
@@ -23,10 +32,13 @@ def get_runtime_args(config, token, url):
                 s_val = val[y]
                 args.append(key)
                 args.append("{}={}".format(y, s_val))
-    args.append('--conf')
-    args.append(f"spark.kubernetes.driverEnv.CORTEX_TOKEN={token}")
-    args.append('--conf')
-    args.append(f"spark.cortex.phoenix.token={token}")
+    args.append('--py-files')
+    args.append(f'local:///opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar,local:///opt/spark/jars/delta-core_2.12-2.2.0.jar')
+    if token is not None:
+        args.append('--conf')
+        args.append(f"spark.kubernetes.driverEnv.CORTEX_TOKEN={token}")
+        args.append('--conf')
+        args.append(f"spark.cortex.phoenix.token={token}")
     if url:
         args.append('--conf')
         args.append(f"spark.fabric.client.phoenix.url={url}")
@@ -108,14 +120,16 @@ if __name__ == '__main__':
     try:
         # pool values from args
         payload = json.loads(sys.argv[1])
-        token = payload.get('token') or os.environ['CORTEX_TOKEN']
+        token = payload.get('token') or os.getenv('CORTEX_TOKEN', None)
         print(payload)
         input_params = payload['payload']
         n = len(sys.argv)
         # TODO throw error if wrong amount of args
-        config_file_loc = input_params.get("config")
-        # get resource files from filesystem
-        spark_config = get_config_file(config_file_loc)
+        spark_config = input_params.get("spark_config")
+        if not spark_config:
+            # get resource files from filesystem
+            config_file_loc = input_params.get("config")
+            spark_config = get_config_file(config_file_loc)
 
         # TODO: Verify app command is a list of strings
         override_app_command = input_params.get("app_command")
@@ -135,7 +149,7 @@ if __name__ == '__main__':
 
         isClusterMode = spark_config.get("pyspark", {}).get("options", {}).get("--deploy-mode")
         if isClusterMode:
-            driver_template = get_driver_template("/app/conf/driverTemplate.yaml")
+            driver_template = get_driver_template("driverTemplate.yaml")
 
             # variable replace and write new driver podspec
             # TODO better job of generalizing
