@@ -45,7 +45,7 @@ public class ProfilesController {
     }
 
     @GetMapping(path="{profileSchema}")
-    public Map<String, List> getProfileIds(@PathVariable String profileSchema) {
+    public Map<String, List<String>> getProfileIds(@PathVariable String profileSchema) {
         /**
          * Fetches all profile Ids for a particular profileSchema
          */
@@ -63,7 +63,7 @@ public class ProfilesController {
     }
 
     @PostMapping(path="listProfileIds")
-    public Map<String, List> listProfileIds(@RequestBody Payload payload) {
+    public Map<String, List<String>> listProfileIds(@RequestBody Payload payload) {
         /**
          * Fetches all profile Ids for a particular profileSchema
          */

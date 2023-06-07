@@ -12,6 +12,7 @@
 package com.c12e.cortex.examples;
 
 import com.c12e.cortex.examples.aggregate.FilterQueries;
+import com.c12e.cortex.examples.aggregate.FilterQuery;
 import com.c12e.cortex.examples.catalog.ManageCatalog;
 import com.c12e.cortex.examples.cdata.CData;
 import com.c12e.cortex.examples.datasource.DataSourceRW;
@@ -38,7 +39,8 @@ import picocli.CommandLine.Command;
         CacheWrite.class,
         KPIQueries.class,
         FilterQueries.class,
-        ManageCatalog.class
+        ManageCatalog.class,
+        FilterQuery.class
 })
 public class Application {
     public static void main(String[] args) {

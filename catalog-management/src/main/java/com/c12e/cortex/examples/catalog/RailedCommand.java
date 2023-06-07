@@ -19,22 +19,22 @@ import com.c12e.cortex.phoenix.NotFoundException;
 import com.c12e.cortex.phoenix.ProfileSchema;
 import com.c12e.cortex.phoenix.spec.*;
 import com.c12e.cortex.profiles.CortexSession;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.module.kotlin.KotlinModule;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.TypeRef;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import com.c12e.shadow.com.fasterxml.jackson.core.JsonParser;
+import com.c12e.shadow.com.fasterxml.jackson.core.JsonProcessingException;
+import com.c12e.shadow.com.fasterxml.jackson.databind.DeserializationContext;
+import com.c12e.shadow.com.fasterxml.jackson.databind.JsonNode;
+import com.c12e.shadow.com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.c12e.shadow.com.fasterxml.jackson.databind.json.JsonMapper;
+import com.c12e.shadow.com.fasterxml.jackson.databind.module.SimpleModule;
+import com.c12e.shadow.com.fasterxml.jackson.module.kotlin.KotlinModule;
+import com.c12e.shadow.com.jayway.jsonpath.DocumentContext;
+import com.c12e.shadow.com.jayway.jsonpath.JsonPath;
+import com.c12e.shadow.com.jayway.jsonpath.Option;
+import com.c12e.shadow.com.jayway.jsonpath.TypeRef;
+import com.c12e.shadow.com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.c12e.shadow.com.jayway.jsonpath.spi.json.JsonProvider;
+import com.c12e.shadow.com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.c12e.shadow.com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
 import org.slf4j.Logger;
@@ -120,7 +120,7 @@ public abstract class RailedCommand implements Runnable {
         module.addDeserializer(ProfileSchema.class, new ProfileSchemaDeserializer());
 
         //Add custom serializer to Jackson module
-        com.jayway.jsonpath.Configuration.setDefaults(new com.jayway.jsonpath.Configuration.Defaults() {
+        com.c12e.shadow.com.jayway.jsonpath.Configuration.setDefaults(new com.c12e.shadow.com.jayway.jsonpath.Configuration.Defaults() {
             private final JsonProvider jsonProvider = new JacksonJsonProvider(JsonMapper.builder()
                     .addModules(new KotlinModule.Builder().build(), module)
                     .build());

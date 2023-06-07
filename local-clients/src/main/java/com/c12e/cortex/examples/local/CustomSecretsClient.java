@@ -39,14 +39,14 @@ public class CustomSecretsClient extends LocalSecretClient {
      * @throws RuntimeException if any of the environment variables is not defined
      */
     public void requireEnvExists(List<String> env) {
-        var envNotExist = env.stream().map(e -> System.getenv(e) == null).collect(Collectors.toList());
-        var missingEnv = IntStream.range(0, env.size())
+        List<Boolean> envNotExist = env.stream().map(e -> System.getenv(e) == null).collect(Collectors.toList());
+        List<String> missingEnv = IntStream.range(0, env.size())
                 .filter(i -> envNotExist.get(i))
                 .mapToObj(i -> env.get(i))
                 .collect(Collectors.toList());
 
         if (!missingEnv.isEmpty()) {
-            var error =String.format("Missing environment variable(s) '%s' for CustomSecretsClient.",
+            String error =String.format("Missing environment variable(s) '%s' for CustomSecretsClient.",
                     String.join(", ", missingEnv));
             System.err.println(error);
             throw new RuntimeException(error);

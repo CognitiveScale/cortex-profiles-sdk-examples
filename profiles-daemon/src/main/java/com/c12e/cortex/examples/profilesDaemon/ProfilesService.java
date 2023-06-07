@@ -27,7 +27,7 @@ public class ProfilesService {
         StatefulRedisConnection<String, String> connection
                 = redisClient.connect();
         RedisCommands<String, String> syncCommands = connection.sync();
-        Map data = syncCommands.hgetall(profileSchema+":"+profileId);
+        Map<String, String> data = syncCommands.hgetall(profileSchema+":"+profileId);
         connection.close();
 
         return data;

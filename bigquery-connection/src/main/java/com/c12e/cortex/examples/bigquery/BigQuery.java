@@ -15,7 +15,8 @@ package com.c12e.cortex.examples.bigquery;
 import com.c12e.cortex.examples.local.SessionExample;
 import com.c12e.cortex.phoenix.InternalSecretsClient;
 import com.c12e.cortex.profiles.CortexSession;
-import com.c12e.cortex.profiles.client.CortexSecretsClient;
+
+import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
@@ -24,7 +25,6 @@ import org.apache.spark.sql.SparkSession;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -64,14 +64,14 @@ public class BigQuery implements Runnable {
         String url = session.spark().conf().get(CortexSession.SECRET_CLIENT_URL_KEY);
 
         // Retrieve the Secret.
-        var client = new InternalSecretsClient(url, token);
-        var secret = client.getSecret(project, secretKey);
+        InternalSecretsClient client = new InternalSecretsClient(url, token);
+        String secret = client.getSecret(project, secretKey);
         System.out.println(String.format("Secret (%s): '%s'", secretKey, secret));
         return secret;
     }
 
     private String getBigQueryCredsFromEnv() {
-        var credentials = System.getenv(BIGQUERY_CREDS_FILE);
+        String credentials = System.getenv(BIGQUERY_CREDS_FILE);
         if (credentials == null) {
             throw new RuntimeException(String.format("Missing BigQuery JSON credentials. Try setting (environment variable): '%s'", BIGQUERY_CREDS_FILE));
         }
@@ -91,7 +91,7 @@ public class BigQuery implements Runnable {
     @Override
     public void run() {
         // Create cortex session
-        var sessionExample = new SessionExample();
+        SessionExample sessionExample = new SessionExample();
         CortexSession cortexSession = sessionExample.getCortexSession();
         writeFromBigQuery(cortexSession);
     }
@@ -99,10 +99,9 @@ public class BigQuery implements Runnable {
     public void writeFromBigQuery(CortexSession cortexSession) {
         // Get spark session
         SparkSession session = cortexSession.spark();
-        session.conf().getAll().toStream().print();
 
         // Read the BigQuery table
-        var reader = session.read()
+        DataFrameReader reader = session.read()
                 .format("bigquery")
                 .option("parentProject", parentProject)
                 .option("table", tableName);

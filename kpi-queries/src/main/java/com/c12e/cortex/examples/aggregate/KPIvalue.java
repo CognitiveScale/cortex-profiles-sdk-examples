@@ -12,8 +12,6 @@
 
 package com.c12e.cortex.examples.aggregate;
 
-import com.google.type.DateTime;
-
 import java.io.Serializable;
 
 public class KPIvalue implements Serializable {
