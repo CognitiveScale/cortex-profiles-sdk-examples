@@ -40,11 +40,6 @@ public class FilterQuery implements Runnable {
         ProfileScriptEngine engine = new ProfileScriptEngine(profileData, Map.of());
         Dataset<Row> filteredData = engine.applyFilter(filter);
         filteredData.show();
-
-//        CortexManagedContent cortexManagedContent = new CortexManagedContent("", "");
-//        cortexManagedContent.upload();
-
-
     }
 
     private void filter(Dataset<Row> profileData, String s) {
