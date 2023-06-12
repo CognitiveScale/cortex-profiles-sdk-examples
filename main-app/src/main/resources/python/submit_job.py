@@ -33,7 +33,7 @@ def get_runtime_args(config, token, url):
                 args.append(key)
                 args.append("{}={}".format(y, s_val))
     args.append('--py-files')
-    args.append(f'local:///opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar,local:///opt/spark/jars/delta-core_2.12-2.2.0.jar')
+    args.append(f'local:///opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar,local:///opt/spark/jars/delta-core_2.12-2.4.0.jar')
     if token is not None:
         args.append('--conf')
         args.append(f"spark.kubernetes.driverEnv.CORTEX_TOKEN={token}")
