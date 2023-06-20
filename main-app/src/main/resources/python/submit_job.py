@@ -169,6 +169,10 @@ if __name__ == '__main__':
                              "spark.cortex.phoenix.project": project}
             spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(projectOptions)
 
+        azureOptions = {"spark.kubernetes.executor.label.azure.workload.identity/use": "true",
+                            "spark.kubernetes.driver.label.azure.workload.identity/use": "true"}
+        spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(azureOptions)
+
         # create spark-submit call
         run_args = get_runtime_args(spark_config, token, payload.get('apiEndpoint'))
 
