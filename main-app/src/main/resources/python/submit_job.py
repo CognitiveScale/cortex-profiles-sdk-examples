@@ -33,7 +33,7 @@ def get_runtime_args(config, token, url):
                 args.append(key)
                 args.append("{}={}".format(y, s_val))
     args.append('--py-files')
-    args.append(f'local:///opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar,local:///opt/spark/jars/delta-core_2.12-2.2.0.jar')
+    args.append(f'local:///opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar,local:///opt/spark/jars/delta-core_2.12-2.4.0.jar')
     if token is not None:
         args.append('--conf')
         args.append(f"spark.kubernetes.driverEnv.CORTEX_TOKEN={token}")
@@ -168,6 +168,10 @@ if __name__ == '__main__':
             projectOptions = {"spark.kubernetes.driverEnv.CORTEX_PROJECT": project,
                              "spark.cortex.phoenix.project": project}
             spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(projectOptions)
+
+        azureOptions = {"spark.kubernetes.executor.label.azure.workload.identity/use": "true",
+                            "spark.kubernetes.driver.label.azure.workload.identity/use": "true"}
+        spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(azureOptions)
 
         # create spark-submit call
         run_args = get_runtime_args(spark_config, token, payload.get('apiEndpoint'))
