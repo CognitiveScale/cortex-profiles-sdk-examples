@@ -1,8 +1,7 @@
 # Managing Catalog Resources
 
-This example is a CLI application that uses a secondary configuration, the `app-config.json`, to define a number of
-catalog entities to be managed during execution. The Connections/Data Sources/Profile Schema in the app-config.json
-are created with the attributes defined in the configuration and are then available to use through the Profiles SDK
+This example is a CLI application that uses a secondary configuration, the `app-config.json`, to define a number of configurable steps during execution.
+Connections/Data Sources/Profile Schema are defined in the `../main-app/src/main/resources/spec` folder, and are made available to use through the Profiles SDK.
 This builds off of the [Local Clients](../local-clients/README.md) example for its initial setup.
 
 (See [RailedCommand.java](./src/main/java/com/c12e/cortex/examples/catalog/RailedCommand.java) for config driven Catalog management.)
@@ -82,27 +81,8 @@ To recreate resources that already exist (used in case of spec configuration cha
 }
 ```
 
-To define the specification for any number of Connections, Data Sources, and Profile Schemas. Resource schema deserializes
-into Local Catalog entities.
-
-```json
-{
-  "resources": {
-    "specs": {
-      "connections": [
-        ...
-      ],
-      "dataSources": [
-        ...
-      ],
-      "profileSchemas": [
-        ...
-      ]
-    }
-  }
-}
-```
-
+The specification for any number of Connections, Data Sources, and Profile Schemas may be defined in any number of yaml
+files in the `spec` path.
 
 ## Run Locally
 
@@ -113,7 +93,7 @@ To run this example locally with local Cortex clients (from the parent directory
     ```
 2. Run the application with Gradle.
     ```
-    ./gradlew main-app:run --args="catalog-management -p local --config ../catalog-management/src/main/resources/conf/app-conf.json"
+    ./gradlew main-app:run --args="catalog-management -p local --config ../catalog-management/src/main/resources/conf/app-conf.json --spec src/main/resources/spec"
     ```
 
 The end of the log output should be similar to:
@@ -255,7 +235,7 @@ Exit Code: 0
     - Use the [Remote Catalog](../docs/catalog.md#remote-catalog) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the in-cluster GraphQL API endpoint (`"http://cortex-api.cortex.svc.cluster.local:8080"`) and removing the Local Catalog implementation (`spark.cortex.catalog.impl`).
     - Use the [remote storage client](../docs/backendstorage.md#remote-storage-client) implementation by setting the Cortex URL (`spark.cortex.client.phoenix.url`) to the GraphQL API endpoint, and remove the local storage client implementation (`spark.cortex.client.storage.impl`).
     - Remove the local Secret client implementation (`spark.cortex.client.secrets.impl`).
-    - Update the `app_command` arguments to match your Cortex Project and App Config location (`--project`, `--config`).
+    - Update the `app_command` arguments to match your Cortex Project and App Config location (`--project`, `--config`, `--spec`).
 
 To Build and run the skill:
 1. Run the following make commands:
@@ -274,7 +254,9 @@ make build create-app-image deploy-skill invoke
       "--project",
       "mytest",
       "--config",
-      "/app/conf/app-conf.json"
+      "/app/conf/app-conf.json",
+      "--spec",
+      "/opt/spark/work-dir/src/main/resources/spec"
     ],
     "app_location": "local:///app/libs/app.jar",
     "options": {
