@@ -56,6 +56,13 @@ dependencies {
     implementation("info.picocli:picocli:4.6.3")
     annotationProcessor("info.picocli:picocli-codegen:4.6.3")
 
+    // Hadoop AWS - for Spark S3a connector, in sdk image but needed for main-app:run
+    runtimeOnly("org.apache.hadoop:hadoop-aws:3.3.4")
+    testRuntimeOnly("org.apache.hadoop:hadoop-aws:3.3.4")
+    // Hadoop GCS - spark connector, in sdk image but needed for main-app:run
+    runtimeOnly("com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.15")
+    testRuntimeOnly("com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.15")
+
     // test dependencies
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
