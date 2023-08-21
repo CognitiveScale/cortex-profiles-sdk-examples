@@ -10,6 +10,6 @@
     ]
   },
   "resources": {
-    "recreate": true,
+    "recreate": true
   }
 }
