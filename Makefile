@@ -4,6 +4,9 @@
 TAG := latest
 DOCKER_IMAGE := profiles-example
 DAEMON_IMAGE := pdaemon
+SPARK_BASE_IMAGE ?= c12e/profiles-sdk:1.8.0-gae2c22e
+PLATFORM ?=  linux/amd64 # linux/arm64
+
 ifndef DAEMON_TAG
 	curr_hash:=$(shell git rev-parse --short HEAD)
 	ifneq ($(curr_hash), $(GIT_HASH))
@@ -31,7 +34,7 @@ DAEMON_CONTAINER := ${DOCKER_PREGISTRY_URL}/${DAEMON_IMAGE}:${DAEMON_TAG}
 all: clean build create-app-image deploy-skill
 
 create-app-image:
-	docker build --build-arg base_img=c12e/profiles-sdk:1.3.1-gb3c97be -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
+	docker buildx build --platform $(PLATFORM) --build-arg base_img=$(SPARK_BASE_IMAGE) -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
 
 create-daemon-image:
 	docker build --no-cache -t ${DAEMON_IMAGE}:${DAEMON_TAG}  -f ./profiles-daemon/Dockerfile .
