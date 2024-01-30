@@ -18,7 +18,7 @@ import yaml
 import sys
 import json
 
-def get_runtime_args(config, token, url):
+def get_runtime_args(config):
     pyspark_args = config['pyspark']
     options = pyspark_args['options']
     args = [os.environ['SPARK_HOME'] + "/" + pyspark_args['pyspark_bin']]
@@ -34,14 +34,6 @@ def get_runtime_args(config, token, url):
                 args.append("{}={}".format(y, s_val))
     args.append('--py-files')
     args.append(f'local:///opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar,local:///opt/spark/jars/delta-spark_2.12-3.0.0.jar')
-    if token is not None:
-        args.append('--conf')
-        args.append(f"spark.kubernetes.driverEnv.CORTEX_TOKEN={token}")
-        args.append('--conf')
-        args.append(f"spark.cortex.phoenix.token={token}")
-    if url:
-        args.append('--conf')
-        args.append(f"spark.fabric.client.phoenix.url={url}")
     args.append(pyspark_args['app_location'])
     for x in pyspark_args['app_command']:
         args.append(x)
@@ -116,10 +108,36 @@ def write_driver(driver_spec_loc, driver_spec):
         file.write(driver_spec)
 
 
+def get_storage_config(storage_config):
+    # Create Java command with storage_config
+    cmd = [f'{os.environ["JAVA_HOME"]}/bin/java',
+           '-cp',
+           f'/opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar',
+           'com.c12e.cortex.profiles.CortexStorageConfig',
+           json.dumps(storage_config)]
+
+    print(cmd)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    # Capture the standard output and error (if any)
+    stdout, stderr = process.communicate()
+
+    # Print the output and error
+    print('Java stderr:')
+    print(stderr)
+
+    # Check the return code to see if the Java command executed successfully
+    if process.returncode == 0:
+        print('Storage config call called successfully.')
+        return json.loads(stdout)
+    else:
+        print(stderr)
+        raise Exception(f'Storage config call failed with return code {process.returncode}.')
+
 if __name__ == '__main__':
     try:
         # pool values from args
-        payload = json.loads(sys.argv[1])
+        rawPayload = sys.argv[1]
+        payload = json.loads(rawPayload)
         token = payload.get('token') or os.getenv('CORTEX_TOKEN', None)
         print(payload)
         input_params = payload['payload']
@@ -169,12 +187,29 @@ if __name__ == '__main__':
                              "spark.cortex.phoenix.project": project}
             spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(projectOptions)
 
+        if token is not None:
+            tokenOptions = {
+                "spark.kubernetes.driverEnv.CORTEX_MESSAGE": rawPayload,
+                "spark.kubernetes.driverEnv.CORTEX_TOKEN": token,
+                "spark.cortex.phoenix.token": token
+            }
+            spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(tokenOptions)
+
+        url = payload.get('apiEndpoint', None)
+        if url is not None:
+            urlOptions = {"spark.kubernetes.driverEnv.API_ENDPOINT": url,
+                        "spark.fabric.client.phoenix.url": url}
+            spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(urlOptions)
+
         azureOptions = {"spark.kubernetes.executor.label.azure.workload.identity/use": "true",
                             "spark.kubernetes.driver.label.azure.workload.identity/use": "true"}
         spark_config.get("pyspark", {}).get("options", {}).get("--conf", {}).update(azureOptions)
 
+        spark_config.get("pyspark", {}).get("options", {}).get("--conf", {})\
+            .update(get_storage_config(spark_config.get("pyspark", {}).get("options", {}).get("--conf", {})))
+
         # create spark-submit call
-        run_args = get_runtime_args(spark_config, token, payload.get('apiEndpoint'))
+        run_args = get_runtime_args(spark_config)
 
         print(run_args)
 
