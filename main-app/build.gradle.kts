@@ -124,3 +124,6 @@ tasks.withType<Jar> {
     from(project(":filter-queries").sourceSets["main"].output)
     from(project(":catalog-management").sourceSets["main"].output)
 }
+tasks.distZip {
+    enabled = false
+}

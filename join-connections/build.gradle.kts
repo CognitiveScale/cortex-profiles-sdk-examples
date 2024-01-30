@@ -32,3 +32,7 @@ tasks.getByName<Test>("test") {
 }
 
 project.setProperty("mainClassName", "com.c12e.cortex.examples.joinconn.JoinConnections")
+
+tasks.distZip {
+    enabled = false
+}

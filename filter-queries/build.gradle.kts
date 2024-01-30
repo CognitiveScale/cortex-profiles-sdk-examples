@@ -33,3 +33,7 @@ tasks.getByName<Test>("test") {
 }
 
 project.setProperty("mainClassName", "com.c12e.cortex.examples.aggregate.FilterQueries")
+
+tasks.distZip {
+    enabled = false
+}

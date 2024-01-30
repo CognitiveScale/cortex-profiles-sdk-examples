@@ -32,3 +32,7 @@ tasks.getByName<Test>("test") {
 }
 
 project.setProperty("mainClassName", "com.c12e.cortex.examples.cache.RedisWrite")
+
+tasks.distZip {
+    enabled = false
+}

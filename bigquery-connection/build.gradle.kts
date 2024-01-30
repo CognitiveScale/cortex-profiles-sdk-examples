@@ -27,3 +27,7 @@ tasks.getByName<Test>("test") {
 }
 
 project.setProperty("mainClassName", "com.c12e.cortex.examples.bigquery.BigQuery")
+
+tasks.distZip {
+    enabled = false
+}
