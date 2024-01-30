@@ -42,24 +42,24 @@ create-daemon-image:
 
 # Build the Application
 build:
-	./gradlew build
+	./gradlew -Pversion=$(VERSION) build
 
 sonar:
-	./gradlew sonar
+	./gradlew -Pversion=$(VERSION) sonar
 
 build-daemon:
 	./gradlew :profile-daemon:build
 
 # Test the Application
 test:
-	./gradlew test
+	./gradlew -Pversion=$(VERSION) test
 
 clean:
 	./gradlew clean
 
 # Start the Daemon locally
 start-daemon:
-	./gradlew :profile-daemon:bootRun
+	./gradlew -Pversion=$(VERSION) :profile-daemon:bootRun
 
 # Tag the latest create-app-image built container
 tag-container: check-env
