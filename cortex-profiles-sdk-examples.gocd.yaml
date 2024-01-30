@@ -57,11 +57,7 @@ pipelines:
         git: git@github.com:CognitiveScale/cortex-profiles-sdk-examples.git
         branch: main
     environment_variables:
-      JFROG_USER: "ci-automation"
       SONAR_USER_HOME: "/tmp"
-    secure_variables:
-      # LastPass: "Shared-devops/ci-automation (artifactory) - Copy"
-      JFROG_PASS: "AES:ZiO+TOuKRJVoRx9Sz/2UXQ==:j/WhkELyMxjJrv5ECdWUZ7S1VDlogSCTN/NxqbYjaFFjTyEo/zsBRqfTgGbyCtRiPY90x3vlQTlrlUyqi4/AjVwvShRswntTNW7r55ZDEsOqN+CsvnFPVaihvQnlhnkVkUrWWNNePJEfoG4Dz34LpripcIsV7wbybLto44WqxeUMydCZCPfl5h893a6tx7mMUpgiv+6T2hRs48QJ6OYBGQd3rFSWsNKFyUMhxYwa3oRtXrcMWuy4L0hleTPhNcAt2CgDCnT9QJll5CX603S4mu9fwtROhT7Hl1O4lxOQkdHPH0nFmkAkotdPMnLjCNZskByTP4x2o+aayu0XooIi7rABsAMugJJ+ETdB9ArzrF0XqbPHtvQ7f71xP3G8+iU5E46ow6VYFXA6tvX2dNJ25SgekbirfblQAWooVntJOrrdNiScHTzkgQu6AN5AzmLCCcio274tZqxHS+s2Psivn0UYavKaFjIl4EYogWXmrweBBCyWaSl2V4gKXzQ+saLRX4rGqq2A0u/hmtqUKSfTEQmlfQmOsjlVVFpfSahMgt0+JKj459665lbx0Kpi2CpJFOqiWeGfMZoc4bHmi7DcSI5zDuZirfjfHW3mRLh1FqmDWbU0d1jo1jwA7U/ngcpjNlhmQQAdzo35hG9Sq/j+mZ9TKW3P3VEhkclUks/1B8xiz8wM8etboJeeYCt/h6AfzPr8t1huKRpwdMEEVfxxFJJS/JTp5tvm4Q7n2PiPt7jSS4m21eHg1eJzJxad16xnQPc1o7QQ9gf1NNLSEkI0XxXoe4xZuJRO9LljhTMYGJDqyTWlDEeXM7O+mesXux8DOE0VA05NILN+ZbwpqEeKtM1eRKHkdXA9tzB7A1ky1CPjR/K5NFNz638xKhdNwq+xYvngfLYdkbYJ5sseLyMydjivd4KScSqP7Qd4vvBOdCsIKo7Q7swnCV50ihEOFbRdEYq2qDWeInN+dOPH4mbTyluN9CAqzyvhmhtD2ds8Dts="
     stages: *serviceBuildRc
   cortex-profiles-sdk-examples-pr:
     group: pull-requests
@@ -78,9 +74,5 @@ pipelines:
           url: git@github.com:CognitiveScale/cortex-profiles-sdk-examples.git
           defaultBranch: main
     environment_variables:
-      JFROG_USER: "ci-automation"
       SONAR_USER_HOME: "/tmp"
-    secure_variables:
-      # LastPass: "Shared-devops/ci-automation (artifactory) - Copy"
-      JFROG_PASS: "AES:ZiO+TOuKRJVoRx9Sz/2UXQ==:j/WhkELyMxjJrv5ECdWUZ7S1VDlogSCTN/NxqbYjaFFjTyEo/zsBRqfTgGbyCtRiPY90x3vlQTlrlUyqi4/AjVwvShRswntTNW7r55ZDEsOqN+CsvnFPVaihvQnlhnkVkUrWWNNePJEfoG4Dz34LpripcIsV7wbybLto44WqxeUMydCZCPfl5h893a6tx7mMUpgiv+6T2hRs48QJ6OYBGQd3rFSWsNKFyUMhxYwa3oRtXrcMWuy4L0hleTPhNcAt2CgDCnT9QJll5CX603S4mu9fwtROhT7Hl1O4lxOQkdHPH0nFmkAkotdPMnLjCNZskByTP4x2o+aayu0XooIi7rABsAMugJJ+ETdB9ArzrF0XqbPHtvQ7f71xP3G8+iU5E46ow6VYFXA6tvX2dNJ25SgekbirfblQAWooVntJOrrdNiScHTzkgQu6AN5AzmLCCcio274tZqxHS+s2Psivn0UYavKaFjIl4EYogWXmrweBBCyWaSl2V4gKXzQ+saLRX4rGqq2A0u/hmtqUKSfTEQmlfQmOsjlVVFpfSahMgt0+JKj459665lbx0Kpi2CpJFOqiWeGfMZoc4bHmi7DcSI5zDuZirfjfHW3mRLh1FqmDWbU0d1jo1jwA7U/ngcpjNlhmQQAdzo35hG9Sq/j+mZ9TKW3P3VEhkclUks/1B8xiz8wM8etboJeeYCt/h6AfzPr8t1huKRpwdMEEVfxxFJJS/JTp5tvm4Q7n2PiPt7jSS4m21eHg1eJzJxad16xnQPc1o7QQ9gf1NNLSEkI0XxXoe4xZuJRO9LljhTMYGJDqyTWlDEeXM7O+mesXux8DOE0VA05NILN+ZbwpqEeKtM1eRKHkdXA9tzB7A1ky1CPjR/K5NFNz638xKhdNwq+xYvngfLYdkbYJ5sseLyMydjivd4KScSqP7Qd4vvBOdCsIKo7Q7swnCV50ihEOFbRdEYq2qDWeInN+dOPH4mbTyluN9CAqzyvhmhtD2ds8Dts="
     stages: *serviceBuild
