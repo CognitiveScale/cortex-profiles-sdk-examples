@@ -42,7 +42,7 @@ allprojects {
 	tasks.withType<KotlinCompile> {
 		kotlinOptions {
 			freeCompilerArgs = listOf("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
-			jvmTarget = "8"
+			jvmTarget = "1.8"
 			apiVersion = "1.6"
 			languageVersion = "1.6"
 		}
@@ -89,7 +89,7 @@ subprojects {
 		resolutionStrategy {
 			eachDependency {
 				when (requested.group) {
-					"com.c12e.cortex.profiles" -> useVersion("1.8.0-gae2c22e")
+					"com.c12e.cortex.profiles" -> useVersion(providers.gradleProperty("PROFILES_SDK_VERSION").get())
 				}
 			}
 		}

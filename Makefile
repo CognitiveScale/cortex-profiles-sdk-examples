@@ -1,5 +1,6 @@
 .PHONY: clean build build-daemon create-app-image create-daemon-image test start-daemon deploy-daemon start-daemon-container
 -include .build_file
+-include gradle.properties
 
 TAG := latest
 DOCKER_IMAGE := profiles-example
@@ -31,7 +32,7 @@ DAEMON_CONTAINER := ${DOCKER_PREGISTRY_URL}/${DAEMON_IMAGE}:${DAEMON_TAG}
 all: clean build create-app-image deploy-skill
 
 create-app-image:
-	docker build --build-arg base_img=c12e/profiles-sdk:1.8.0-gae2c22e -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
+	docker build --build-arg base_img=c12e/profiles-sdk:$(PROFILES_SDK_VERSION) -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
 
 create-daemon-image:
 	docker build --no-cache -t ${DAEMON_IMAGE}:${DAEMON_TAG}  -f ./profiles-daemon/Dockerfile .
