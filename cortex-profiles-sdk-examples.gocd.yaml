@@ -20,7 +20,9 @@ common:
 
                   echo "artifactoryUser=${JFROG_USER}
                   artifactoryPassword=${JFROG_PASS}
-                  PROFILES_SDK_VERSION=${PROFILES_SDK_VERSION}" > gradle.properties
+                  PROFILES_SDK_VERSION=${PROFILES_SDK_VERSION}
+                  systemProp.sonar.token=${SONAR_TOKEN}
+                  systemProp.sonar.host.url=${SONAR_HOST_URL}" > gradle.properties
               - script: |
                   c12e-ci
   serviceBuildRc: &serviceBuildRc
@@ -43,7 +45,9 @@ common:
                   
                   echo "artifactoryUser=${JFROG_USER}
                   artifactoryPassword=${JFROG_PASS}
-                  PROFILES_SDK_VERSION=${PROFILES_SDK_VERSION}" > gradle.properties
+                  PROFILES_SDK_VERSION=${PROFILES_SDK_VERSION}
+                  systemProp.sonar.token=${SONAR_TOKEN}
+                  systemProp.sonar.host.url=${SONAR_HOST_URL}" > gradle.properties
               - script: |
                   c12e-ci
 pipelines:

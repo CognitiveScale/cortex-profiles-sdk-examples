@@ -1,4 +1,4 @@
-.PHONY: clean build build-daemon create-app-image create-daemon-image test start-daemon deploy-daemon start-daemon-container
+.PHONY: clean build build-daemon create-app-image create-daemon-image test start-daemon deploy-daemon start-daemon-container sonar
 -include .build_file
 -include gradle.properties
 
@@ -42,6 +42,9 @@ create-daemon-image:
 # Build the Application
 build:
 	./gradlew build
+
+sonar:
+	./gradlew sonar
 
 build-daemon:
 	./gradlew :profile-daemon:build

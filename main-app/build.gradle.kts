@@ -11,12 +11,16 @@
  */
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import kotlin.collections.mutableSetOf
+
 
 plugins {
     application
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.bmuschko.docker-remote-api")
+    id("org.sonarqube")
+    jacoco
 }
 
 
@@ -87,6 +91,28 @@ tasks.test {
         events("passed", "skipped", "failed")
         exceptionFormat = TestExceptionFormat.FULL
     }
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to be run before generating the report
+    classDirectories.setFrom(
+        sourceSets.main.get().java.classesDirectory,
+        project(":local-clients").sourceSets["main"].java.classesDirectory,
+        project(":build-profiles").sourceSets["main"].java.classesDirectory,
+        project(":datasource-refresh").sourceSets["main"].java.classesDirectory,
+        project(":join-connections").sourceSets["main"].java.classesDirectory,
+        project(":cdata-connection").sourceSets["main"].java.classesDirectory,
+        project(":datasource-streaming").sourceSets["main"].java.classesDirectory,
+        project(":bigquery-connection").sourceSets["main"].java.classesDirectory,
+        project(":cache-profile").sourceSets["main"].java.classesDirectory,
+        project(":kpi-queries").sourceSets["main"].java.classesDirectory,
+        project(":filter-queries").sourceSets["main"].java.classesDirectory,
+        project(":catalog-management").sourceSets["main"].java.classesDirectory
+    )
+    reports {
+        xml.required.set(true)
+    }
 }
 
 project.setProperty("mainClassName", "com.c12e.cortex.examples.Application")
@@ -124,6 +150,43 @@ tasks.withType<Jar> {
     from(project(":filter-queries").sourceSets["main"].output)
     from(project(":catalog-management").sourceSets["main"].output)
 }
+
+
+fun filterExistingDirectories(inputDirectories: Set<File>): Set<File> {
+    return inputDirectories.filter { it.exists() && it.isDirectory() }.toSet()
+}
+
+sonar {
+    var source_set = mutableSetOf(filterExistingDirectories(project.sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":local-clients").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":build-profiles").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":datasource-refresh").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":join-connections").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":cdata-connection").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":datasource-streaming").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":bigquery-connection").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":cache-profile").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":kpi-queries").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":filter-queries").sourceSets["main"].allJava.srcDirs))
+    source_set.add(filterExistingDirectories(project(":catalog-management").sourceSets["main"].allJava.srcDirs))
+
+    properties {
+        property("sonar.projectKey", "cortex-profiles-sdk-examples")
+        property("sonar.projectName", "Cortex Profiles SDK Examples")
+        property("sonar.tags", "sensa,fabric")
+        property("sonar.gradle.skipCompile", "true")
+        property("sonar.java.coveragePlugin", "jacoco")
+        property("sonar.jacoco.reportsPath", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        property("sonar.junit.reportPaths", "${project.buildDir}/test-results/test")
+        property("sonar.projectBaseDir", "${project.rootDir}")
+        properties["sonar.sources"] = source_set
+    }
+}
+
+tasks.sonar {
+    dependsOn(tasks.jacocoTestReport)
+}
+
 tasks.distZip {
     enabled = false
 }

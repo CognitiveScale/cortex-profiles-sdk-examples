@@ -16,6 +16,7 @@ plugins {
 	kotlin("jvm") version "1.6.21" apply false
 	kotlin("plugin.serialization") version "1.6.21" apply false
 	id("com.bmuschko.docker-remote-api") version "7.4.0" apply false
+	id("org.sonarqube") version "4.4.1.3373" apply false
 }
 
 buildscript {

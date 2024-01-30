@@ -3,7 +3,7 @@
 function build() {
   apt update &> /dev/null
   apt install -q -y make &> /dev/null
-  make build
+  make build sonar
 }
 
 function buildLocal() {
