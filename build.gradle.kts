@@ -29,7 +29,11 @@ buildscript {
 
 allprojects {
 	group = "com.c12e.cortex.examples"
-	version = "1.0.0-SNAPSHOT"
+	if (project.version != "unspecified") {
+		version = project.version
+	} else {
+		version = "1.0.0-SNAPSHOT"
+	}
 
 	tasks.withType<Test> {
 		useJUnitPlatform()

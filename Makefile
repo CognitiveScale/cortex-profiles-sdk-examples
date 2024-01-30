@@ -6,6 +6,7 @@ TAG := latest
 DOCKER_IMAGE := profiles-example
 DAEMON_IMAGE := pdaemon
 PLATFORM ?=  linux/amd64 # linux/arm64
+VERSION ?= 6.6.0-SNAPSHOT
 
 ifndef DAEMON_TAG
 	curr_hash:=$(shell git rev-parse --short HEAD)
