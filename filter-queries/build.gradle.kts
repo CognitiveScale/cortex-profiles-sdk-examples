@@ -5,13 +5,6 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-group = "com.c12e.cortex.examples"
-version = "1.0.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     // project dependencies
     api(platform("com.c12e.cortex.profiles:platform-dependencies"))
@@ -33,3 +26,7 @@ tasks.getByName<Test>("test") {
 }
 
 project.setProperty("mainClassName", "com.c12e.cortex.examples.aggregate.FilterQueries")
+
+tasks.distZip {
+    enabled = false
+}

@@ -1,11 +1,12 @@
-.PHONY: clean build build-daemon create-app-image create-daemon-image test start-daemon deploy-daemon start-daemon-container
+.PHONY: clean build build-daemon create-app-image create-daemon-image test start-daemon deploy-daemon start-daemon-container sonar
 -include .build_file
+-include gradle.properties
 
 TAG := latest
 DOCKER_IMAGE := profiles-example
 DAEMON_IMAGE := pdaemon
-SPARK_BASE_IMAGE ?= c12e/profiles-sdk:1.8.0-gae2c22e
 PLATFORM ?=  linux/amd64 # linux/arm64
+VERSION ?= 6.6.0-SNAPSHOT
 
 ifndef DAEMON_TAG
 	curr_hash:=$(shell git rev-parse --short HEAD)
@@ -34,28 +35,31 @@ DAEMON_CONTAINER := ${DOCKER_PREGISTRY_URL}/${DAEMON_IMAGE}:${DAEMON_TAG}
 all: clean build create-app-image deploy-skill
 
 create-app-image:
-	docker buildx build --platform $(PLATFORM) --build-arg base_img=$(SPARK_BASE_IMAGE) -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
+	docker buildx --platform $(PLATFORM) --build-arg base_img=c12e/profiles-sdk:$(PROFILES_SDK_VERSION) -t ${DOCKER_IMAGE}:${TAG} -f ./main-app/build/resources/main/Dockerfile ./main-app/build
 
 create-daemon-image:
 	docker build --no-cache -t ${DAEMON_IMAGE}:${DAEMON_TAG}  -f ./profiles-daemon/Dockerfile .
 
 # Build the Application
 build:
-	./gradlew build
+	./gradlew -Pversion=$(VERSION) build
+
+sonar:
+	./gradlew -Pversion=$(VERSION) sonar
 
 build-daemon:
 	./gradlew :profile-daemon:build
 
 # Test the Application
 test:
-	./gradlew test
+	./gradlew -Pversion=$(VERSION) test
 
 clean:
 	./gradlew clean
 
 # Start the Daemon locally
 start-daemon:
-	./gradlew :profile-daemon:bootRun
+	./gradlew -Pversion=$(VERSION) :profile-daemon:bootRun
 
 # Tag the latest create-app-image built container
 tag-container: check-env

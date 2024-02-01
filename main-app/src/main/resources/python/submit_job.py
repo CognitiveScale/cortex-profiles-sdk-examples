@@ -33,7 +33,7 @@ def get_runtime_args(config):
                 args.append(key)
                 args.append("{}={}".format(y, s_val))
     args.append('--py-files')
-    args.append(f'local:///opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar,local:///opt/spark/jars/delta-spark_2.12-3.0.0rc1.jar')
+    args.append(f'local:///opt/spark/jars/profiles-sdk-{os.environ["VERSION"]}.jar,local:///opt/spark/jars/delta-spark_2.12-3.0.0.jar')
     args.append(pyspark_args['app_location'])
     for x in pyspark_args['app_command']:
         args.append(x)

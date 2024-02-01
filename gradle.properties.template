@@ -14,3 +14,6 @@
 
 artifactoryUser=<YOUR USERNAME>
 artifactoryPassword=<YOUR PASSWORD>
+
+# Set the profiles sdk version to build with, example: 1.8.12-g8c6dbd3
+PROFILES_SDK_VERSION=<PROFILES SDK VERSION>

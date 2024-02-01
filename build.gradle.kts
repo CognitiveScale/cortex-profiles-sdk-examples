@@ -16,6 +16,7 @@ plugins {
 	kotlin("jvm") version "1.6.21" apply false
 	kotlin("plugin.serialization") version "1.6.21" apply false
 	id("com.bmuschko.docker-remote-api") version "7.4.0" apply false
+	id("org.sonarqube") version "4.4.1.3373" apply false
 }
 
 buildscript {
@@ -28,7 +29,11 @@ buildscript {
 
 allprojects {
 	group = "com.c12e.cortex.examples"
-	version = "1.0.0-SNAPSHOT"
+	if (project.version != "unspecified") {
+		version = project.version
+	} else {
+		version = "1.0.0-SNAPSHOT"
+	}
 
 	tasks.withType<Test> {
 		useJUnitPlatform()
@@ -42,7 +47,7 @@ allprojects {
 	tasks.withType<KotlinCompile> {
 		kotlinOptions {
 			freeCompilerArgs = listOf("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
-			jvmTarget = "8"
+			jvmTarget = "1.8"
 			apiVersion = "1.6"
 			languageVersion = "1.6"
 		}
@@ -89,7 +94,7 @@ subprojects {
 		resolutionStrategy {
 			eachDependency {
 				when (requested.group) {
-					"com.c12e.cortex.profiles" -> useVersion("1.3.1-gb3c97be")
+					"com.c12e.cortex.profiles" -> useVersion(providers.gradleProperty("PROFILES_SDK_VERSION").get())
 				}
 			}
 		}
