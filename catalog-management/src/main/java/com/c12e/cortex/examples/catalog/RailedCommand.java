@@ -13,10 +13,7 @@
 package com.c12e.cortex.examples.catalog;
 
 import com.c12e.cortex.examples.local.SessionExample;
-import com.c12e.cortex.phoenix.Connection;
-import com.c12e.cortex.phoenix.DataSource;
-import com.c12e.cortex.phoenix.NotFoundException;
-import com.c12e.cortex.phoenix.ProfileSchema;
+import com.c12e.cortex.phoenix.*;
 import com.c12e.cortex.phoenix.spec.*;
 import com.c12e.cortex.profiles.CortexSession;
 import com.c12e.shadow.com.fasterxml.jackson.core.JsonParser;
@@ -60,6 +57,9 @@ public abstract class RailedCommand implements Runnable {
 
     @CommandLine.Option(names = {"-c", "--config"}, description = "Ingestion config file path", required = true)
     protected String configFilePath;
+
+    @CommandLine.Option(names = {"-s", "--spec"}, description = "Ingestion catalog spec path", required = true)
+    protected String specPath;
 
     @CommandLine.Spec
     protected CommandLine.Model.CommandSpec cmdSpec;
@@ -115,89 +115,16 @@ public abstract class RailedCommand implements Runnable {
         }
     }
 
-    public RailedCommand() {
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(ProfileSchema.class, new ProfileSchemaDeserializer());
-
-        //Add custom serializer to Jackson module
-        com.c12e.shadow.com.jayway.jsonpath.Configuration.setDefaults(new com.c12e.shadow.com.jayway.jsonpath.Configuration.Defaults() {
-            private final JsonProvider jsonProvider = new JacksonJsonProvider(JsonMapper.builder()
-                    .addModules(new KotlinModule.Builder().build(), module)
-                    .build());
-            private final MappingProvider mappingProvider = new JacksonMappingProvider(JsonMapper.builder()
-                    .addModules(new KotlinModule.Builder().build(), module)
-                    .build());
-
-            @Override
-            public JsonProvider jsonProvider() {
-                return jsonProvider;
-            }
-
-            @Override
-            public MappingProvider mappingProvider() {
-                return mappingProvider;
-            }
-
-            @Override
-            public Set<Option> options() {
-                return EnumSet.noneOf(Option.class);
-            }
-        });
-    }
-
-    /**
-     * Custom Profile Schema deserializer to convert from app config to Cortex type
-     */
-    public class ProfileSchemaDeserializer extends StdDeserializer<ProfileSchema> {
-
-        public ProfileSchemaDeserializer() {
-            this(null);
-        }
-
-        public ProfileSchemaDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public ProfileSchema deserialize(JsonParser jp, DeserializationContext ctxt)
-                throws IOException, JsonProcessingException {
-            JsonNode node = jp.getCodec().readTree(jp);
-
-            List<AttributeSpec> attributes = Arrays.asList(ctxt.readTreeAsValue(node.get("customAttributes"), CustomAttributeSpec[].class));
-            attributes.addAll(Arrays.asList(ctxt.readTreeAsValue(node.get("bucketAttributes"), BucketAttributeSpec[].class)));
-
-            return new ProfileSchema(
-                    node.get("project").asText(),
-                    node.get("name").asText(),
-                    node.has("title") ? node.get("title").asText(null) : null,
-                    node.has("description") ? node.get("description").asText(null) : null,
-                    ctxt.readTreeAsValue(node.get("names"), ProfileNames.class),
-                    ctxt.readTreeAsValue(node.get("primarySource"), DataSourceSelection.class),
-                    Arrays.asList(ctxt.readTreeAsValue(node.get("joins"), JoinSourceSelection[].class)),
-                    node.has("userId") ? node.get("userId").asText(null) : null,
-                    attributes,
-                    Arrays.asList(ctxt.readTreeAsValue(node.get("attributeTags"), AttributeTag[].class))
-            );
-        }
-    }
-
     /**
      * Manage catalog entities defined in the app configuration
      * @param cortexSession - the Cortex session
      * @param config - the app config
      * @param project- the project name
      */
-    public void handleResourceEntities(CortexSession cortexSession, DocumentContext config, String project) {
-        config.put(CONNECTIONS_PATH + "[*]", "project", project);
-        config.put(DATA_SOURCES_PATH + "[*]", "project", project);
-        config.put(PROFILE_SCHEMAS_PATH + "[*]", "project", project);
-
-        List<Connection> connections = config.read(CONNECTIONS_PATH, new TypeRef<List<Connection>>() {
-        });
-        List<DataSource> dataSources = config.read(DATA_SOURCES_PATH, new TypeRef<List<DataSource>>() {
-        });
-        List<ProfileSchema> profileSchemas = config.read(PROFILE_SCHEMAS_PATH, new TypeRef<List<ProfileSchema>>() {
-        });
+    public void handleResourceEntities(CortexSession cortexSession, DocumentContext config, LocalCatalog localCatalog, String project) {
+        Iterable<Connection> connections = localCatalog.listConnections(project);
+        Iterable<DataSource> dataSources = localCatalog.listDataSources(project);
+        Iterable<ProfileSchema> profileSchemas = localCatalog.listProfileSchemas(project);
 
         Boolean recreate = config.read("resources.recreate");
         //Boolean recreate = true;
@@ -289,14 +216,16 @@ public abstract class RailedCommand implements Runnable {
         SessionExample example = new SessionExample();
         CortexSession cortexSession = example.getCortexSession();
         DocumentContext config;
+        LocalCatalog localCatalog;
         try {
+            localCatalog = new LocalCatalog(specPath);
             config = JsonPath.parse(Paths.get(configFilePath).toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         //catalog management
-        handleResourceEntities(cortexSession, config, project);
+        handleResourceEntities(cortexSession, config, localCatalog, project);
 
         //set listener for streaming sources
         SingleLoopQueryListener queryListener = new SingleLoopQueryListener(cortexSession.spark());

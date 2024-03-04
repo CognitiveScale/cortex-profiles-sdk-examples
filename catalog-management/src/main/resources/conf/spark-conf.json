@@ -6,7 +6,9 @@
       "--project",
       "local",
       "--config",
-      "/app/conf/app-conf.json"
+      "/app/conf/app-conf.json",
+      "--spec",
+      "/opt/spark/work-dir/src/main/resources/spec"
     ],
     "app_location": "local:///app/libs/app.jar",
     "options": {
@@ -22,7 +24,9 @@
         "spark.cortex.client.secrets.impl": "com.c12e.cortex.examples.local.CustomSecretsClient",
         "spark.cortex.client.storage.impl": "com.c12e.cortex.profiles.client.LocalRemoteStorageClient",
         "spark.cortex.storage.storageType": "file",
-        "spark.cortex.storage.file.baseDir": "src/main/resources/data"
+        "spark.cortex.storage.file.baseDir": "src/main/resources/data",
+        "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
+        "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog"
       }
     }
   }
