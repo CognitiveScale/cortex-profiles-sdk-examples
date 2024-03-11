@@ -105,21 +105,25 @@ public class StreamingDataSource implements Runnable {
         }
 
         @Override
+        public void onQueryIdle(QueryIdleEvent event) {
+            logger.info("STREAMING LISTENER: Streaming Query idle");
+            countBeforeStop--;
+            if(countBeforeStop == 0){
+                logger.info("STREAMING LISTENER: Initiating Streaming Query stop");
+                try {
+                    sparkSession.sqlContext().streams().get(event.id()).stop();
+                } catch (TimeoutException e) {
+                    logger.error("Timeout error in query", e);
+                }
+            } else {
+                logger.info("STREAMING LISTENER: No processing occurred in last poll, stopping in {} poll intervals", countBeforeStop);
+            }
+        }
+
+        @Override
         public void onQueryProgress(QueryProgressEvent event) {
             logger.info("STREAMING LISTENER: Streaming Query in progress");
-            if (event.progress().numInputRows() == 0) {
-                countBeforeStop--;
-                if(countBeforeStop == 0){
-                    logger.info("STREAMING LISTENER: Initiating Streaming Query stop");
-                    try {
-                        sparkSession.sqlContext().streams().get(event.progress().id()).stop();
-                    } catch (TimeoutException e) {
-                        logger.error("STREAMING LISTENER: Timeout error in query", e);
-                    }
-                }
-            }
             logger.info(event.progress().prettyJson());
-            logger.info("STREAMING LISTENER: No processing occurred in last poll, stopping in {} poll intervals", countBeforeStop);
         }
 
         @Override
